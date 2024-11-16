@@ -7,7 +7,7 @@ export function generateSessionId(): string {
     return sessionId;
 }
 
-export interface SessionData {
+interface SessionData {
     resume_text: string;
     job_description: string;
 }
