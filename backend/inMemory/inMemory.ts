@@ -35,3 +35,8 @@ export function deleteData(sessionId: string): void {
         delete tempStorage[sessionId];
     }
 }
+
+// Clear all data 
+export function clearAllData(): void {
+    Object.keys(tempStorage).forEach(key => delete tempStorage[key]);
+}
