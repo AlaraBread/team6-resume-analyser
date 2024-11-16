@@ -3,6 +3,8 @@ import {
     storeData,
     retrieveData,
     deleteData,
+    tempStorage,
+    clearAllData,
 } from "./inMemory.ts";
 
 import { assertEquals, assertNotEquals } from "https://deno.land/std@0.224.0/assert/mod.ts";
@@ -36,4 +38,15 @@ Deno.test("deleteData removes data correctly", () => {
     deleteData(sessionId);
     const data = retrieveData(sessionId);
     assertEquals(data, null);
+});
+
+Deno.test("clearAllData removes all session data", () => {
+    storeData("session_id_55", "Resume 1", "Job Desc 1");
+    storeData("session_id_56", "Resume 2", "Job Desc 2");
+    
+    clearAllData();
+    
+    assertEquals(Object.keys(tempStorage).length, 0);
+    assertEquals(retrieveData("session_id_55"), null);
+    assertEquals(retrieveData("session_id_56"), null); 
 });
