@@ -7,10 +7,7 @@ import {
 	tempStorage,
 } from "./inMemory.ts";
 
-import {
-	assertEquals,
-	assertNotEquals,
-} from "https://deno.land/std@0.224.0/assert/mod.ts";
+import { assertEquals, assertNotEquals } from "@std/assert";
 
 Deno.test("Generate session ID", () => {
 	const sessionId = generateSessionId();
