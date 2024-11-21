@@ -1,6 +1,6 @@
-import FitScoreChart from "./FitScoreChart";
-import SkillsMatched from "./SkillsMatched";
-import ImprovementSuggestions from "./ImprovementSuggestions";
+import FitScoreChart from "./fit_score_chart";
+import SkillsMatched from "./skills_matched";
+import ImprovementSuggestions from "./improvement_suggestions";
 
 interface MockData {
 	fitScore: number;
