@@ -2,7 +2,7 @@ interface ImprovementSuggestionsProps {
 	suggestions: string[];
 }
 
-export default function improvementSuggestions({
+export default function ImprovementSuggestions({
 	suggestions,
 }: ImprovementSuggestionsProps) {
 	return (
