@@ -1,3 +1,4 @@
+import "./dashboard.css";
 interface ImprovementSuggestionsProps {
 	suggestions: string[];
 }
@@ -7,10 +8,10 @@ export default function ImprovementSuggestions({
 }: ImprovementSuggestionsProps) {
 	return (
 		<div>
-			<h2>Improvement Suggestions</h2>
-			<ul>
+			<h2 className="suggestions-title">Improvement Suggestions</h2>
+			<ul className="suggestions-list">
 				{suggestions.map((suggestion, index) => (
-					<li key={index} style={{ marginBottom: "0.5rem" }}>
+					<li key={index} className="suggestions-item">
 						{suggestion}
 					</li>
 				))}

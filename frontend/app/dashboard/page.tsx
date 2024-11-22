@@ -1,6 +1,7 @@
 import FitScoreChart from "./fit_score_chart";
 import SkillsMatched from "./skills_matched";
 import ImprovementSuggestions from "./improvement_suggestions";
+import "./dashboard.css";
 
 interface MockData {
 	fitScore: number;
@@ -28,8 +29,8 @@ const mockData: MockData = {
 
 export default function Dashboard() {
 	return (
-		<div style={{ fontFamily: "Arial, sans-serif", padding: "2rem" }}>
-			<h1 style={{ textAlign: "center" }}>Resume Analysis Dashboard</h1>
+		<div className="dashboard-container">
+			<h1 className="dashboard-title">Resume Analysis Dashboard</h1>
 			<br></br>
 			<FitScoreChart score={mockData.fitScore} />
 			<SkillsMatched skills={mockData.matchedSkills} />
