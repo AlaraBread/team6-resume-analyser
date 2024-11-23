@@ -10,7 +10,7 @@ interface MockData {
 }
 
 const mockData: MockData = {
-	fitScore: 55,
+	fitScore: 5,
 	matchedSkills: [
 		"JavaScript",
 		"React",

@@ -1,35 +1,38 @@
-import { Card, CardContent, Typography } from "@mui/material";
+import { Card, CardContent, Typography, Rating } from "@mui/material";
 import "./dashboard.css";
 type FitScoreChartProps = {
 	score: number;
 };
 
 export default function FitScoreChart({ score }: FitScoreChartProps) {
-	const getBackgroundColor = (score: number): string => {
-		if (score > 75) {
-			return "#4caf50";
-		} else if (score > 25) {
-			return "#ffff00";
-		} else {
-			return "#f44336";
-		}
-	};
-
+	const ratingVal = (score / 100) * 5;
 	return (
-		<div className="fit-score-chart">
-			<h2 className="fit-score-chart-title">Resume Fit Score</h2>
-			<div className="fit-score-bar-container">
-				<div className="fit-score-bar-background">
-					<div
-						className="fit-score-bar"
-						style={{
-							width: `${score}%`,
-							backgroundColor: getBackgroundColor(score),
-						}}
-					></div>
+		<Card className="card-container-fit">
+			<CardContent>
+				<Typography variant="h5" className="fit-score-chart-title">
+					Resume Fit Score
+				</Typography>
+				<div
+					style={{
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						margin: "1rem 0",
+					}}
+				>
+					<Rating
+						value={ratingVal}
+						readOnly
+						precision={0.5}
+						size="large"
+					/>
+					<Typography
+						style={{ marginLeft: "0.5rem", fontWeight: "bold" }}
+					>
+						{ratingVal.toFixed(2)} / 5
+					</Typography>
 				</div>
-				<span className="fit-score-label">{score}%</span>
-			</div>
-		</div>
+			</CardContent>
+		</Card>
 	);
 }
