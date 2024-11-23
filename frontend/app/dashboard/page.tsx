@@ -3,14 +3,14 @@ import SkillsMatched from "./skills_matched";
 import ImprovementSuggestions from "./improvement_suggestions";
 import "./dashboard.css";
 
-interface MockData {
+export interface MockData {
 	fitScore: number;
 	matchedSkills: string[];
 	improvementSuggestions: string[];
 }
 
 const mockData: MockData = {
-	fitScore: 5,
+	fitScore: 85,
 	matchedSkills: [
 		"JavaScript",
 		"React",
