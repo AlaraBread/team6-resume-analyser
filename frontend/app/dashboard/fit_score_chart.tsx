@@ -1,3 +1,4 @@
+import { Card, CardContent, Typography } from "@mui/material";
 import "./dashboard.css";
 type FitScoreChartProps = {
 	score: number;

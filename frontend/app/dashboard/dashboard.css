@@ -46,40 +46,31 @@
 	font-weight: bolder;
 }
 
-.skills-matched-title {
-	font-size: 1.5rem;
-	margin-bottom: 0.5rem;
-	color: #333;
-	text-align: left;
+.card-container-skills-match {
+	display: flex;
+	justify-content: center;
+	margin: 0 auto;
+	text-align: center;
 }
 
 .skills-matched-list {
-	list-style-type: circle;
-	padding-left: 2.5rem;
-	margin: 0;
+	width: 100%;
+	padding: 0;
+	text-align: center;
+	list-style-type: disc;
+	padding-left: 1.5rem;
 }
 
-.skills-matched-item {
-	margin-bottom: 1rem;
-	color: #555;
-	font-size: 1rem;
+.card-container-improvement {
+	display: flex;
+	justify-content: center;
+	margin: 0 auto;
+	text-align: center;
 }
-
-.suggestions-title {
-	font-size: 1.5rem;
-	margin-bottom: 0.5rem;
-	color: #333;
-	text-align: left;
-}
-
-.suggestions-list {
-	list-style-type: circle;
-	padding-left: 2.5rem;
-	margin: 0;
-}
-
-.suggestions-item {
-	margin-bottom: 1rem;
-	color: #555;
-	font-size: 1rem;
+.improvements-list {
+	width: 100%;
+	padding: 0;
+	text-align: center;
+	list-style-type: disc;
+	padding-left: 1.5rem;
 }
