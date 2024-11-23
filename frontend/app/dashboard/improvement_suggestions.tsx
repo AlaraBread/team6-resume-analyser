@@ -18,7 +18,7 @@ export default function ImprovementSuggestions({
 	return (
 		<Card className="card-container-improvement">
 			<CardContent>
-				<Typography variant="h6" style={{ fontWeight: "bold" }}>
+				<Typography variant="h5" style={{ fontWeight: "bold" }}>
 					Improvement Suggestions
 				</Typography>
 				<List className="improvements-list">
