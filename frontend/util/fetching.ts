@@ -56,22 +56,44 @@ export type postRequests = {
 		};
 	};
 	"api/resume-upload": {
-		request: {
-			file: File;
-		};
+		request: FormData;
 		response: {
 			message: string;
 		};
 	};
 };
 
-export async function backendPost<T extends keyof postRequests>(
+type formPostRequests = {
+	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData
+		? K
+		: never;
+}[keyof postRequests];
+
+type jsonPostRequests = {
+	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData
+		? never
+		: K;
+}[keyof postRequests];
+
+export async function backendPost<T extends jsonPostRequests>(
 	endpoint: T,
 	data: postRequests[T]["request"],
 ): Promise<postRequests[T]["response"]> {
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		body: JSON.stringify(data),
+	}).then((response) => response.json()) as Promise<
+		postRequests[T]["response"]
+	>;
+}
+
+export async function backendFormPost<T extends formPostRequests>(
+	endpoint: T,
+	data: postRequests[T]["request"],
+): Promise<postRequests[T]["response"]> {
+	return fetch(getEndpointPath(endpoint), {
+		method: "POST",
+		body: data,
 	}).then((response) => response.json()) as Promise<
 		postRequests[T]["response"]
 	>;
