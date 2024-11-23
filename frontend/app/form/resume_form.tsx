@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { backendPost } from "util/fetching";
+import { backendFormPost } from "util/fetching";
 import { Button, Card, CardContent, CardHeader, styled } from "@mui/material";
 
 /*https://mui.com/material-ui/react-button/#file-upload*/
@@ -18,14 +18,15 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 export default function ResumeForm() {
-	const [file, setFile] = useState<File | null>(null);
 	const [message, setMessage] = useState<string | null>(null);
 
-	const handleSubmit = (event: React.FormEvent) => {
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
+		const formData = new FormData(event.target as HTMLFormElement);
+		const file = formData.get("file");
 
 		// Checks if a file was selected
-		if (!file) {
+		if (!file || typeof file == "string" || file.name == "") {
 			setMessage("Please select a file");
 			return;
 		}
@@ -43,7 +44,7 @@ export default function ResumeForm() {
 		}
 
 		// This will upload the resume
-		backendPost("api/resume-upload", { file })
+		backendFormPost("api/resume-upload", formData)
 			.then((data) => {
 				setMessage(data.message);
 			})
@@ -68,13 +69,9 @@ export default function ResumeForm() {
 					>
 						UPLOAD RESUME
 						<VisuallyHiddenInput
+							name="file"
 							type="file"
 							accept="application/pdf"
-							onChange={(event) => {
-								const selectedFile =
-									event.target.files?.[0] || null;
-								setFile(selectedFile);
-							}}
 						/>
 					</Button>
 					<Button
