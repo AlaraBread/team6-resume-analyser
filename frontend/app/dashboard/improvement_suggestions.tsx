@@ -23,13 +23,9 @@ export default function ImprovementSuggestions({
 				titleTypographyProps={{ style: { fontWeight: "bold" } }}
 			/>
 			<CardContent>
-				<List className="improvements-list">
+				<List sx={{ listStyleType: "none", padding: 0 }}>
 					{suggestions.map((suggestion, index) => (
-						<ListItem
-							key={index}
-							disablePadding
-							style={{ display: "list-item" }}
-						>
+						<ListItem key={index}>
 							<ListItemText primary={suggestion} />
 						</ListItem>
 					))}
