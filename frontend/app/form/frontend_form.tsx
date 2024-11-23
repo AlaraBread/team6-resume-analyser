@@ -1,8 +1,8 @@
 "use client";
 
-import ResumeForm from "./resumeForm";
-import JobDescriptionForm from "./jobdescriptionForm";
-import styles from "./frontendForm.module.css";
+import ResumeForm from "./resume_form";
+import JobDescriptionForm from "./job_description_form";
+import styles from "./frontend_form.module.css";
 import { Card, CardContent } from "@mui/material";
 
 export default function FrontendForm() {
