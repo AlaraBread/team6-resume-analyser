@@ -20,13 +20,9 @@ export default function SkillsMatched({ skills }: SkillsMatchedProps) {
 				titleTypographyProps={{ style: { fontWeight: "bold" } }}
 			/>
 			<CardContent>
-				<List className="skills-matched-list">
+				<List sx={{ listStyleType: "none", padding: 0 }}>
 					{skills.map((skill, index) => (
-						<ListItem
-							key={index}
-							disablePadding
-							style={{ display: "list-item" }}
-						>
+						<ListItem key={index}>
 							<ListItemText primary={skill} />
 						</ListItem>
 					))}
