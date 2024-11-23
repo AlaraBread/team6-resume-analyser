@@ -1,7 +1,7 @@
 import {
 	Card,
 	CardContent,
-	Typography,
+	CardHeader,
 	List,
 	ListItem,
 	ListItemText,
@@ -17,10 +17,12 @@ export default function ImprovementSuggestions({
 }: ImprovementSuggestionsProps) {
 	return (
 		<Card className="card-container-improvement">
+			<CardHeader
+				component="h2"
+				title="Improvement Suggestions"
+				titleTypographyProps={{ style: { fontWeight: "bold" } }}
+			/>
 			<CardContent>
-				<Typography variant="h5" style={{ fontWeight: "bold" }}>
-					Improvement Suggestions
-				</Typography>
 				<List className="improvements-list">
 					{suggestions.map((suggestion, index) => (
 						<ListItem
