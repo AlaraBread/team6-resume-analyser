@@ -1,3 +1,11 @@
+import {
+	Card,
+	CardContent,
+	Typography,
+	List,
+	ListItem,
+	ListItemText,
+} from "@mui/material";
 import "./dashboard.css";
 interface SkillsMatchedProps {
 	skills: string[];
@@ -5,17 +13,23 @@ interface SkillsMatchedProps {
 
 export default function SkillsMatched({ skills }: SkillsMatchedProps) {
 	return (
-		<div>
-			<h2 className="skills-matched-title">
-				Skills and Keywords Matched
-			</h2>
-			<ul className="skills-matched-list">
-				{skills.map((skill, index) => (
-					<li key={index} className="skills-matched-item">
-						{skill}
-					</li>
-				))}
-			</ul>
-		</div>
+		<Card className="card-container-skills-match">
+			<CardContent>
+				<Typography variant="h6" style={{ fontWeight: "bold" }}>
+					Skills and Keywords Matched
+				</Typography>
+				<List className="skills-matched-list">
+					{skills.map((skill, index) => (
+						<ListItem
+							key={index}
+							disablePadding
+							style={{ display: "list-item" }}
+						>
+							<ListItemText primary={skill} />
+						</ListItem>
+					))}
+				</List>
+			</CardContent>
+		</Card>
 	);
 }
