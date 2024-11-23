@@ -10,7 +10,9 @@
 	width: 40%;
 	border-radius: 8px;
 }
-
+.card > * > * {
+	margin: 1rem;
+}
 .heading {
 	text-align: center;
 	font-size: 2rem;

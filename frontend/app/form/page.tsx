@@ -1,4 +1,4 @@
-import FrontendForm from "./frontendForm";
+import FrontendForm from "./frontend_form";
 
 export default function FormPage() {
 	return <FrontendForm />;

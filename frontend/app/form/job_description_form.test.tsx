@@ -1,5 +1,10 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import JobDescriptionForm from "./jobdescriptionForm";
+import JobDescriptionForm from "./job_description_form";
+import { backendPost } from "util/fetching";
+
+jest.mock("../../util/fetching", () => ({
+	backendPost: jest.fn(),
+}));
 
 it("Displays the job description form with input and button", () => {
 	render(<JobDescriptionForm />);
@@ -45,13 +50,19 @@ it("Displays an error if the job description exceeds 5000 characters", () => {
 });
 
 it("Displays a success message if the job description is valid", async () => {
+	(backendPost as jest.Mock).mockResolvedValueOnce({
+		message: "Job description submitted successfully",
+	});
+
 	render(<JobDescriptionForm />);
-	const input = screen.getByLabelText(/job description/i);
+	const textarea = screen.getByPlaceholderText(/enter job description/i);
 	const submitButton = screen.getByRole("button", {
 		name: /submit job description/i,
 	});
 
-	fireEvent.change(input, { target: { value: "Valid job description" } });
+	fireEvent.change(textarea, {
+		target: { value: "Valid job description" },
+	});
 	fireEvent.click(submitButton);
 
 	const successMessage = await screen.findByText(

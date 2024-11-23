@@ -47,6 +47,22 @@ export type postRequests = {
 			message: string;
 		};
 	};
+	"api/job-description": {
+		request: {
+			description: string;
+		};
+		response: {
+			message: string;
+		};
+	};
+	"api/resume-upload": {
+		request: {
+			file: File;
+		};
+		response: {
+			message: string;
+		};
+	};
 };
 
 export async function backendPost<T extends keyof postRequests>(

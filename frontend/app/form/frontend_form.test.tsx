@@ -1,10 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import FrontendForm from "./frontendForm";
-import ResumeForm from "./resumeForm";
-import JobDescriptionForm from "./jobdescriptionForm";
+import FrontendForm from "./frontend_form";
+import ResumeForm from "./resume_form";
+import JobDescriptionForm from "./job_description_form";
 
-jest.mock("./resumeForm");
-jest.mock("./jobdescriptionForm");
+jest.mock("./resume_form");
+jest.mock("./job_description_form");
 
 beforeEach(() => {
 	jest.clearAllMocks();

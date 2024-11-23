@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { backendPost } from "util/fetching";
 import {
 	Button,
 	Card,
@@ -13,18 +14,7 @@ export default function JobDescriptionForm() {
 	const [description, setDescription] = useState<string>("");
 	const [message, setMessage] = useState<string | null>(null);
 
-	/**
-	 * Requires task 8 to submit form data
-	 * For now, I created a mock to submit and
-	 * return a response
-	 */
-	const uploadJobDescription = async (
-		_description: string,
-	): Promise<string> => {
-		return Promise.resolve("Job description submitted successfully.");
-	};
-
-	const handleSubmit = async (event: React.FormEvent) => {
+	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
 
 		// Check if the job description is empty
@@ -40,12 +30,13 @@ export default function JobDescriptionForm() {
 		}
 
 		// Submits job description
-		try {
-			const response = await uploadJobDescription(description);
-			setMessage(response);
-		} catch {
-			setMessage("There was an error submitting the job description.");
-		}
+		backendPost("api/job-description", { description })
+			.then((data) => {
+				setMessage(data.message);
+			})
+			.catch((error) => {
+				setMessage("" + error);
+			});
 	};
 	return (
 		<Card>
@@ -71,7 +62,7 @@ export default function JobDescriptionForm() {
 					<Button type="submit" variant="contained" fullWidth>
 						Submit Job Description
 					</Button>
-					{message && message}
+					{message ?? ""}
 				</form>
 			</CardContent>
 		</Card>
