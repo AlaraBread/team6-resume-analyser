@@ -1,7 +1,7 @@
 import {
 	Card,
 	CardContent,
-	Typography,
+	CardHeader,
 	List,
 	ListItem,
 	ListItemText,
@@ -14,10 +14,12 @@ interface SkillsMatchedProps {
 export default function SkillsMatched({ skills }: SkillsMatchedProps) {
 	return (
 		<Card className="card-container-skills-match">
+			<CardHeader
+				component="h2"
+				title="Skills and Keywords Matched"
+				titleTypographyProps={{ style: { fontWeight: "bold" } }}
+			/>
 			<CardContent>
-				<Typography variant="h6" style={{ fontWeight: "bold" }}>
-					Skills and Keywords Matched
-				</Typography>
 				<List className="skills-matched-list">
 					{skills.map((skill, index) => (
 						<ListItem
