@@ -1,9 +1,11 @@
 import { render, fireEvent, screen } from "@testing-library/react";
 import ResumeForm from "./resume_form";
-import { backendPost } from "util/fetching";
+import { backendFormPost } from "util/fetching";
+import fs from "fs";
+import path from "path";
 
 jest.mock("../../util/fetching", () => ({
-	backendPost: jest.fn(),
+	backendFormPost: jest.fn(),
 }));
 
 it("Displays the form with input field and button", () => {
@@ -28,12 +30,22 @@ it("Displays error when no file is selected", async () => {
 	).toBeInTheDocument();
 });
 
+// TEST FAILED, OUTPUT IS "please select a file"
+// CURRENTLY FIXING WITH REAL FILE
 it("Displays error if file type is invalid", async () => {
 	render(<ResumeForm />);
 	const upload = screen.getByRole("button", { name: /upload resume/i });
-	const input = upload.querySelector("input[type='file']");
-	const file = new File(["content"], "document.txt", { type: "text/plain" });
-	fireEvent.change(input as HTMLInputElement, { target: { files: [file] } });
+	const input = upload.querySelector(
+		"input[type='file']",
+	) as HTMLInputElement;
+
+	const file_path = path.join(__dirname, "test.txt");
+	const file_content = fs.readFileSync(file_path); // Read file content
+	const file = new File([file_content], "test.txt", { type: "text/plain" });
+	Object.defineProperty(input, "files", {
+		value: [file],
+	});
+	fireEvent.change(input);
 
 	const submit = screen.getByRole("button", { name: /submit resume/i });
 	fireEvent.click(submit);
@@ -42,6 +54,7 @@ it("Displays error if file type is invalid", async () => {
 	).toBeInTheDocument();
 });
 
+// TEST FAILED, OUTPUT IS "please select a file"
 it("Displays error if file is over 2MB", async () => {
 	render(<ResumeForm />);
 	const upload = screen.getByRole("button", { name: /upload resume/i });
@@ -58,8 +71,9 @@ it("Displays error if file is over 2MB", async () => {
 	).toBeInTheDocument();
 });
 
+// TEST FAILED, OUTPUT IS "please select a file"
 it("Displays a successful response when PDF file is uploaded", async () => {
-	(backendPost as jest.Mock).mockResolvedValueOnce({
+	(backendFormPost as jest.Mock).mockResolvedValueOnce({
 		message: "Resume uploaded successfully",
 	});
 	render(<ResumeForm />);
