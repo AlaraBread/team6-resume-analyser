@@ -1,10 +1,4 @@
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	Rating,
-	Typography,
-} from "@mui/material";
+import { Card, CardContent, Rating, Typography } from "@mui/material";
 import "./dashboard.css";
 
 type FitScoreChartProps = {
