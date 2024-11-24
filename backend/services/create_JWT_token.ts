@@ -13,7 +13,7 @@ const headerObject = {
 };
 
 // Load environment variable from .env
-const env = config({ path: "../../.env" });
+const env = config();
 const jwtKey = env.JWT_SECRET_KEY;
 
 const createJWT = (email: string, password: string) => {
