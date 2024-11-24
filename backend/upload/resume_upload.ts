@@ -24,7 +24,9 @@ export async function resumeUpload(ctx: Context) {
 	}
 
 	const formFile = formData.get("file");
-	const file = typeof formFile == "string" || !formFile ? undefined : formFile;
+	const file = typeof formFile == "string" || !formFile
+		? undefined
+		: formFile;
 
 	if (!file) {
 		ctx.response.status = 400;

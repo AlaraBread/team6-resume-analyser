@@ -1,10 +1,11 @@
 import { assert, assertEquals } from "@std/assert";
 import { jobDescriptionUpload } from "./job_description_upload.ts";
 import { createMockContext } from "@oak/oak/testing";
+import { createBody } from "../util/util.test.ts";
 
 Deno.test("Job Description - Valid Input", async () => {
 	const ctx = createMockContext({
-		body: ReadableStream.from(
+		body: createBody(
 			JSON.stringify({
 				job_description: "This is a valid job description.",
 			}),
@@ -26,7 +27,7 @@ Deno.test("Job Description - Valid Input", async () => {
 
 Deno.test("Job Description - Exceeds Character Limit", async () => {
 	const ctx = createMockContext({
-		body: ReadableStream.from(
+		body: createBody(
 			JSON.stringify({
 				job_description: "A".repeat(5001), // Exceeds 5,000 characters
 			}),

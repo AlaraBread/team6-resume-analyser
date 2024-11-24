@@ -1,15 +1,7 @@
 import { assert, assertEquals } from "@std/assert";
 import { resumeUpload } from "./resume_upload.ts";
 import { createMockContext } from "@oak/oak/testing";
-
-function createBody(body: string) {
-	const req = new Request("http://0.0.0.0", {
-		method: "POST",
-		body: (body + "\n").replaceAll("\n", "\r\n"),
-	});
-	assert(req.body);
-	return req.body;
-}
+import { createBody } from "../util/util.test.ts";
 
 Deno.test("Valid PDF", async () => {
 	const body = `--boundary
