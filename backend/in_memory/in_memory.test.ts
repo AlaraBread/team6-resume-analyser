@@ -5,7 +5,7 @@ import {
 	retrieveData,
 	storeData,
 	tempStorage,
-} from "./inMemory.ts";
+} from "./in_memory.ts";
 
 import { assertEquals, assertNotEquals } from "@std/assert";
 
