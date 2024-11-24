@@ -58,6 +58,15 @@ export type postRequests = {
 			message: string;
 		};
 	};
+	"api/sign_in": {
+		request: {
+			username: string;
+			password: string;
+		};
+		response: {
+			message: string;
+		};
+	};
 };
 
 export async function backendPost<T extends keyof postRequests>(
