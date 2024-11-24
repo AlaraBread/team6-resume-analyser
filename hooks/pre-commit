@@ -1,0 +1,39 @@
+#!/bin/bash
+
+cd "$(dirname "$0")"
+cd ../..
+git ls-files | xargs --delimiter="\n" -L 1 basename >dirs.tmp
+grep --invert-match --line-regexp --perl-regexp "([a-z\(\)\[\]\.\_\-]*)|([A-Z_]*\.md)" dirs.tmp
+if [ $? == 0 ]; then
+	echo "invalid file name(s)"
+	exit 1
+fi
+rm dirs.tmp
+
+cd backend
+deno fmt
+if [ $? != 0 ]; then
+	exit 1
+fi
+deno lint
+if [ $? != 0 ]; then
+	exit 1
+fi
+deno test
+if [ $? != 0 ]; then
+	exit 1
+fi
+
+cd ../frontend
+npm run format
+if [ $? != 0 ]; then
+	exit 1
+fi
+npm run lint
+if [ $? != 0 ]; then
+	exit 1
+fi
+npm run test:ci
+if [ $? != 0 ]; then
+	exit 1
+fi
