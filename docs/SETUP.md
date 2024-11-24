@@ -2,7 +2,7 @@
 
 ## Frontend
 
-The frontend is in `/frontend`. It is a next.js project that uses npm and node.
+The frontend is in `/frontend`. It is a [next.js](https://nextjs.org/) project that uses [npm](https://www.npmjs.com/) and [node](https://nodejs.org/en).
 
 1. Please ensure you have [node.js](https://nodejs.org/en) installed on your machine.
 2. ```sh
@@ -77,12 +77,19 @@ If you are using another editor that doesnt support deno, or you can't set it up
 deno fmt
 ```
 
-## Switching between frontend and backend in vscode
+### Linting
 
-Deno and node proceses imports differently. This causes projects made for one to not work in the other. Remember that the frontend is using node and the backend is using deno.
+We are using deno for linting the backend.
 
-When you need to switch between them, you need to run the `Deno: Enable` and `Deno: Disable` commands in vscode to let it know that you're working on the other project.
+#### in vscode (reccomended)
 
-You can press ctrl+shift+p (or f1 on some systems) and type `deno enable` and then press enter to run the command.
+If you have the deno extension installed, you should get linting information in vscode.
 
-Let everyone know if you discover a way of configuring this to happen automatically.
+#### from the command line
+
+If you are using another editor that doesnt support deno, or you can't set it up for some reason, you can also lint your code using
+
+(in `backend`)
+```bash
+deno lint
+```
