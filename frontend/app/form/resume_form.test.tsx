@@ -1,7 +1,6 @@
 import { render, fireEvent, screen } from "@testing-library/react";
 import ResumeForm from "./resume_form";
 import { backendFormPost } from "util/fetching";
-import userEvent from "@testing-library/user-event";
 
 jest.mock("../../util/fetching", () => ({
 	backendFormPost: jest.fn(),
@@ -42,7 +41,7 @@ it("Displays error if file type is invalid", async () => {
 	});
 
 	const submit = screen.getByRole("button", { name: /submit resume/i });
-	await userEvent.click(submit);
+	fireEvent.click(submit);
 	expect(
 		await screen.findByText(/pdf files are only allowed/i),
 	).toBeInTheDocument();
