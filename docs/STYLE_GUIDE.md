@@ -4,6 +4,17 @@ Please setup deno and prettier as described in [SETUP.md](SETUP.md).
 
 All code should be formatted automatically by them.
 
+Files and directories should be named in `camel_case`. Tests should be put next to the files they are testing.
+
+```
+└── my_component/
+    ├── my_component.tsx
+    ├── my_component.test.tsx
+    └── another_component/
+        ├── another_component.tsx
+        └── another_component.test.tsx
+```
+
 Components, types, and interfaces should be named in `PascalCase`.
 
 ```tsx
