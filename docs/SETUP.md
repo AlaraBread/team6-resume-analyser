@@ -111,3 +111,11 @@ To run the same checks that run in ci on your local, you can run
 ```sh
 deno run check
 ```
+
+## Pre Commit Hook
+
+If you want a pre commit hook that checks file naming, checks formatting, lints, and runs tests, there is a script in `hooks/pre-commit`. To install it, copy `hooks/pre-commit` to `.git/hooks`.
+
+```sh
+cp hooks/pre-commit .git/hooks
+```
