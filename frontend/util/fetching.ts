@@ -47,6 +47,17 @@ export type postRequests = {
 			message: string;
 		};
 	};
+	"api/sign_up": {
+		request: {
+			email: string;
+			username: string;
+			password: string;
+			confirm_password: string;
+		};
+		response: {
+			message: string;
+		};
+	};
 };
 
 export async function backendPost<T extends keyof postRequests>(
