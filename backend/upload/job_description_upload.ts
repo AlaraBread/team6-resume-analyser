@@ -1,5 +1,11 @@
-export async function JobDescriptionHandler(req: Request): Promise<Response> {
-	const body = await req.json();
+import { Context, Router } from "@oak/oak";
+
+export default function (router: Router) {
+	router.post("/api/job-description", jobDescriptionUpload);
+}
+
+export async function jobDescriptionUpload(ctx: Context): Promise<Response> {
+	const body = await ctx.request.body.json();
 	const jobDescription = body.job_description;
 
 	// Validate job description

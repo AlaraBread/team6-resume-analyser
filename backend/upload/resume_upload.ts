@@ -1,4 +1,8 @@
-import { multiParser } from "https://deno.land/x/multiparser@0.114.0/mod.ts";
+import { Context, Router } from "@oak/oak";
+
+export default function (router: Router) {
+	router.post("/api/resume-upload", resumeUpload);
+}
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 const ALLOWED_MIME_TYPES = [
@@ -6,32 +10,30 @@ const ALLOWED_MIME_TYPES = [
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
-export async function ResumeUploadHandler(req: Request): Promise<Response> {
-	const parsed = await multiParser(req);
+export async function resumeUpload(ctx: Context): Promise<Response> {
+	const formData = await ctx.request.body.formData();
 
-	if (!parsed) {
+	if (!formData) {
 		return new Response(
 			JSON.stringify({ error: "Failed to parse form data." }),
 			{ status: 400, headers: { "Content-Type": "application/json" } },
 		);
 	}
 
-	const resumeFile = Array.isArray(parsed.files)
-		? parsed.files.find((file: any) => file.name === "resume_file")
-		: parsed.files?.resume_file;
+	const formFile = formData.get("file");
+	const file =
+		typeof formFile == "string" || !formFile ? undefined : formFile;
 
-	if (!resumeFile) {
+	if (!file) {
 		return new Response(
 			JSON.stringify({ error: "No resume file uploaded." }),
 			{ status: 400, headers: { "Content-Type": "application/json" } },
 		);
 	}
 
-	const { contentType, size } = resumeFile;
-
 	// Normalize content type and validate
-	const normalizedContentType = (contentType || "").split("\n")[0].trim();
-	if (!ALLOWED_MIME_TYPES.includes(normalizedContentType)) {
+	const contentType = file.type.split("\n")[0].trim();
+	if (!ALLOWED_MIME_TYPES.includes(contentType)) {
 		return new Response(
 			JSON.stringify({
 				error: "Invalid file type. Only PDF and DOCX files are allowed.",
@@ -41,7 +43,7 @@ export async function ResumeUploadHandler(req: Request): Promise<Response> {
 	}
 
 	// Validate file size
-	if (size > MAX_FILE_SIZE) {
+	if (file.size > MAX_FILE_SIZE) {
 		return new Response(
 			JSON.stringify({ error: "File size exceeds 2MB." }),
 			{ status: 400, headers: { "Content-Type": "application/json" } },
