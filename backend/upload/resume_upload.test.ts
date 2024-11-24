@@ -1,4 +1,4 @@
-import { assertEquals, assert } from "@std/assert";
+import { assert, assertEquals } from "@std/assert";
 import { resumeUpload } from "./resume_upload.ts";
 import { createMockContext } from "@oak/oak/testing";
 
