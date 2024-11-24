@@ -6,8 +6,7 @@ import {
 	ListItem,
 	ListItemText,
 } from "@mui/material";
-import "./dashboard.css";
-
+import styles from "./pages.module.css";
 interface ImprovementSuggestionsProps {
 	suggestions: string[];
 }
@@ -16,16 +15,19 @@ export default function ImprovementSuggestions({
 	suggestions,
 }: ImprovementSuggestionsProps) {
 	return (
-		<Card className="card-container-improvement">
+		<Card className={styles.cardContainerImprovement}>
 			<CardHeader
 				component="h2"
 				title="Improvement Suggestions"
-				titleTypographyProps={{ style: { fontWeight: "bold" } }}
+				titleTypographyProps={{
+					className: styles.cardHeaderTitleImprovement,
+				}}
 			/>
+
 			<CardContent>
-				<List sx={{ listStyleType: "none", padding: 0 }}>
+				<List className={styles.listContainerImprovement}>
 					{suggestions.map((suggestion, index) => (
-						<ListItem key={index}>
+						<ListItem key={index} className={styles.listItem}>
 							<ListItemText primary={suggestion} />
 						</ListItem>
 					))}
