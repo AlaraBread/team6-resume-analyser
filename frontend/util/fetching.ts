@@ -66,7 +66,8 @@ export type postRequests = {
 };
 
 type formPostRequests = {
-	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData ? K
+	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData
+		? K
 		: never;
 }[keyof postRequests];
 
