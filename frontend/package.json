@@ -8,7 +8,8 @@
 		"test:ci": "jest --ci",
 		"format": "prettier -uw \"**\"",
 		"lint": "next lint",
-		"check-formatting": "prettier -uc \"**\""
+		"check-formatting": "prettier -uc \"**\"",
+		"check": "npm run check-formatting && npm run lint && npm run build && npm run test:ci"
 	},
 	"dependencies": {
 		"@emotion/react": "^11.13.3",

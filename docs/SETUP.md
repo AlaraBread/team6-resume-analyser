@@ -46,6 +46,15 @@ If you are using another editor that doesnt support eslint, or you can't set it 
 npm run lint
 ```
 
+### Check
+
+To run the same checks that run in ci on your local, you can run
+
+(in `frontend`)
+```sh
+npm run check
+```
+
 ## Backend
 
 The backend is in `/backend`. It is an [oak server](https://oakserver.org/) that uses [deno](https://deno.com/).
@@ -92,4 +101,13 @@ If you are using another editor that doesnt support deno, or you can't set it up
 (in `backend`)
 ```bash
 deno lint
+```
+
+### Check
+
+To run the same checks that run in ci on your local, you can run
+
+(in `frontend`)
+```sh
+deno run check
 ```
