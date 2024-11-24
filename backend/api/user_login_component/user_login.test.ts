@@ -1,17 +1,20 @@
 import { assertEquals } from "@std/assert";
-import { createBody } from "../utils/util.test.ts"; // Assuming the path to your function
-import userLogin from "./userLogin.ts";
-import { users } from "./register.ts"; // Import the actual users object
 import { createMockContext } from "@oak/oak/testing";
 import { Router } from "@oak/oak";
+import { userLogin } from "./user_login.ts";
+import { users } from "../register_component/user_registration.ts";
+import { createBody } from "../../util/util.test.ts";
+import { generateHash } from "../../services/generate_hash.ts";
 
 Deno.test("POST /api/userLogin - Successful Login", async () => {
+	// Generate the hashed password
+	const hashedPassword = await generateHash("securePassword");
+
 	// Pre-populate the imported users object with a registered user
 	users["user@example.com"] = {
 		email: "user@example.com",
 		username: "user123",
-		password:
-			"debe062ddaaf9f8b06720167c7b65c778c934a89ca89329dcb82ca79d19e17d2", // SHA-256 hash for 'securePassword'
+		password: hashedPassword, // SHA-256 hash for 'securePassword'
 	};
 	const ctx = createMockContext({
 		method: "POST",
@@ -42,12 +45,14 @@ Deno.test("POST /api/userLogin - Successful Login", async () => {
 });
 
 Deno.test("POST /api/userLogin - Missing User Email", async () => {
+	// Generate the hashed password
+	const hashedPassword = await generateHash("securePassword");
+
 	// Pre-populate the imported users object with a registered user
 	users["user@example.com"] = {
 		email: "user@example.com",
 		username: "user123",
-		password:
-			"debe062ddaaf9f8b06720167c7b65c778c934a89ca89329dcb82ca79d19e17d2", // SHA-256 hash for 'securePassword'
+		password: hashedPassword, // SHA-256 hash for 'securePassword'
 	};
 	const ctx = createMockContext({
 		method: "POST",
@@ -78,12 +83,14 @@ Deno.test("POST /api/userLogin - Missing User Email", async () => {
 });
 
 Deno.test("POST /api/userLogin - Missing User Password", async () => {
+	// Generate the hashed password
+	const hashedPassword = await generateHash("securePassword");
+
 	// Pre-populate the imported users object with a registered user
 	users["user@example.com"] = {
 		email: "user@example.com",
 		username: "user123",
-		password:
-			"debe062ddaaf9f8b06720167c7b65c778c934a89ca89329dcb82ca79d19e17d2", // SHA-256 hash for 'securePassword'
+		password: hashedPassword, // SHA-256 hash for 'securePassword'
 	};
 	const ctx = createMockContext({
 		method: "POST",
@@ -114,12 +121,14 @@ Deno.test("POST /api/userLogin - Missing User Password", async () => {
 });
 
 Deno.test("POST /api/userLogin - Invalid password", async () => {
+	// Generate the hashed password
+	const hashedPassword = await generateHash("securePassword");
+
 	// Pre-populate the imported users object with a registered user
 	users["user@example.com"] = {
 		email: "user@example.com",
 		username: "user123",
-		password:
-			"debe062ddaaf9f8b06720167c7b65c778c934a89ca89329dcb82ca79d19e17d2", // SHA-256 hash for 'securePassword'
+		password: hashedPassword, // SHA-256 hash for 'securePassword'
 	};
 	const ctx = createMockContext({
 		method: "POST",

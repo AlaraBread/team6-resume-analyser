@@ -3,3 +3,6 @@
 
 # temporary files
 *.tmp
+
+# Environment variables
+.env

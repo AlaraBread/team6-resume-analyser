@@ -1,8 +1,8 @@
 import { assertEquals } from "@std/assert";
-import { createBody } from "../utils/util.test.ts"; // Assuming the path to your function
-import { register } from "./register.ts";
 import { createMockContext } from "@oak/oak/testing";
 import { Router } from "@oak/oak";
+import { userRegistration } from "./user_registration.ts";
+import { createBody } from "../../util/util.test.ts";
 
 Deno.test("POST /api/register - Successful Registration", async () => {
 	const ctx = createMockContext({
@@ -19,7 +19,7 @@ Deno.test("POST /api/register - Successful Registration", async () => {
 	});
 
 	const router = new Router();
-	register(router);
+	userRegistration(router);
 
 	// Mock `next` function
 	const next = async () => {};
@@ -45,7 +45,7 @@ Deno.test("POST /api/register - Missing Fields", async () => {
 	});
 
 	const router = new Router();
-	register(router);
+	userRegistration(router);
 
 	const next = async () => {};
 
@@ -63,7 +63,7 @@ Deno.test("POST /api/register - Duplicate Email", async () => {
 	};
 
 	const router = new Router();
-	register(router);
+	userRegistration(router);
 
 	// First registration
 	const ctx1 = createMockContext({

@@ -1,4 +1,7 @@
-import { Buffer, createHmac, getNumericDate } from "../api/deps.ts";
+import { getNumericDate } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
+import { createHmac } from "node:crypto";
+import { Buffer } from "node:buffer";
+import { config } from "https://deno.land/x/dotenv@v3.2.2/mod.ts";
 
 const base64UrlEncode = (data: string): string => {
 	return Buffer.from(data, "utf-8").toString("base64");
@@ -8,8 +11,10 @@ const headerObject = {
 	typ: "JWT",
 	alg: "HS256",
 };
-// Secret key for JWT
-const jwtKey = "59c4b48eac7e9ac37c046ba88964870d";
+
+// Load environment variable from .env
+const env = config({ path: "../../.env" });
+const jwtKey = env.JWT_SECRET_KEY;
 
 const createJWT = (email: string, password: string) => {
 	const payloadObject = {
