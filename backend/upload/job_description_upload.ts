@@ -13,7 +13,8 @@ export async function jobDescriptionUpload(ctx: Context) {
 	if (!jobDescription || jobDescription.length > 5000) {
 		ctx.response.status = 400;
 		ctx.response.body = JSON.stringify({
-			error: "Job description exceeds character limit.",
+			isError: true,
+			message: "Job description exceeds character limit.",
 		});
 		return;
 	}
@@ -21,6 +22,7 @@ export async function jobDescriptionUpload(ctx: Context) {
 	ctx.response.status = 200;
 	// Return success if validation passes
 	ctx.response.body = JSON.stringify({
+		isError: false,
 		message: "Job description submitted successfully.",
 	});
 }

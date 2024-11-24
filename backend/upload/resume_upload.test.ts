@@ -29,6 +29,7 @@ Valid PDF content
 	const responseBody = JSON.parse(ctx.response.body as string);
 
 	assertEquals(ctx.response.status, 200);
+	assert(!responseBody.isError);
 	assertEquals(responseBody.message, "Resume uploaded successfully.");
 });
 
@@ -50,8 +51,9 @@ Invalid file content
 	const responseBody = JSON.parse(ctx.response.body as string);
 
 	assertEquals(ctx.response.status, 400);
+	assert(responseBody.isError);
 	assertEquals(
-		responseBody.error,
+		responseBody.message,
 		"Invalid file type. Only PDF and DOCX files are allowed.",
 	);
 });
@@ -76,5 +78,6 @@ ${largeFileContent}
 	const responseBody = JSON.parse(ctx.response.body as string);
 
 	assertEquals(ctx.response.status, 400);
-	assertEquals(responseBody.error, "File size exceeds 2MB.");
+	assert(responseBody.isError);
+	assertEquals(responseBody.message, "File size exceeds 2MB.");
 });

@@ -17,7 +17,8 @@ export async function resumeUpload(ctx: Context) {
 	if (!formData) {
 		ctx.response.status = 400;
 		ctx.response.body = JSON.stringify({
-			error: "Failed to parse form data.",
+			isError: true,
+			message: "Failed to parse form data.",
 		});
 		return;
 	}
@@ -29,7 +30,8 @@ export async function resumeUpload(ctx: Context) {
 	if (!file) {
 		ctx.response.status = 400;
 		ctx.response.body = JSON.stringify({
-			error: "No resume file uploaded.",
+			isError: true,
+			message: "No resume file uploaded.",
 		});
 		return;
 	}
@@ -39,7 +41,8 @@ export async function resumeUpload(ctx: Context) {
 	if (!ALLOWED_MIME_TYPES.includes(contentType)) {
 		ctx.response.status = 400;
 		ctx.response.body = JSON.stringify({
-			error: "Invalid file type. Only PDF and DOCX files are allowed.",
+			isError: true,
+			message: "Invalid file type. Only PDF and DOCX files are allowed.",
 		});
 		return;
 	}
@@ -48,7 +51,8 @@ export async function resumeUpload(ctx: Context) {
 	if (file.size > MAX_FILE_SIZE) {
 		ctx.response.status = 400;
 		ctx.response.body = JSON.stringify({
-			error: "File size exceeds 2MB.",
+			isError: true,
+			message: "File size exceeds 2MB.",
 		});
 		return;
 	}
@@ -56,6 +60,7 @@ export async function resumeUpload(ctx: Context) {
 	// Success response
 	ctx.response.status = 200;
 	ctx.response.body = JSON.stringify({
+		isError: false,
 		message: "Resume uploaded successfully.",
 	});
 }
