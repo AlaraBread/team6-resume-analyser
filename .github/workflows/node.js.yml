@@ -29,6 +29,8 @@ jobs:
         run: cd frontend; npm ci
       - name: check formatting with prettier
         run: cd frontend; npm run check-formatting
+      - name: lint
+        run: cd frontend; npm run lint
       - name: nextjs build
         run: cd frontend; npm run build
       - name: run tests
