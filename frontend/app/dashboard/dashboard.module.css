@@ -6,7 +6,7 @@
 	padding: 1rem; /* Space around text */
 	margin: auto; /* Center the card horizontally */
 	max-width: 100%; /* Ensure it stays responsive with max*/
-	min-width: 25%;
+	width: 70ch;
 	margin-bottom: 1rem;
 	gap: 1rem;
 }
@@ -18,14 +18,10 @@
 	flex-direction: column;
 	gap: 1rem;
 }
+
 .dashboardTitle {
 	text-align: center;
 	gap: 1rem;
-	font-weight: bolder;
-}
-
-.cardHeaderTitleSkills {
-	font-weight: bold;
 }
 
 .listContainerSkills {
@@ -35,10 +31,6 @@
 
 .listItem {
 	text-align: left; /* Align list items to the left */
-}
-
-.cardHeaderTitleImprovement {
-	font-weight: bold;
 }
 
 .listContainerImprovement {
@@ -53,7 +45,6 @@
 }
 
 .fitScoreTitle {
-	font-weight: bold;
 	margin-right: 1rem;
 }
 
@@ -63,5 +54,4 @@
 
 .ratingScore {
 	margin-left: 0.5rem;
-	font-weight: bold;
 }

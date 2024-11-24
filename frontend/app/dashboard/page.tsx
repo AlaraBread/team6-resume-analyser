@@ -1,7 +1,7 @@
 import FitScoreChart from "./fit_score_chart";
 import SkillsMatched from "./skills_matched";
 import ImprovementSuggestions from "./improvement_suggestions";
-import styles from "./pages.module.css";
+import styles from "./dashboard.module.css";
 export interface MockData {
 	fitScore: number;
 	matchedSkills: string[];

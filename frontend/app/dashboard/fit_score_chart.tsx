@@ -1,5 +1,5 @@
 import { Card, CardContent, Rating, Typography } from "@mui/material";
-import styles from "./pages.module.css";
+import styles from "./dashboard.module.css";
 type FitScoreChartProps = {
 	score: number;
 };
