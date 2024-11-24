@@ -1,5 +1,5 @@
-# editor
-/.vscode/
-
 # node
 /node_modules
+
+# temporary files
+*.tmp
