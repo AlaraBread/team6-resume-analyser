@@ -6,7 +6,7 @@ import {
 	ListItem,
 	ListItemText,
 } from "@mui/material";
-import styles from "./pages.module.css";
+import styles from "./dashboard.module.css";
 interface SkillsMatchedProps {
 	skills: string[];
 }
