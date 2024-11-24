@@ -6,23 +6,25 @@ import {
 	ListItem,
 	ListItemText,
 } from "@mui/material";
-import "./dashboard.css";
+import styles from "./pages.module.css";
 interface SkillsMatchedProps {
 	skills: string[];
 }
 
 export default function SkillsMatched({ skills }: SkillsMatchedProps) {
 	return (
-		<Card className="card-container-skills-match">
+		<Card className={styles.cardContainerSkillsMatch}>
 			<CardHeader
 				component="h2"
 				title="Skills and Keywords Matched"
-				titleTypographyProps={{ style: { fontWeight: "bold" } }}
+				titleTypographyProps={{
+					className: styles.cardHeaderTitleSkills,
+				}}
 			/>
 			<CardContent>
-				<List sx={{ listStyleType: "none", padding: 0 }}>
+				<List className={styles.listContainerSkills}>
 					{skills.map((skill, index) => (
-						<ListItem key={index}>
+						<ListItem key={index} className={styles.listItem}>
 							<ListItemText primary={skill} />
 						</ListItem>
 					))}

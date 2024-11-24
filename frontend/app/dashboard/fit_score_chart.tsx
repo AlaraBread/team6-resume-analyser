@@ -1,6 +1,5 @@
 import { Card, CardContent, Rating, Typography } from "@mui/material";
-import "./dashboard.css";
-
+import styles from "./pages.module.css";
 type FitScoreChartProps = {
 	score: number;
 };
@@ -12,39 +11,20 @@ export default function FitScoreChart({ score }: FitScoreChartProps) {
 	const roundedScore = ratingVal.toFixed(2);
 
 	return (
-		<Card className="card-container-fit">
+		<Card className={styles.cardContainerFit}>
 			<CardContent>
-				<div
-					style={{
-						display: "flex",
-						alignItems: "center",
-						justifyContent: "space-between",
-					}}
-				>
-					<Typography
-						variant="h5"
-						style={{
-							fontWeight: "bold",
-							marginRight: "1rem",
-						}}
-					>
+				<div className={styles.fitScoreContent}>
+					<Typography variant="h5" className={styles.fitScoreTitle}>
 						Resume Fit Score
 					</Typography>
-					<div
-						style={{
-							alignItems: "center",
-						}}
-					>
+					<div className={styles.ratingContainer}>
 						<Rating
 							value={ratingVal}
 							readOnly
 							precision={0.5}
 							size="large"
 						/>
-						<Typography
-							variant="h6"
-							style={{ marginLeft: "0.5rem", fontWeight: "bold" }}
-						>
+						<Typography variant="h6" className={styles.ratingScore}>
 							{roundedScore} / 5
 						</Typography>
 					</div>
