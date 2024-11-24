@@ -1,6 +1,7 @@
 {
 	"tasks": {
-		"dev": "deno run --allow-net --watch main.ts"
+		"dev": "deno run --allow-net --watch main.ts",
+		"check": "deno fmt --check && deno lint && deno test"
 	},
 	"imports": {
 		"@oak/oak": "jsr:@oak/oak@^17.1.3",
