@@ -53,19 +53,20 @@ export type postRequests = {
 		};
 		response: {
 			message: string;
+			isError: boolean;
 		};
 	};
 	"api/resume-upload": {
 		request: FormData;
 		response: {
 			message: string;
+			isError: boolean;
 		};
 	};
 };
 
 type formPostRequests = {
-	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData
-		? K
+	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData ? K
 		: never;
 }[keyof postRequests];
 
