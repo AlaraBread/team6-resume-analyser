@@ -3,7 +3,7 @@
 cd "$(dirname "$0")"
 cd ../..
 git ls-files | xargs --delimiter="\n" -L 1 basename >dirs.tmp
-grep --invert-match --line-regexp --perl-regexp "([a-z\(\)\[\]\.\_\-]*)|([A-Z_]*\.md)" dirs.tmp
+grep --invert-match --line-regexp --perl-regexp "([a-z\(\)\[\]\.\_\-@]*)|([A-Z_]*\.md)" dirs.tmp
 if [ $? == 0 ]; then
 	echo "invalid file name(s)"
 	exit 1
