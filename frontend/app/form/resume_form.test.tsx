@@ -1,8 +1,7 @@
 import { render, fireEvent, screen } from "@testing-library/react";
 import ResumeForm from "./resume_form";
 import { backendFormPost } from "util/fetching";
-import fs from "fs";
-import path from "path";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("../../util/fetching", () => ({
 	backendFormPost: jest.fn(),
@@ -30,25 +29,20 @@ it("Displays error when no file is selected", async () => {
 	).toBeInTheDocument();
 });
 
-// TEST FAILED, OUTPUT IS "please select a file"
-// CURRENTLY FIXING WITH REAL FILE
 it("Displays error if file type is invalid", async () => {
 	render(<ResumeForm />);
-	const upload = screen.getByRole("button", { name: /upload resume/i });
-	const input = upload.querySelector(
-		"input[type='file']",
-	) as HTMLInputElement;
-
-	const file_path = path.join(__dirname, "test.txt");
-	const file_content = fs.readFileSync(file_path); // Read file content
-	const file = new File([file_content], "test.txt", { type: "text/plain" });
-	Object.defineProperty(input, "files", {
-		value: [file],
+	globalThis.FormData.prototype.get = jest.fn((name: string) => {
+		switch (name) {
+			case "file":
+				return new File([new Blob()], "test.txt", {
+					type: "application/txt",
+				});
+		}
+		return null;
 	});
-	fireEvent.change(input);
 
 	const submit = screen.getByRole("button", { name: /submit resume/i });
-	fireEvent.click(submit);
+	await userEvent.click(submit);
 	expect(
 		await screen.findByText(/pdf files are only allowed/i),
 	).toBeInTheDocument();
@@ -57,13 +51,16 @@ it("Displays error if file type is invalid", async () => {
 // TEST FAILED, OUTPUT IS "please select a file"
 it("Displays error if file is over 2MB", async () => {
 	render(<ResumeForm />);
-	const upload = screen.getByRole("button", { name: /upload resume/i });
-	const input = upload.querySelector("input[type='file']");
-	const file = new File(["A".repeat(3 * 1024 * 1024)], "large.pdf", {
-		type: "application/pdf",
+	globalThis.FormData.prototype.get = jest.fn((name: string) => {
+		switch (name) {
+			case "file":
+				return new File(["A".repeat(3 * 1024 * 1024)], "large.pdf", {
+					type: "application/pdf",
+				});
+		}
+		return null;
 	});
 
-	fireEvent.change(input as HTMLInputElement, { target: { files: [file] } });
 	const submit = screen.getByRole("button", { name: /submit resume/i });
 	fireEvent.click(submit);
 	expect(
@@ -77,13 +74,15 @@ it("Displays a successful response when PDF file is uploaded", async () => {
 		message: "Resume uploaded successfully",
 	});
 	render(<ResumeForm />);
-	const upload = screen.getByRole("button", { name: /upload resume/i });
-	const input = upload.querySelector("input[type='file']");
-
-	const file = new File(["content"], "resume.pdf", {
-		type: "application/pdf",
+	globalThis.FormData.prototype.get = jest.fn((name: string) => {
+		switch (name) {
+			case "file":
+				return new File(["content"], "resume.pdf", {
+					type: "application/pdf",
+				});
+		}
+		return null;
 	});
-	fireEvent.change(input as Element, { target: { files: [file] } });
 
 	const submitButton = screen.getByRole("button", { name: /submit resume/i });
 	fireEvent.click(submitButton);

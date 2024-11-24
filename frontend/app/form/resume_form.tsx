@@ -56,11 +56,7 @@ export default function ResumeForm() {
 		<Card>
 			<CardHeader title="Resume Upload" />
 			<CardContent>
-				<form
-					onSubmit={(event) => {
-						void handleSubmit(event);
-					}}
-				>
+				<form onSubmit={handleSubmit} name="resume upload">
 					<Button
 						component="label"
 						role="button"
