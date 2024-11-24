@@ -10,14 +10,17 @@ const ALLOWED_MIME_TYPES = [
 	"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 ];
 
-export async function resumeUpload(ctx: Context): Promise<Response> {
+export async function resumeUpload(ctx: Context) {
 	const formData = await ctx.request.body.formData();
+	ctx.response.headers = new Headers({ "Content-Type": "application/json" });
 
 	if (!formData) {
-		return new Response(
-			JSON.stringify({ error: "Failed to parse form data." }),
-			{ status: 400, headers: { "Content-Type": "application/json" } },
-		);
+		console.log("failed to parse");
+		ctx.response.status = 400;
+		ctx.response.body = JSON.stringify({
+			error: "Failed to parse form data.",
+		});
+		return;
 	}
 
 	const formFile = formData.get("file");
@@ -25,34 +28,36 @@ export async function resumeUpload(ctx: Context): Promise<Response> {
 		typeof formFile == "string" || !formFile ? undefined : formFile;
 
 	if (!file) {
-		return new Response(
-			JSON.stringify({ error: "No resume file uploaded." }),
-			{ status: 400, headers: { "Content-Type": "application/json" } },
-		);
+		console.log("no file");
+		ctx.response.status = 400;
+		ctx.response.body = JSON.stringify({
+			error: "No resume file uploaded.",
+		});
+		return;
 	}
 
 	// Normalize content type and validate
 	const contentType = file.type.split("\n")[0].trim();
 	if (!ALLOWED_MIME_TYPES.includes(contentType)) {
-		return new Response(
-			JSON.stringify({
-				error: "Invalid file type. Only PDF and DOCX files are allowed.",
-			}),
-			{ status: 400, headers: { "Content-Type": "application/json" } },
-		);
+		ctx.response.status = 400;
+		ctx.response.body = JSON.stringify({
+			error: "Invalid file type. Only PDF and DOCX files are allowed.",
+		});
+		return;
 	}
 
 	// Validate file size
 	if (file.size > MAX_FILE_SIZE) {
-		return new Response(
-			JSON.stringify({ error: "File size exceeds 2MB." }),
-			{ status: 400, headers: { "Content-Type": "application/json" } },
-		);
+		ctx.response.status = 400;
+		ctx.response.body = JSON.stringify({
+			error: "File size exceeds 2MB.",
+		});
+		return;
 	}
 
 	// Success response
-	return new Response(
-		JSON.stringify({ message: "Resume uploaded successfully." }),
-		{ status: 200, headers: { "Content-Type": "application/json" } },
-	);
+	ctx.response.status = 200;
+	ctx.response.body = JSON.stringify({
+		message: "Resume uploaded successfully.",
+	});
 }

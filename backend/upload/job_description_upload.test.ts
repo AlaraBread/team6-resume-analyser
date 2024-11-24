@@ -13,10 +13,10 @@ Deno.test("Job Description - Valid Input", async () => {
 		headers: [["Content-Type", "application/json"]],
 	});
 
-	const response = await jobDescriptionUpload(ctx);
-	const responseBody = await response.json();
+	await jobDescriptionUpload(ctx);
+	const responseBody = JSON.parse(ctx.response.body as string);
 
-	assertEquals(response.status, 200);
+	assertEquals(ctx.response.status, 200);
 	assertEquals(
 		responseBody.message,
 		"Job description submitted successfully.",
@@ -34,10 +34,10 @@ Deno.test("Job Description - Exceeds Character Limit", async () => {
 		headers: [["Content-Type", "application/json"]],
 	});
 
-	const response = await jobDescriptionUpload(ctx);
-	const responseBody = await response.json();
+	await jobDescriptionUpload(ctx);
+	const responseBody = JSON.parse(ctx.response.body as string);
 
-	assertEquals(response.status, 400);
+	assertEquals(ctx.response.status, 400);
 	assertEquals(
 		responseBody.error,
 		"Job description exceeds character limit.",
