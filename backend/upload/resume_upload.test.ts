@@ -24,7 +24,6 @@ Valid PDF content
 		method: "POST",
 		headers: [["Content-Type", "multipart/form-data; boundary=boundary"]],
 	});
-	console.log(ctx);
 
 	await resumeUpload(ctx);
 	const responseBody = JSON.parse(ctx.response.body as string);

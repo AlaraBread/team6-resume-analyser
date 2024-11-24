@@ -15,7 +15,6 @@ export async function resumeUpload(ctx: Context) {
 	ctx.response.headers = new Headers({ "Content-Type": "application/json" });
 
 	if (!formData) {
-		console.log("failed to parse");
 		ctx.response.status = 400;
 		ctx.response.body = JSON.stringify({
 			error: "Failed to parse form data.",
@@ -28,7 +27,6 @@ export async function resumeUpload(ctx: Context) {
 		typeof formFile == "string" || !formFile ? undefined : formFile;
 
 	if (!file) {
-		console.log("no file");
 		ctx.response.status = 400;
 		ctx.response.body = JSON.stringify({
 			error: "No resume file uploaded.",
