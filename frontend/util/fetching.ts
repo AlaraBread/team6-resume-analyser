@@ -60,7 +60,7 @@ export type postRequests = {
 	};
 	"api/sign_in": {
 		request: {
-			username: string;
+			email: string;
 			password: string;
 		};
 		response: {
