@@ -4,7 +4,7 @@ Please setup deno and prettier as described in [SETUP.md](SETUP.md).
 
 All code should be formatted automatically by them.
 
-Files and directories should be named in `camel_case`. Tests should be put next to the files they are testing.
+Files and directories should be named in `snake_case`. Tests should be put next to the files they are testing.
 
 ```
 └── my_component/
