@@ -1,35 +1,38 @@
-import { assertEquals } from "@std/assert";
+import { assert, assertEquals } from "@std/assert";
 import { processAndCleanFile } from "./parse_text.ts";
+import { officeparser } from "./deps.ts";
+import { restore, stub } from "@std/testing/mock";
 
 Deno.test("processAndCleanFile - Stockholm Resume (with whitespace)", async () => {
-	const filePath = "./pdf_files/Stockholm-Resume-Template-Simple.pdf";
-	const expectedFilePath = "./pdf_files/stochholm_expected_text.txt";
+	restore();
+	const fileContent = "    this      is the pdf file's\ncontent";
+	stub(officeparser, "parseOfficeAsync", () => {
+		return Promise.resolve(fileContent);
+	});
 
-	let expectedOutput: string;
-	try {
-		expectedOutput = await Deno.readTextFile(expectedFilePath);
-
-		const result = await processAndCleanFile(filePath);
-
-		assertEquals(
-			result,
-			expectedOutput,
-			"The cleaned text should match the expected output.",
-		);
-	} catch (error) {
-		console.error("Error during test execution:", error);
-		throw error;
-	}
-});
-
-Deno.test("processAndCleanFile - Non-existent file", async () => {
-	const filePath = "./pdf_files/NonExistentFile.pdf";
-
-	const result = await processAndCleanFile(filePath);
+	const result = await processAndCleanFile(new File([fileContent], ""));
 
 	assertEquals(
 		result,
-		"Error occurred during processing.",
-		"Should handle missing files gracefully.",
+		"this is the pdf file's content",
+		"The cleaned text should match the expected output.",
+	);
+});
+
+Deno.test("processAndCleanFile - failed to process file", async () => {
+	restore();
+	stub(officeparser, "parseOfficeAsync", () => {
+		return Promise.reject("Error occurred during processing.");
+	});
+
+	await processAndCleanFile(new File([""], "")).then(() => {
+		assert(false);
+	}).catch(
+		(reason) => {
+			assertEquals(
+				reason,
+				"Error occurred during processing.",
+			);
+		},
 	);
 });
