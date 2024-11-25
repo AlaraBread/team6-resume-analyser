@@ -17,14 +17,20 @@ export function userRegistration(router: Router) {
 		// Validate inputs
 		if (!email || !password || !username) {
 			context.response.status = 400;
-			context.response.body = "All fields are required";
+			context.response.body = JSON.stringify({
+				isError: true,
+				message: "All fields are required",
+			});
 			return;
 		}
 
 		// Check for email uniqueness
 		if (users[email]) {
 			context.response.status = 400;
-			context.response.body = "Email already registered";
+			context.response.body = JSON.stringify({
+				isError: true,
+				message: "Email already registered",
+			});
 			return;
 		}
 
@@ -34,6 +40,9 @@ export function userRegistration(router: Router) {
 
 		// Respond with success
 		context.response.status = 201;
-		context.response.body = "User registered";
+		context.response.body = JSON.stringify({
+			isError: false,
+			message: "Registered successfully",
+		});
 	});
 }

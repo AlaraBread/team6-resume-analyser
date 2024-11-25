@@ -4,7 +4,7 @@ import { generateHash } from "../../services/generate_hash.ts";
 import { users } from "../register_component/user_registration.ts";
 
 export function userLogin(router: Router) {
-	router.post("/api/userLogin", async (ctx: Context) => {
+	router.post("/api/login", async (ctx: Context) => {
 		const body = await ctx.request.body.json();
 
 		// Extract email and password
@@ -12,7 +12,10 @@ export function userLogin(router: Router) {
 
 		if (!email || !password) {
 			ctx.response.status = 400;
-			ctx.response.body = "Email and password are required";
+			ctx.response.body = JSON.stringify({
+				isError: true,
+				message: "Email and password are required",
+			});
 			return;
 		}
 
@@ -22,15 +25,22 @@ export function userLogin(router: Router) {
 
 		if (user.email !== email || user.password !== hashedPassword) {
 			ctx.response.status = 401;
-			ctx.response.body = "Invalid email or password";
+			ctx.response.body = JSON.stringify({
+				isError: true,
+				message: "Invalid email or password",
+			});
 			return;
 		}
 
 		// Generate JWT
-		const token = createJWT(email);
+		const token = await createJWT(email);
 
 		// Send the token
 		ctx.response.status = 200;
-		ctx.response.body = { token };
+		ctx.response.body = JSON.stringify({
+			isError: false,
+			message: "Logged in",
+			token,
+		});
 	});
 }

@@ -6,7 +6,7 @@ import { users } from "../register_component/user_registration.ts";
 import { createBody } from "../../util/util.test.ts";
 import { generateHash } from "../../services/generate_hash.ts";
 
-Deno.test("POST /api/userLogin - Successful Login", async () => {
+Deno.test("POST /api/login - Successful Login", async () => {
 	// Generate the hashed password
 	const hashedPassword = await generateHash("securePassword");
 
@@ -18,7 +18,7 @@ Deno.test("POST /api/userLogin - Successful Login", async () => {
 	};
 	const ctx = createMockContext({
 		method: "POST",
-		path: "/api/userLogin",
+		path: "/api/login",
 		headers: [["Content-Type", "application/json"]],
 		body: createBody(
 			JSON.stringify({
@@ -44,7 +44,7 @@ Deno.test("POST /api/userLogin - Successful Login", async () => {
 	delete users["user@example.com"];
 });
 
-Deno.test("POST /api/userLogin - Missing User Email", async () => {
+Deno.test("POST /api/login - Missing User Email", async () => {
 	// Generate the hashed password
 	const hashedPassword = await generateHash("securePassword");
 
@@ -56,7 +56,7 @@ Deno.test("POST /api/userLogin - Missing User Email", async () => {
 	};
 	const ctx = createMockContext({
 		method: "POST",
-		path: "/api/userLogin",
+		path: "/api/login",
 		headers: [["Content-Type", "application/json"]],
 		body: createBody(
 			JSON.stringify({
@@ -76,13 +76,19 @@ Deno.test("POST /api/userLogin - Missing User Email", async () => {
 
 	// Assertions
 	assertEquals(ctx.response.status, 400);
-	assertEquals(ctx.response.body, "Email and password are required");
+	assertEquals(
+		ctx.response.body,
+		JSON.stringify({
+			isError: true,
+			message: "Email and password are required",
+		}),
+	);
 
 	// Cleanup: Remove the user from the users object after the test
 	delete users["user@example.com"];
 });
 
-Deno.test("POST /api/userLogin - Missing User Password", async () => {
+Deno.test("POST /api/login - Missing User Password", async () => {
 	// Generate the hashed password
 	const hashedPassword = await generateHash("securePassword");
 
@@ -94,7 +100,7 @@ Deno.test("POST /api/userLogin - Missing User Password", async () => {
 	};
 	const ctx = createMockContext({
 		method: "POST",
-		path: "/api/userLogin",
+		path: "/api/login",
 		headers: [["Content-Type", "application/json"]],
 		body: createBody(
 			JSON.stringify({
@@ -114,13 +120,19 @@ Deno.test("POST /api/userLogin - Missing User Password", async () => {
 
 	// Assertions
 	assertEquals(ctx.response.status, 400);
-	assertEquals(ctx.response.body, "Email and password are required");
+	assertEquals(
+		ctx.response.body,
+		JSON.stringify({
+			isError: true,
+			message: "Email and password are required",
+		}),
+	);
 
 	// Cleanup: Remove the user from the users object after the test
 	delete users["user@example.com"];
 });
 
-Deno.test("POST /api/userLogin - Invalid password", async () => {
+Deno.test("POST /api/login - Invalid password", async () => {
 	// Generate the hashed password
 	const hashedPassword = await generateHash("securePassword");
 
@@ -132,7 +144,7 @@ Deno.test("POST /api/userLogin - Invalid password", async () => {
 	};
 	const ctx = createMockContext({
 		method: "POST",
-		path: "/api/userLogin",
+		path: "/api/login",
 		headers: [["Content-Type", "application/json"]],
 		body: createBody(
 			JSON.stringify({
@@ -153,7 +165,13 @@ Deno.test("POST /api/userLogin - Invalid password", async () => {
 
 	// Assertions
 	assertEquals(ctx.response.status, 401);
-	assertEquals(ctx.response.body, "Invalid email or password");
+	assertEquals(
+		ctx.response.body,
+		JSON.stringify({
+			isError: true,
+			message: "Invalid email or password",
+		}),
+	);
 
 	// Cleanup: Remove the user from the users object after the test
 	delete users["user@example.com"];
