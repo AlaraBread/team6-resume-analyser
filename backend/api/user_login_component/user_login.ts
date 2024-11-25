@@ -1,5 +1,5 @@
 import { Context, Router } from "@oak/oak";
-import { createJWT } from "../../services/create_JWT_token.ts";
+import { createJWT } from "../../services/create_jwt_token.ts";
 import { generateHash } from "../../services/generate_hash.ts";
 import { users } from "../register_component/user_registration.ts";
 
