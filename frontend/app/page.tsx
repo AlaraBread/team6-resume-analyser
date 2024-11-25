@@ -1,5 +1,4 @@
 import { BackendExample } from "./backend_example";
-import { SignUp } from "./task_6/sign_up";
 import Counter from "./counter";
 import styles from "./page.module.css";
 
@@ -13,7 +12,6 @@ export default function Page() {
 			<h1>resume analyser!</h1>
 			<Counter />
 			<BackendExample />
-			< SignUp />
 		</div>
 	);
 }
