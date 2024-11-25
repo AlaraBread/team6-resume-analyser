@@ -2,24 +2,32 @@
 
 import { Button, Card, CardContent, CardHeader, Input } from "@mui/material";
 import { useState } from "react";
-import { backendPost} from "util/fetching";
+import { backendPost } from "util/fetching";
 
-
-export function SignUp(){
-    const [postData, setPostData] = useState<string | undefined>();
-    return (<>
-        <Card>
-        <CardHeader component="h2" title="Sign Up" />
+export function SignUp() {
+	const [postData, setPostData] = useState<string | undefined>();
+	return (
+		<>
+			<Card>
+				<CardHeader component="h2" title="Sign Up" />
 				<CardContent>
-					<p data-testid="backend-example-post">{postData}</p>
+					<p data-testid="backend-sign-up-post">{postData}</p>
 					<form
 						onSubmit={(event) => {
 							event.preventDefault();
 							const data = new FormData(
 								event.target as HTMLFormElement,
 							);
-							backendPost("api/greeting", {
-								name: data.get("name")?.toString() ?? "",
+
+							backendPost("api/sign_up", {
+								email: data.get("email")?.toString() ?? "",
+								username:
+									data.get("username")?.toString() ?? "",
+								password:
+									data.get("password")?.toString() ?? "",
+								confirm_password:
+									data.get("confirm_password")?.toString() ??
+									"",
 							})
 								.then((data) => {
 									setPostData(data.message);
@@ -29,16 +37,29 @@ export function SignUp(){
 								});
 						}}
 					>
-						<Input name="email" placeholder="email" /><br/>
-                        <Input name="username" placeholder="username" /><br/>
-                        <Input name="password" placeholder="password" /><br/>
-                        <Input name="confirm" placeholder="confirm password" /><br/>
-                        <br/>
+						<Input name="email" placeholder="email" />
+						<br />
+						<Input name="username" placeholder="username" />
+						<br />
+						<Input
+							name="password"
+							type="password"
+							placeholder="password"
+						/>
+						<br />
+						<Input
+							name="confirm_password"
+							type="password"
+							placeholder="confirm password"
+						/>
+						<br />
+						<br />
 						<Button variant="contained" type="submit">
 							sign up
 						</Button>
 					</form>
 				</CardContent>
-        </Card>
-    </>);
+			</Card>
+		</>
+	);
 }
