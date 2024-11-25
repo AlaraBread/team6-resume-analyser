@@ -1,20 +1,3 @@
-/*import { act, fireEvent, render, screen } from "@testing-library/react";
-import { SignUp } from "./sign_up";
-
-it("should ", () => {
-	act(() => {
-		render(<SignUp />);
-		fireEvent.click(screen.getByRole("button", { name: "sign up" }));
-	});
-	let response;
-	act(() => {
-		response = screen.getByTestId("backend-sign-up-post");
-	});
-	expect(response).toHaveTextContent(
-		"SyntaxError: Unexpected end of JSON input",
-	);
-});
-*/
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import Page from "./page";
 import { backendPost } from "util/fetching";
@@ -50,12 +33,7 @@ it("has an h2 that says sign in", () => {
 		}),
 	).toBeTruthy();
 });
-/*
-it("should match snapshot", () => {
-	const { container } = render(<Page />);
-	expect(container).toMatchSnapshot();
-});
-*/
+
 it("displays the correct information from the backend post", async () => {
 	backendPostMock.mockResolvedValueOnce({ message: "this is a message" });
 	render(<Page />);
@@ -72,12 +50,4 @@ it("displays the correct information from the backend post", async () => {
 	expect(screen.getByTestId("backend-sign-up-post").textContent).toEqual(
 		"this is a message",
 	);
-	/*
-	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "sign up" }));
-	});
-	expect(screen.getByTestId("backend-sign-up-post").textContent).toEqual(
-		"this is a message",
-	);
-	*/
 });
