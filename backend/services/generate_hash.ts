@@ -1,5 +1,5 @@
-import { crypto } from "jsr:@std/crypto";
-import { encodeHex } from "jsr:@std/encoding/hex";
+import { crypto } from "@std/crypto";
+import { encodeHex } from "@std/encoding";
 
 export async function generateHash(password: string): Promise<string> {
 	// Hash the password

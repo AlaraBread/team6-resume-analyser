@@ -1,5 +1,5 @@
 import { Context, Router } from "@oak/oak";
-import { createJWT } from "../../services/create_jwt_token.ts";
+import { createJWT } from "../../services/jwt.ts";
 import { generateHash } from "../../services/generate_hash.ts";
 import { users } from "../register_component/user_registration.ts";
 
@@ -27,7 +27,7 @@ export function userLogin(router: Router) {
 		}
 
 		// Generate JWT
-		const token = createJWT(email, password);
+		const token = createJWT(email);
 
 		// Send the token
 		ctx.response.status = 200;
