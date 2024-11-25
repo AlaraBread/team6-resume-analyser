@@ -6,10 +6,15 @@ import resumeUpload from "./upload/resume_upload.ts";
 import { userRegistration } from "./api/register_component/user_registration.ts";
 import { userLogin } from "./api/user_login_component/user_login.ts";
 
+import { sessionMiddleware } from "./middleware/session_middleware.ts"; // Import the middleware
+
 export const router = new Router();
 
+// Apply middleware to routes requiring session management
+router.post("/api/resume-upload", sessionMiddleware, (ctx) => resumeUpload(ctx));
+router.post("/api/job-description", sessionMiddleware, (ctx) => jobDescription(ctx));
+
+// Keep other routes without session management
 hello(router);
-jobDescription(router);
-resumeUpload(router);
 userRegistration(router);
 userLogin(router);
