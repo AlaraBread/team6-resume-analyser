@@ -47,6 +47,25 @@ export type postRequests = {
 			message: string;
 		};
 	};
+  //TODO: use register and login instead of sign up and sign in
+	"api/sign_up": {
+		request: {
+			email: string;
+			username: string;
+			password: string;
+			confirm_password: string;
+		};
+		response: {
+			message: string;
+		};
+	};
+	"api/sign_in": {
+		request: {
+			email: string;
+			password: string;
+		};
+		response: {
+			message: string;
 	"api/job-description": {
 		request: {
 			description: string;
