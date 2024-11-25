@@ -82,6 +82,28 @@ export type postRequests = {
 			isError: boolean;
 		};
 	};
+	"api/register": {
+		request: {
+			email: string;
+			username: string;
+			password: string;
+		};
+		response: {
+			isError: boolean;
+			message: string;
+		};
+	};
+	"api/login": {
+		request: {
+			email: string;
+			password: string;
+		};
+		response: {
+			isError: boolean;
+			message: string;
+			token?: string;
+		};
+	};
 };
 
 type formPostRequests = {
