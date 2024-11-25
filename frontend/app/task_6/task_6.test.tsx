@@ -32,17 +32,23 @@ jest.mock("../../util/fetching", () => {
 	};
 });
 
-it("has an h1 that says sign up", () => {
+it("has an h2 that says sign up", () => {
 	render(<Page />);
-	expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-		"sign up",
-	);
+	expect(
+		screen.getByRole("heading", {
+			level: 2,
+			name: "Sign Up",
+		}),
+	).toBeTruthy();
 });
-it("has an h1 that says sign in", () => {
+it("has an h2 that says sign in", () => {
 	render(<Page />);
-	expect(screen.getByRole("heading", { level: 2 })).toHaveTextContent(
-		"sign in",
-	);
+	expect(
+		screen.getByRole("heading", {
+			level: 2,
+			name: "Sign In",
+		}),
+	).toBeTruthy();
 });
 /*
 it("should match snapshot", () => {
@@ -59,6 +65,7 @@ it("displays the correct information from the backend post", async () => {
 	expect(screen.getByTestId("backend-sign-up-post").textContent).toEqual(
 		"this is a message",
 	);
+	backendPostMock.mockResolvedValueOnce({ message: "this is a message" });
 	await act(async () => {
 		fireEvent.click(screen.getByRole("button", { name: "sign in" }));
 	});
