@@ -47,6 +47,7 @@ export type postRequests = {
 			message: string;
 		};
 	};
+  //TODO: use register and login instead of sign up and sign in
 	"api/sign_up": {
 		request: {
 			email: string;
@@ -65,17 +66,55 @@ export type postRequests = {
 		};
 		response: {
 			message: string;
+	"api/job-description": {
+		request: {
+			description: string;
+		};
+		response: {
+			message: string;
+			isError: boolean;
+		};
+	};
+	"api/resume-upload": {
+		request: FormData;
+		response: {
+			message: string;
+			isError: boolean;
 		};
 	};
 };
 
-export async function backendPost<T extends keyof postRequests>(
+type formPostRequests = {
+	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData
+		? K
+		: never;
+}[keyof postRequests];
+
+type jsonPostRequests = {
+	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData
+		? never
+		: K;
+}[keyof postRequests];
+
+export async function backendPost<T extends jsonPostRequests>(
 	endpoint: T,
 	data: postRequests[T]["request"],
 ): Promise<postRequests[T]["response"]> {
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		body: JSON.stringify(data),
+	}).then((response) => response.json()) as Promise<
+		postRequests[T]["response"]
+	>;
+}
+
+export async function backendFormPost<T extends formPostRequests>(
+	endpoint: T,
+	data: postRequests[T]["request"],
+): Promise<postRequests[T]["response"]> {
+	return fetch(getEndpointPath(endpoint), {
+		method: "POST",
+		body: data,
 	}).then((response) => response.json()) as Promise<
 		postRequests[T]["response"]
 	>;
