@@ -47,7 +47,7 @@ export type postRequests = {
 			message: string;
 		};
 	};
-  //TODO: use register and login instead of sign up and sign in
+	//TODO: use register and login instead of sign up and sign in
 	"api/sign_up": {
 		request: {
 			email: string;
@@ -66,6 +66,8 @@ export type postRequests = {
 		};
 		response: {
 			message: string;
+		};
+	};
 	"api/job-description": {
 		request: {
 			description: string;
@@ -107,8 +109,7 @@ export type postRequests = {
 };
 
 type formPostRequests = {
-	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData
-		? K
+	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData ? K
 		: never;
 }[keyof postRequests];
 
