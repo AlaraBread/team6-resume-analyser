@@ -1,6 +1,13 @@
 "use client";
 
-import { Button, Card, CardContent, CardHeader, Input } from "@mui/material";
+import {
+	Button,
+	Card,
+	CardContent,
+	CardHeader,
+	CircularProgress,
+	Input,
+} from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { backendPost } from "util/fetching";
@@ -8,11 +15,13 @@ import { backendPost } from "util/fetching";
 export function Login() {
 	const [postData, setPostData] = useState<string | undefined>();
 	const [blankMessage, setBlankMessage] = useState("");
+	const [isLoading, setLoading] = useState(false);
 	const router = useRouter();
 	return (
 		<>
 			<Card>
 				<CardHeader component="h2" title="Login" />
+				{isLoading ? <CircularProgress /> : undefined}
 				<CardContent>
 					<p data-testid="backend-login-post">{postData}</p>
 					<form
@@ -41,6 +50,7 @@ export function Login() {
 									"Please make sure you didn't leave any of the fields blank.",
 								);
 							else {
+								setLoading(true);
 								//input is valid
 								backendPost("api/login", {
 									email: data.get("email")?.toString() ?? "",
@@ -48,10 +58,12 @@ export function Login() {
 										data.get("password")?.toString() ?? "",
 								})
 									.then((data) => {
+										setLoading(false);
 										setPostData(data.message);
 										router.push("/form");
 									})
 									.catch((reason) => {
+										setLoading(false);
 										setPostData("" + reason);
 									});
 							}

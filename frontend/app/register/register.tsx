@@ -1,6 +1,13 @@
 "use client";
 
-import { Button, Card, CardContent, CardHeader, Input } from "@mui/material";
+import {
+	Button,
+	Card,
+	CardContent,
+	CardHeader,
+	CircularProgress,
+	Input,
+} from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { backendPost } from "util/fetching";
@@ -9,11 +16,13 @@ export function Register() {
 	const [postData, setPostData] = useState<string | undefined>();
 	const [blankMessage, setBlankMessage] = useState("");
 	const [passMessage, setPassMessage] = useState("");
+	const [isLoading, setLoading] = useState(false);
 	const router = useRouter();
 	return (
 		<>
 			<Card>
 				<CardHeader component="h2" title="Register" />
+				{isLoading ? <CircularProgress /> : undefined}
 				<CardContent>
 					<p data-testid="backend-register-post">{postData}</p>
 					<form
@@ -58,13 +67,16 @@ export function Register() {
 								);
 
 							if (isMatching && !isBlank) {
+								setLoading(true);
 								// input is valid
 								backendPost("api/register", fields)
 									.then((data) => {
+										setLoading(false);
 										setPostData(data.message);
 										router.push("/login");
 									})
 									.catch((reason) => {
+										setLoading(false);
 										setPostData("" + reason);
 									});
 							}
