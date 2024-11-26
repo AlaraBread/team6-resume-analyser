@@ -34,8 +34,10 @@ export function Register() {
 							};
 
 							// verify fields are not empty
-							var isBlank = false;
-							for (const [key, value] of Object.entries(fields)) {
+							let isBlank = false;
+							for (const [_key, value] of Object.entries(
+								fields,
+							)) {
 								if (!value) isBlank = true;
 							}
 							if (isBlank)
@@ -45,7 +47,7 @@ export function Register() {
 							else setBlankMessage("");
 
 							// verify passwords match
-							var isMatching =
+							let isMatching =
 								fields["password"] == fields["confirmPassword"];
 							if (isMatching) setPassMessage("");
 							else

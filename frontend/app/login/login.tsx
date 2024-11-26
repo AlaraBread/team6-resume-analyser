@@ -28,8 +28,10 @@ export function Login() {
 							};
 
 							// verify fields are not empty
-							var isBlank = false;
-							for (const [key, value] of Object.entries(fields)) {
+							let isBlank = false;
+							for (const [_key, value] of Object.entries(
+								fields,
+							)) {
 								if (!value) isBlank = true;
 							}
 							if (isBlank)
