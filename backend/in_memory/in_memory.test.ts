@@ -1,7 +1,6 @@
 import {
 	clearAllData,
 	deleteData,
-	generateSessionId,
 	retrieveData,
 	storeData,
 	tempStorage,
@@ -9,14 +8,8 @@ import {
 
 import { assertEquals, assertNotEquals } from "@std/assert";
 
-Deno.test("Generate session ID", () => {
-	const sessionId = generateSessionId();
-
-	assertEquals(sessionId, "session_id_1");
-});
-
 Deno.test("storeData and retrieveData are successful", () => {
-	const sessionId = generateSessionId();
+	const sessionId = "username";
 	storeData(
 		sessionId,
 		"Extracted resume text here...",
@@ -25,9 +18,9 @@ Deno.test("storeData and retrieveData are successful", () => {
 
 	const storedData = retrieveData(sessionId);
 	assertNotEquals(storedData, null);
-	assertEquals(storedData?.resume_text, "Extracted resume text here...");
+	assertEquals(storedData?.resumeText, "Extracted resume text here...");
 	assertEquals(
-		storedData?.job_description,
+		storedData?.jobDescription,
 		"Submitted job description here...",
 	);
 });

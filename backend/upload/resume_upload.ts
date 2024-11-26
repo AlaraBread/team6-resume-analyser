@@ -1,7 +1,8 @@
-import { Context, Router } from "@oak/oak";
+import { Context, Middleware, Router } from "@oak/oak";
+import { processAndCleanFile } from "../services/parse_text.ts";
 
-export default function (router: Router) {
-	router.post("/api/resume-upload", resumeUpload);
+export default function (router: Router, sessionMiddleware: Middleware) {
+	router.post("/api/resume-upload", sessionMiddleware, resumeUpload);
 }
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
@@ -56,6 +57,7 @@ export async function resumeUpload(ctx: Context) {
 		return;
 	}
 
+	ctx.state.sessionData.resumeText = await processAndCleanFile(file);
 	// Success response
 	ctx.response.status = 200;
 	ctx.response.body = JSON.stringify({
