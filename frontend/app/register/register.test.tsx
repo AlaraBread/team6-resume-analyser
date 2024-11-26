@@ -16,6 +16,21 @@ jest.mock("../../util/fetching", () => {
 	};
 });
 
+const useRouterMock = jest.fn(() => {
+	return {
+		push: (_route: string) => {},
+	};
+});
+
+jest.mock("next/navigation", () => {
+	const originalModule: object = jest.requireActual("next/navigation");
+	return {
+		__esModule: true,
+		...originalModule,
+		useRouter: () => useRouterMock(),
+	};
+});
+
 it("has an h2 that says register", () => {
 	render(<Page />);
 	expect(

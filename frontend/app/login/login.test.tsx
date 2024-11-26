@@ -15,6 +15,22 @@ jest.mock("../../util/fetching", () => {
 			backendPostMock(...args)) as typeof backendPost,
 	};
 });
+
+const useRouterMock = jest.fn(() => {
+	return {
+		push: (_route: string) => {},
+	};
+});
+
+jest.mock("next/navigation", () => {
+	const originalModule: object = jest.requireActual("next/navigation");
+	return {
+		__esModule: true,
+		...originalModule,
+		useRouter: () => useRouterMock(),
+	};
+});
+
 it("has an h2 that says login", () => {
 	render(<Page />);
 	expect(

@@ -10,7 +10,7 @@ import {
 	TextField,
 } from "@mui/material";
 
-export default function JobDescriptionForm() {
+export default function JobDescriptionForm(props: { onSubmit?: () => void }) {
 	const [description, setDescription] = useState<string>("");
 	const [message, setMessage] = useState<string | null>(null);
 
@@ -30,9 +30,12 @@ export default function JobDescriptionForm() {
 		}
 
 		// Submits job description
-		backendPost("api/job-description", { description })
+		backendPost("api/job-description", { jobDescription: description })
 			.then((data) => {
 				setMessage(data.message);
+				if (props.onSubmit) {
+					props.onSubmit();
+				}
 			})
 			.catch((error) => {
 				setMessage("" + error);
