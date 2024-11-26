@@ -1,7 +1,7 @@
 import { assert, assertEquals } from "@std/assert";
-import { jobDescriptionUpload } from "./job_description_upload.ts";
+import { jobDescriptionUpload } from "./job_description.ts";
 import { createMockContext } from "@oak/oak/testing";
-import { createBody } from "../util/util.test.ts";
+import { createBody } from "../../util/util.test.ts";
 
 Deno.test("Job Description - Valid Input", async () => {
 	const ctx = createMockContext({

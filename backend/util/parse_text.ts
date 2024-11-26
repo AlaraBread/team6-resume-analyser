@@ -1,8 +1,8 @@
 import { officeparser } from "./deps.ts";
 import { Buffer } from "node:buffer";
 
+// Extract text from a file
 export async function processAndCleanFile(file: File): Promise<string> {
-	// Extract text from the file
 	const data = await officeparser.parseOfficeAsync(
 		Buffer.from(await file.arrayBuffer()),
 	);
