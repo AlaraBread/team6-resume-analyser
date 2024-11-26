@@ -89,7 +89,8 @@ export type postRequests = {
 };
 
 type formPostRequests = {
-	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData ? K
+	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData
+		? K
 		: never;
 }[keyof postRequests];
 
@@ -107,17 +108,17 @@ export async function backendPost<T extends jsonPostRequests>(
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		body: JSON.stringify(data),
-	}).then((response) => response.json()).then((response) => {
-		if (endpoint == "api/login" && response.token) {
-			token = response.token;
-			if (token) {
-				localStorage.setItem("token", token);
+	})
+		.then((response) => response.json())
+		.then((response) => {
+			if (endpoint == "api/login" && response.token) {
+				token = response.token;
+				if (token) {
+					localStorage.setItem("token", token);
+				}
 			}
-		}
-		return response;
-	}) as Promise<
-		postRequests[T]["response"]
-	>;
+			return response;
+		}) as Promise<postRequests[T]["response"]>;
 }
 
 export async function backendFormPost<T extends formPostRequests>(
@@ -127,8 +128,7 @@ export async function backendFormPost<T extends formPostRequests>(
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		headers: {
-			token: token ??
-				"",
+			token: token ?? "",
 		},
 		body: data,
 	}).then((response) => response.json()) as Promise<
