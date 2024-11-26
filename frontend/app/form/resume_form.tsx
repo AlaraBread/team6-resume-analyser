@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 import { backendFormPost } from "util/fetching";
-import { Button, Card, CardContent, CardHeader, styled } from "@mui/material";
+import {
+	Button,
+	Card,
+	CardContent,
+	CardHeader,
+	CircularProgress,
+	styled,
+} from "@mui/material";
 
 /*https://mui.com/material-ui/react-button/#file-upload*/
 const VisuallyHiddenInput = styled("input")({
@@ -19,6 +26,7 @@ const VisuallyHiddenInput = styled("input")({
 
 export default function ResumeForm(props: { onSubmit?: () => void }) {
 	const [message, setMessage] = useState<string | null>(null);
+	const [isLoading, setLoading] = useState(false);
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -44,10 +52,11 @@ export default function ResumeForm(props: { onSubmit?: () => void }) {
 		}
 
 		setMessage("");
-
+		setLoading(true);
 		// This will upload the resume
 		backendFormPost("api/resume-upload", formData)
 			.then((data) => {
+				setLoading(false);
 				setMessage(data.message);
 				if (props.onSubmit) {
 					props.onSubmit();
@@ -55,11 +64,13 @@ export default function ResumeForm(props: { onSubmit?: () => void }) {
 			})
 			.catch((reason) => {
 				setMessage("Error: " + (reason?.message ?? reason));
+				setLoading(false);
 			});
 	};
 	return (
 		<Card>
 			<CardHeader title="Resume Upload" />
+			{isLoading ? <CircularProgress /> : undefined}
 			<CardContent>
 				<form onSubmit={handleSubmit} name="resume upload">
 					<Button

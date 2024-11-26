@@ -1,6 +1,13 @@
 "use client";
 
-import { Button, Card, CardContent, CardHeader, Input } from "@mui/material";
+import {
+	Button,
+	Card,
+	CardContent,
+	CardHeader,
+	CircularProgress,
+	Input,
+} from "@mui/material";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { backendPost } from "util/fetching";
@@ -8,6 +15,7 @@ import { backendPost } from "util/fetching";
 export function Login() {
 	const [postData, setPostData] = useState<string | undefined>();
 	const [blankMessage, setBlankMessage] = useState("");
+	const [isLoading, setLoading] = useState(false);
 	const router = useRouter();
 	function onSubmit(event: FormEvent) {
 		event.preventDefault();
@@ -40,6 +48,7 @@ export function Login() {
 	return (
 		<Card>
 			<CardHeader component="h2" title="Login" />
+			{isLoading ? <CircularProgress /> : undefined}
 			<CardContent>
 				<p data-testid="backend-login-post">{postData}</p>
 				<form encType="text/plain" onSubmit={onSubmit}>

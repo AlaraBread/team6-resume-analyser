@@ -7,12 +7,14 @@ import {
 	Card,
 	CardContent,
 	CardHeader,
+	CircularProgress,
 	TextField,
 } from "@mui/material";
 
 export default function JobDescriptionForm(props: { onSubmit?: () => void }) {
 	const [description, setDescription] = useState<string>("");
 	const [message, setMessage] = useState<string | null>(null);
+	const [isLoading, setLoading] = useState(false);
 
 	const handleSubmit = (event: React.FormEvent) => {
 		event.preventDefault();
@@ -29,9 +31,11 @@ export default function JobDescriptionForm(props: { onSubmit?: () => void }) {
 			return;
 		}
 
+		setLoading(true);
 		// Submits job description
 		backendPost("api/job-description", { jobDescription: description })
 			.then((data) => {
+				setLoading(false);
 				setMessage(data.message);
 				if (props.onSubmit) {
 					props.onSubmit();
@@ -39,6 +43,7 @@ export default function JobDescriptionForm(props: { onSubmit?: () => void }) {
 			})
 			.catch((reason) => {
 				setMessage("Error: " + (reason?.message ?? reason));
+				setLoading(false);
 			});
 	};
 	return (
@@ -50,6 +55,7 @@ export default function JobDescriptionForm(props: { onSubmit?: () => void }) {
 						void handleSubmit(event);
 					}}
 				>
+					{isLoading ? <CircularProgress /> : undefined}
 					<TextField
 						label="Job Description"
 						multiline
