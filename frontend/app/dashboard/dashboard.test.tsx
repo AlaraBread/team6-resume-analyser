@@ -3,6 +3,21 @@ import Dashboard from "./page";
 import { MockData } from "./page";
 import FitScoreChart from "./fit_score_chart";
 
+const useRouterMock = jest.fn(() => {
+	return {
+		push: (_route: string) => {},
+	};
+});
+
+jest.mock("next/navigation", () => {
+	const originalModule: object = jest.requireActual("next/navigation");
+	return {
+		__esModule: true,
+		...originalModule,
+		useRouter: () => useRouterMock(),
+	};
+});
+
 describe("Dashboard Component", () => {
 	// Mock data for testing
 	const mockData: MockData = {
