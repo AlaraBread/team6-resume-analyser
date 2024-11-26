@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Card, CardContent, CardHeader, Input } from "@mui/material";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { backendPost } from "util/fetching";
 
@@ -8,6 +9,7 @@ export function Register() {
 	const [postData, setPostData] = useState<string | undefined>();
 	const [blankMessage, setBlankMessage] = useState("");
 	const [passMessage, setPassMessage] = useState("");
+	const router = useRouter();
 	return (
 		<>
 			<Card>
@@ -60,6 +62,7 @@ export function Register() {
 								backendPost("api/register", fields)
 									.then((data) => {
 										setPostData(data.message);
+										router.push("/login");
 									})
 									.catch((reason) => {
 										setPostData("" + reason);
