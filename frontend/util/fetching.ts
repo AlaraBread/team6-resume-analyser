@@ -50,7 +50,7 @@ export type postRequests = {
 	};
 	"api/job-description": {
 		request: {
-			description: string;
+			jobDescription: string;
 		};
 		response: {
 			message: string;
@@ -107,6 +107,9 @@ export async function backendPost<T extends jsonPostRequests>(
 ): Promise<postRequests[T]["response"]> {
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
+		headers: {
+			token: token ?? "",
+		},
 		body: JSON.stringify(data),
 	})
 		.then((response) => response.json())
@@ -134,4 +137,8 @@ export async function backendFormPost<T extends formPostRequests>(
 	}).then((response) => response.json()) as Promise<
 		postRequests[T]["response"]
 	>;
+}
+
+export function isLoggedIn(): boolean {
+	return token != null;
 }

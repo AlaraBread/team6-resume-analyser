@@ -17,7 +17,7 @@ const VisuallyHiddenInput = styled("input")({
 	width: 1,
 });
 
-export default function ResumeForm() {
+export default function ResumeForm(props: { onSubmit?: () => void }) {
 	const [message, setMessage] = useState<string | null>(null);
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -47,6 +47,9 @@ export default function ResumeForm() {
 		backendFormPost("api/resume-upload", formData)
 			.then((data) => {
 				setMessage(data.message);
+				if (props.onSubmit) {
+					props.onSubmit();
+				}
 			})
 			.catch((error) => {
 				setMessage("" + error);
