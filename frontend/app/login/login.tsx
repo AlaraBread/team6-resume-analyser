@@ -6,6 +6,7 @@ import { backendPost } from "util/fetching";
 
 export function Login() {
 	const [postData, setPostData] = useState<string | undefined>();
+	const [blankMessage, setBlankMessage] = useState("");
 	return (
 		<>
 			<Card>
@@ -13,23 +14,42 @@ export function Login() {
 				<CardContent>
 					<p data-testid="backend-login-post">{postData}</p>
 					<form
+						encType="text/plain"
 						onSubmit={(event) => {
 							event.preventDefault();
 							const data = new FormData(
 								event.target as HTMLFormElement,
 							);
-
-							backendPost("api/login", {
+							// read fields
+							const fields = {
 								email: data.get("email")?.toString() ?? "",
 								password:
 									data.get("password")?.toString() ?? "",
-							})
-								.then((data) => {
-									setPostData(data.message);
+							};
+
+							// verify fields are not empty
+							var isBlank = false;
+							for (const [key, value] of Object.entries(fields)) {
+								if (!value) isBlank = true;
+							}
+							if (isBlank)
+								setBlankMessage(
+									"Please make sure you didn't leave any of the fields blank.",
+								);
+							else {
+								//input is valid
+								backendPost("api/login", {
+									email: data.get("email")?.toString() ?? "",
+									password:
+										data.get("password")?.toString() ?? "",
 								})
-								.catch((reason) => {
-									setPostData("" + reason);
-								});
+									.then((data) => {
+										setPostData(data.message);
+									})
+									.catch((reason) => {
+										setPostData("" + reason);
+									});
+							}
 						}}
 					>
 						<Input name="username" placeholder="username" />
@@ -40,6 +60,8 @@ export function Login() {
 							placeholder="password"
 						/>
 						<br />
+						{/* will let the user know when that fields cannot be left blank*/}
+						<label>{blankMessage}</label>
 						<br />
 						<Button variant="contained" type="submit">
 							login

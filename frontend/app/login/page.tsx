@@ -1,5 +1,4 @@
-import { Register } from "./register";
-import { Login } from "./login";
+import { Login } from "../login/login";
 import styles from "../page.module.css";
 
 export const metadata = {
@@ -9,8 +8,7 @@ export const metadata = {
 export default function Page() {
 	return (
 		<div className={styles.center}>
-			<h1>sign up/in!</h1>
-			<Register />
+			<h1>Login</h1>
 			<Login />
 		</div>
 	);

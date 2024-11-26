@@ -14,16 +14,6 @@ jest.mock("../../util/fetching", () => {
 			backendPostMock(...args)) as typeof backendPost,
 	};
 });
-
-it("has an h2 that says register", () => {
-	render(<Page />);
-	expect(
-		screen.getByRole("heading", {
-			level: 2,
-			name: "Register",
-		}),
-	).toBeTruthy();
-});
 it("has an h2 that says login", () => {
 	render(<Page />);
 	expect(
@@ -38,16 +28,9 @@ it("displays the correct information from the backend post", async () => {
 	backendPostMock.mockResolvedValueOnce({ message: "this is a message" });
 	render(<Page />);
 	await act(async () => {
-		fireEvent.click(screen.getByRole("button", { name: "register" }));
-	});
-	expect(screen.getByTestId("backend-register-post").textContent).toEqual(
-		"this is a message",
-	);
-	backendPostMock.mockResolvedValueOnce({ message: "this is a message" });
-	await act(async () => {
 		fireEvent.click(screen.getByRole("button", { name: "login" }));
 	});
-	expect(screen.getByTestId("backend-register-post").textContent).toEqual(
+	expect(screen.getByTestId("backend-login-post").textContent).toEqual(
 		"this is a message",
 	);
 });
