@@ -1,17 +1,17 @@
-import { SignUp } from "./sign_up";
-import { SignIn } from "./sign_in";
+import { Register } from "./register";
+import { Login } from "./login";
 import styles from "../page.module.css";
 
 export const metadata = {
-	title: "sign up/in",
+	title: "register/login",
 };
 
 export default function Page() {
 	return (
 		<div className={styles.center}>
 			<h1>sign up/in!</h1>
-			<SignUp />
-			<SignIn />
+			<Register />
+			<Login />
 		</div>
 	);
 }

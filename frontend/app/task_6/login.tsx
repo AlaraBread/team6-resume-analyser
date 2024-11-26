@@ -4,14 +4,14 @@ import { Button, Card, CardContent, CardHeader, Input } from "@mui/material";
 import { useState } from "react";
 import { backendPost } from "util/fetching";
 
-export function SignIn() {
+export function Login() {
 	const [postData, setPostData] = useState<string | undefined>();
 	return (
 		<>
 			<Card>
-				<CardHeader component="h2" title="Sign In" />
+				<CardHeader component="h2" title="Login" />
 				<CardContent>
-					<p data-testid="backend-sign-in-post">{postData}</p>
+					<p data-testid="backend-login-post">{postData}</p>
 					<form
 						onSubmit={(event) => {
 							event.preventDefault();
@@ -19,7 +19,7 @@ export function SignIn() {
 								event.target as HTMLFormElement,
 							);
 
-							backendPost("api/sign_in", {
+							backendPost("api/login", {
 								email: data.get("email")?.toString() ?? "",
 								password:
 									data.get("password")?.toString() ?? "",
@@ -42,7 +42,7 @@ export function SignIn() {
 						<br />
 						<br />
 						<Button variant="contained" type="submit">
-							sign in
+							login
 						</Button>
 					</form>
 				</CardContent>
