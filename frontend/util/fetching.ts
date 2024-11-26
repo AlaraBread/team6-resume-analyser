@@ -2,7 +2,8 @@ import useSWR, { SWRResponse } from "swr";
 
 export const jsonFetcher: (
 	...args: Parameters<typeof fetch>
-) => Promise<object> = (...args) => fetch(...args).then((res) => res.json());
+) => Promise<object> = (url) =>
+	fetch(url, { headers: { token: token ?? "" } }).then((res) => res.json());
 
 function getEndpointPath(endpoint: string) {
 	let server = process.env.NEXT_PUBLIC_BACKEND ?? "";
@@ -42,27 +43,6 @@ export type postRequests = {
 	"api/greeting": {
 		request: {
 			name: string;
-		};
-		response: {
-			message: string;
-		};
-	};
-	//TODO: use register and login instead of sign up and sign in
-	"api/sign_up": {
-		request: {
-			email: string;
-			username: string;
-			password: string;
-			confirm_password: string;
-		};
-		response: {
-			message: string;
-		};
-	};
-	"api/sign_in": {
-		request: {
-			email: string;
-			password: string;
 		};
 		response: {
 			message: string;
@@ -119,7 +99,7 @@ type jsonPostRequests = {
 		: K;
 }[keyof postRequests];
 
-let token: string | undefined = undefined;
+let token: string | null = localStorage.getItem("token");
 export async function backendPost<T extends jsonPostRequests>(
 	endpoint: T,
 	data: postRequests[T]["request"],
@@ -130,6 +110,9 @@ export async function backendPost<T extends jsonPostRequests>(
 	}).then((response) => response.json()).then((response) => {
 		if (endpoint == "api/login" && response.token) {
 			token = response.token;
+			if (token) {
+				localStorage.setItem("token", token);
+			}
 		}
 		return response;
 	}) as Promise<
