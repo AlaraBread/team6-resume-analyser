@@ -47,7 +47,7 @@ export function Register() {
 							else setBlankMessage("");
 
 							// verify passwords match
-							let isMatching =
+							const isMatching =
 								fields["password"] == fields["confirmPassword"];
 							if (isMatching) setPassMessage("");
 							else
