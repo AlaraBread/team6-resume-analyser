@@ -7,11 +7,12 @@ Deno.test("Job Description - Valid Input", async () => {
 	const ctx = createMockContext({
 		body: createBody(
 			JSON.stringify({
-				job_description: "This is a valid job description.",
+				jobDescription: "This is a valid job description.",
 			}),
 		),
 		method: "POST",
 		headers: [["Content-Type", "application/json"]],
+		state: { sessionData: {} },
 	});
 
 	await jobDescriptionUpload(ctx);
@@ -29,11 +30,12 @@ Deno.test("Job Description - Exceeds Character Limit", async () => {
 	const ctx = createMockContext({
 		body: createBody(
 			JSON.stringify({
-				job_description: "A".repeat(5001), // Exceeds 5,000 characters
+				jobDescription: "A".repeat(5001), // Exceeds 5,000 characters
 			}),
 		),
 		method: "POST",
 		headers: [["Content-Type", "application/json"]],
+		state: { sessionData: {} },
 	});
 
 	await jobDescriptionUpload(ctx);

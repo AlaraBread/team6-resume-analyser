@@ -1,22 +1,28 @@
 import { Middleware } from "@oak/oak";
-import { generateSessionId, retrieveData, storeData } from "../in_memory/in_memory.ts";
+import { retrieveData, storeData } from "../in_memory/in_memory.ts";
+import { verifyJWT } from "../services/jwt.ts";
 
 export const sessionMiddleware: Middleware = async (ctx, next) => {
-  // Retrieve or generate a session ID
-  const sessionId = (await ctx.cookies.get("sessionId")) || generateSessionId();
+	// Retrieve or generate a session ID
+	const token = ctx.request.headers.get("token");
+	if (!token) {
+		return Promise.reject("no token");
+	}
+	const payload = await verifyJWT(token);
 
+	// Attach session data to the context state
+	ctx.state.email = payload.email;
+	ctx.state.sessionData = retrieveData(payload.email) || {};
 
-  ctx.cookies.set("sessionId", sessionId, { httpOnly: true });
+	await next();
 
-  // Attach session data to the context state
-  ctx.state.sessionId = sessionId;
-  ctx.state.sessionData = retrieveData(sessionId) || {};
-
-  await next();
-
-  // Update tempStorage after route handler executes
-  const updatedSessionData = ctx.state.sessionData;
-  if (updatedSessionData) {
-    storeData(sessionId, updatedSessionData.resume_text || "", updatedSessionData.job_description || "");
-  }
+	// Update tempStorage after route handler executes
+	const updatedSessionData = ctx.state.sessionData;
+	if (updatedSessionData) {
+		storeData(
+			payload.email,
+			updatedSessionData.resumeText || "",
+			updatedSessionData.jobDescription || "",
+		);
+	}
 };

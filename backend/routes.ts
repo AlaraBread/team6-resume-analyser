@@ -11,8 +11,8 @@ import { sessionMiddleware } from "./middleware/session_middleware.ts"; // Impor
 export const router = new Router();
 
 // Apply middleware to routes requiring session management
-router.post("/api/resume-upload", sessionMiddleware, (ctx) => resumeUpload(ctx));
-router.post("/api/job-description", sessionMiddleware, (ctx) => jobDescription(ctx));
+resumeUpload(router, sessionMiddleware);
+jobDescription(router, sessionMiddleware);
 
 // Keep other routes without session management
 hello(router);

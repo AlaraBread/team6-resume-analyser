@@ -1,12 +1,12 @@
-import { Context, Router } from "@oak/oak";
+import { Context, Middleware, Router } from "@oak/oak";
 
-export default function (router: Router) {
-	router.post("/api/job-description", jobDescriptionUpload);
+export default function (router: Router, sessionMiddleware: Middleware) {
+	router.post("/api/job-description", sessionMiddleware, jobDescriptionUpload);
 }
 
 export async function jobDescriptionUpload(ctx: Context) {
 	const body = await ctx.request.body.json();
-	const jobDescription = body.job_description;
+	const jobDescription = body.jobDescription;
 	ctx.response.headers = new Headers({ "Content-Type": "application/json" });
 
 	// Validate job description
@@ -19,6 +19,7 @@ export async function jobDescriptionUpload(ctx: Context) {
 		return;
 	}
 
+	ctx.state.sessionData.jobDescription = jobDescription;
 	ctx.response.status = 200;
 	// Return success if validation passes
 	ctx.response.body = JSON.stringify({
