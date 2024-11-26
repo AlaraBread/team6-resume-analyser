@@ -63,7 +63,7 @@ export default function ResumeForm(props: { onSubmit?: () => void }) {
 			})
 			.catch((error) => {
 				setLoading(false);
-				setMessage("" + error);
+				setMessage(error.message);
 			});
 	};
 	return (

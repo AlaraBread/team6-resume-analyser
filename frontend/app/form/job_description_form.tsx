@@ -43,7 +43,7 @@ export default function JobDescriptionForm(props: { onSubmit?: () => void }) {
 			})
 			.catch((error) => {
 				setLoading(false);
-				setMessage("" + error);
+				setMessage(error.message);
 			});
 	};
 	return (
