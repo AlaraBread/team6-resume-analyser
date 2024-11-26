@@ -34,7 +34,7 @@ export function userRegistration(router: Router) {
 			return;
 		}
 
-		const hashedPassword = await generateHash(password);
+		const hashedPassword = await generateHash(email, password);
 		// // Save the user to the store
 		users[email] = { email, username, password: hashedPassword };
 

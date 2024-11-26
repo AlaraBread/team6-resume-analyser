@@ -21,7 +21,7 @@ export function userLogin(router: Router) {
 
 		const user = users[email];
 
-		const hashedPassword = await generateHash(password);
+		const hashedPassword = await generateHash(email, password);
 
 		if (user.email !== email || user.password !== hashedPassword) {
 			ctx.response.status = 401;

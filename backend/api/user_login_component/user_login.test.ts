@@ -8,7 +8,10 @@ import { generateHash } from "../../services/generate_hash.ts";
 
 Deno.test("POST /api/login - Successful Login", async () => {
 	// Generate the hashed password
-	const hashedPassword = await generateHash("securePassword");
+	const hashedPassword = await generateHash(
+		"user@example.com",
+		"securePassword",
+	);
 
 	// Pre-populate the imported users object with a registered user
 	users["user@example.com"] = {
@@ -46,7 +49,10 @@ Deno.test("POST /api/login - Successful Login", async () => {
 
 Deno.test("POST /api/login - Missing User Email", async () => {
 	// Generate the hashed password
-	const hashedPassword = await generateHash("securePassword");
+	const hashedPassword = await generateHash(
+		"user@example.com",
+		"securePassword",
+	);
 
 	// Pre-populate the imported users object with a registered user
 	users["user@example.com"] = {
@@ -90,7 +96,10 @@ Deno.test("POST /api/login - Missing User Email", async () => {
 
 Deno.test("POST /api/login - Missing User Password", async () => {
 	// Generate the hashed password
-	const hashedPassword = await generateHash("securePassword");
+	const hashedPassword = await generateHash(
+		"user@example.com",
+		"securePassword",
+	);
 
 	// Pre-populate the imported users object with a registered user
 	users["user@example.com"] = {
@@ -134,7 +143,10 @@ Deno.test("POST /api/login - Missing User Password", async () => {
 
 Deno.test("POST /api/login - Invalid password", async () => {
 	// Generate the hashed password
-	const hashedPassword = await generateHash("securePassword");
+	const hashedPassword = await generateHash(
+		"user@example.com",
+		"securePassword",
+	);
 
 	// Pre-populate the imported users object with a registered user
 	users["user@example.com"] = {
