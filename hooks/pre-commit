@@ -19,7 +19,7 @@ deno lint
 if [ $? != 0 ]; then
 	exit 1
 fi
-deno test
+deno test --allow-read --allow-env --trace-leaks
 if [ $? != 0 ]; then
 	exit 1
 fi

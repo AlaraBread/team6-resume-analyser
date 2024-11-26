@@ -1,15 +1,6 @@
-// Generates key for tempStorage in format:
-// session_id_<number>
-let sessionCounter = 1;
-export function generateSessionId(): string {
-	const sessionId = `session_id_${sessionCounter}`;
-	sessionCounter += 1;
-	return sessionId;
-}
-
 interface SessionData {
-	resume_text: string;
-	job_description: string;
+	resumeText: string;
+	jobDescription: string;
 }
 /**
  * In-memory storage for the session data
@@ -22,7 +13,7 @@ export const tempStorage: Record<string, SessionData> = {};
 /**
  * Stores session data, resume text, and job description in tempStorage.
  *
- * @param sessionId - Unique identifier for the session.
+ * @param username - Unique identifier for the session.
  * @param resumeText - Text extracted from user's resume.
  * @param jobDescription - Text of the job description from user
  *
@@ -31,20 +22,20 @@ export const tempStorage: Record<string, SessionData> = {};
  */
 
 export function storeData(
-	sessionId: string,
+	username: string,
 	resumeText: string,
 	jobDescription: string,
 ): void {
-	tempStorage[sessionId] = {
-		resume_text: resumeText,
-		job_description: jobDescription,
+	tempStorage[username] = {
+		resumeText: resumeText,
+		jobDescription: jobDescription,
 	};
 }
 
-// Retrieve based on sessionID:
+// Retrieve based on username:
 // @return data in tempStorge if exists. Otherwise, null
-export function retrieveData(sessionId: string): SessionData | null {
-	return tempStorage[sessionId] || null;
+export function retrieveData(username: string): SessionData | null {
+	return tempStorage[username] || null;
 }
 
 // Deletes data based on sessionId
