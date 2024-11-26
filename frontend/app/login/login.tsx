@@ -31,7 +31,7 @@ export function Login() {
 			return;
 		}
 		setBlankMessage("");
-    setLoading(true);
+		setLoading(true);
 
 		//input is valid
 		backendPost("api/login", {
@@ -39,12 +39,12 @@ export function Login() {
 			password: data.get("password")?.toString() ?? "",
 		})
 			.then((data) => {
-        setLoading(false);
+				setLoading(false);
 				setPostData(data.message);
 				router.push("/form");
 			})
 			.catch((reason) => {
-        setLoading(false);
+				setLoading(false);
 				setPostData("" + reason);
 			});
 	}
