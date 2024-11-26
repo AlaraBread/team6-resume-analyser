@@ -3,5 +3,5 @@
 import * as _inMemory from "../in_memory/in_memory.ts";
 export const inMemory = { ..._inMemory };
 
-import * as _jwt from "../services/jwt.ts";
+import * as _jwt from "../util/jwt.ts";
 export const jwt = { ..._jwt };

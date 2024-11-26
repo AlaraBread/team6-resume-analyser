@@ -1,7 +1,7 @@
 import { assertEquals } from "@std/assert";
 import { createMockContext } from "@oak/oak/testing";
 import { Router } from "@oak/oak";
-import { userRegistration } from "./user_registration.ts";
+import userRegistration from "./register.ts";
 import { createBody } from "../../util/util.test.ts";
 
 Deno.test("POST /api/register - Successful Registration", async () => {

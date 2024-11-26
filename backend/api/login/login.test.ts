@@ -1,10 +1,10 @@
 import { assertEquals } from "@std/assert";
 import { createMockContext } from "@oak/oak/testing";
 import { Router } from "@oak/oak";
-import { userLogin } from "./user_login.ts";
-import { users } from "../register_component/user_registration.ts";
+import userLogin from "./login.ts";
+import { users } from "../register/register.ts";
 import { createBody } from "../../util/util.test.ts";
-import { generateHash } from "../../services/generate_hash.ts";
+import { generateHash } from "../../util/generate_hash.ts";
 
 Deno.test("POST /api/login - Successful Login", async () => {
 	// Generate the hashed password

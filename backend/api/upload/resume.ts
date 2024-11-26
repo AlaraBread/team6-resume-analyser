@@ -1,5 +1,5 @@
 import { Context, Middleware, Router } from "@oak/oak";
-import { processAndCleanFile } from "../services/parse_text.ts";
+import { processAndCleanFile } from "../../util/parse_text.ts";
 
 export default function (router: Router, sessionMiddleware: Middleware) {
 	router.post("/api/resume-upload", sessionMiddleware, resumeUpload);
@@ -25,7 +25,8 @@ export async function resumeUpload(ctx: Context) {
 	}
 
 	const formFile = formData.get("file");
-	const file = typeof formFile == "string" || !formFile ? undefined : formFile;
+	const file =
+		typeof formFile == "string" || !formFile ? undefined : formFile;
 
 	if (!file) {
 		ctx.response.status = 400;

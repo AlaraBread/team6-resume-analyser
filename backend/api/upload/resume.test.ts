@@ -1,9 +1,9 @@
 import { assert, assertEquals } from "@std/assert";
-import { resumeUpload } from "./resume_upload.ts";
+import { resumeUpload } from "./resume.ts";
 import { createMockContext } from "@oak/oak/testing";
-import { createBody } from "../util/util.test.ts";
+import { createBody } from "../../util/util.test.ts";
 import { restore, stub } from "@std/testing/mock";
-import { officeparser } from "../services/deps.ts";
+import { officeparser } from "../../util/deps.ts";
 
 Deno.test("Valid PDF", async () => {
 	restore();
