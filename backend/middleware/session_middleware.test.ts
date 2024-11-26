@@ -1,115 +1,124 @@
 import { assertEquals, assertRejects } from "@std/assert";
-import { spy, assertSpyCalls } from "@std/testing/mock";
+import { assertSpyCalls, restore, spy, stub } from "@std/testing/mock";
 import { sessionMiddleware } from "../middleware/session_middleware.ts";
-import * as inMemory from "../in_memory/in_memory.ts";
-import * as jwtService from "../services/jwt.ts";
+import { inMemory } from "./deps.ts";
+import { jwt } from "./deps.ts";
+import { createMockContext } from "@oak/oak/testing";
 
 Deno.test("Session Middleware - Valid Token", async () => {
-  // Mock dependencies
-  const mockRetrieveData = spy(() => ({ resumeText: "", jobDescription: "" }));
-  const mockStoreData = spy(() => {});
-  const mockVerifyJWT = spy(async () => ({ email: "test@example.com" }));
+	restore();
+	// Mock dependencies
+	const mockRetrieveData = spy(() => ({ resumeText: "", jobDescription: "" }));
+	const mockStoreData = spy(() => {});
+	const mockVerifyJWT = spy(
+		() => (Promise.resolve({ email: "test@example.com" })),
+	);
 
-  inMemory.retrieveData = mockRetrieveData;
-  inMemory.storeData = mockStoreData;
-  jwtService.verifyJWT = mockVerifyJWT;
+	stub(inMemory, "retrieveData", mockRetrieveData);
+	stub(inMemory, "storeData", mockStoreData);
+	stub(jwt, "verifyJWT", mockVerifyJWT);
 
-  // Mock context
-  const mockNext = spy( async() => {});
-  const ctx = {
-    request: {
-      headers: new Headers({ token: "valid_token" }),
-    },
-    response: { status: 0, body: {} },
-    state: {},
-  } as any;
+	// Mock context
+	const mockNext = spy(async () => {});
+	const ctx = createMockContext({
+		headers: [["token", "valid_token"]],
+		state: {},
+	});
 
-  // Run middleware
-  await sessionMiddleware(ctx, mockNext);
+	// Run middleware
+	await sessionMiddleware(ctx, mockNext);
 
-  // Assertions
-  assertEquals(ctx.state.email, "test@example.com");
-  assertEquals(ctx.state.sessionData.resumeText, "");
-  assertEquals(ctx.state.sessionData.jobDescription, "");
-  assertSpyCalls(mockNext, 1); // Ensure next was called
-  assertSpyCalls(mockRetrieveData, 1); // Ensure retrieveData was called
-  assertSpyCalls(mockStoreData, 1); // Ensure storeData was called
+	// Assertions
+	assertEquals(ctx.state.email, "test@example.com");
+	assertEquals(ctx.state.sessionData.resumeText, "");
+	assertEquals(ctx.state.sessionData.jobDescription, "");
+	assertSpyCalls(mockNext, 1); // Ensure next was called
+	assertSpyCalls(mockRetrieveData, 1); // Ensure retrieveData was called
+	assertSpyCalls(mockStoreData, 1); // Ensure storeData was called
 });
 
 Deno.test("Session Middleware - Missing Token", async () => {
-  // Mock context
-  const mockNext = spy(() => {});
-  const ctx = {
-    request: {
-      headers: new Headers(), // No token
-    },
-    response: { status: 0, body: {} },
-    state: {},
-  } as any;
+	restore();
+	// Mock context
+	const mockNext = spy(() => {
+		return Promise.resolve();
+	});
+	const ctx = createMockContext({
+		headers: [], // no token
+		state: {},
+	});
 
-  // Assertions
-  await assertRejects(() => sessionMiddleware(ctx, mockNext), "no token");
+	// Assertions
+	await assertRejects(
+		async () => await sessionMiddleware(ctx, mockNext),
+		"no token",
+	);
 
-  // Ensure `next` was not called
-  assertSpyCalls(mockNext, 0);
+	// Ensure `next` was not called
+	assertSpyCalls(mockNext, 0);
 });
 
 Deno.test("Session Middleware - Invalid Token", async () => {
-  // Mock dependencies
-  const mockVerifyJWT = spy(async () => {
-    throw new Error("Invalid token");
-  });
-  jwtService.verifyJWT = mockVerifyJWT;
+	restore();
+	// Mock dependencies
+	const mockVerifyJWT = spy(() => {
+		return Promise.reject("Invalid token");
+	});
+	stub(jwt, "verifyJWT", mockVerifyJWT);
 
-  // Mock context
-  const mockNext = spy(() => {});
-  const ctx = {
-    request: {
-      headers: new Headers({ token: "invalid_token" }),
-    },
-    response: { status: 0, body: {} },
-    state: {},
-  } as any;
+	// Mock context
+	const mockNext = spy(() => {
+		return Promise.resolve();
+	});
+	const ctx = createMockContext({
+		headers: [["token", "invalid_token"]],
+		state: {},
+	});
 
-  // Run middleware and assert rejection
-  await assertRejects(() => sessionMiddleware(ctx, mockNext), "Invalid token");
+	// Run middleware and assert rejection
+	await assertRejects(
+		async () => await sessionMiddleware(ctx, mockNext),
+		"Invalid token",
+	);
 
-  // Assertions
-  assertSpyCalls(mockNext, 0); // Ensure next was not called
-  assertSpyCalls(mockVerifyJWT, 1); // Ensure verifyJWT was called
+	// Assertions
+	assertSpyCalls(mockNext, 0); // Ensure next was not called
+	assertSpyCalls(mockVerifyJWT, 1); // Ensure verifyJWT was called
 });
 
 Deno.test("Session Middleware - Session Update", async () => {
-  // Mock dependencies
-  const mockRetrieveData = spy(() => ({ resumeText: "", jobDescription: "" }));
-  const mockStoreData = spy(() => {});
-  const mockVerifyJWT = spy(async () => ({ email: "test@example.com" }));
+	restore();
+	// Mock dependencies
+	const mockRetrieveData = spy(() => ({ resumeText: "", jobDescription: "" }));
+	const mockStoreData = spy(() => {});
+	const mockVerifyJWT = spy(
+		() => (Promise.resolve({ email: "test@example.com" })),
+	);
 
-  inMemory.retrieveData = mockRetrieveData;
-  inMemory.storeData = mockStoreData;
-  jwtService.verifyJWT = mockVerifyJWT;
+	stub(inMemory, "retrieveData", mockRetrieveData);
+	stub(inMemory, "storeData", mockStoreData);
+	stub(jwt, "verifyJWT", mockVerifyJWT);
 
-  // Mock context
-  const mockNext = spy(() => {
-    // Simulate updating session data
-    ctx.state.sessionData.resumeText = "Updated Resume";
-  });
-  const ctx = {
-    request: {
-      headers: new Headers({ token: "valid_token" }),
-    },
-    response: { status: 0, body: {} },
-    state: {},
-  } as any;
+	// Mock context
+	const mockNext = spy(() => {
+		// Simulate updating session data
+		ctx.state.sessionData.resumeText = "Updated Resume";
+		return Promise.resolve();
+	});
+	const ctx = createMockContext({
+		headers: [["token", "valid_token"]],
+		state: {},
+	});
 
-  // Run middleware
-  await sessionMiddleware(ctx, mockNext);
+	// Run middleware
+	await sessionMiddleware(ctx, mockNext);
 
-  // Assertions
-  assertEquals(ctx.state.sessionData.resumeText, "Updated Resume");
-  assertSpyCalls(mockStoreData, 1);
-  assertEquals(
-    mockStoreData.calls[0].args,
-    ["test@example.com", "Updated Resume", ""]
-  ); // Ensure updated data is stored
+	// Assertions
+	assertEquals(ctx.state.sessionData.resumeText, "Updated Resume");
+	assertSpyCalls(mockStoreData, 1);
+	console.log(mockStoreData.calls[0].args);
+	assertEquals(
+		mockStoreData.calls[0].args,
+		["test@example.com", "Updated Resume", ""],
+	); // Ensure updated data is stored
 });
