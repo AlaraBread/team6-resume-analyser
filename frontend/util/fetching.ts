@@ -2,7 +2,8 @@ import useSWR, { SWRResponse } from "swr";
 
 export const jsonFetcher: (
 	...args: Parameters<typeof fetch>
-) => Promise<object> = (...args) => fetch(...args).then((res) => res.json());
+) => Promise<object> = (url) =>
+	fetch(url, { headers: { token: token ?? "" } }).then((res) => res.json());
 
 function getEndpointPath(endpoint: string) {
 	let server = process.env.NEXT_PUBLIC_BACKEND ?? "";
@@ -63,6 +64,28 @@ export type postRequests = {
 			isError: boolean;
 		};
 	};
+	"api/register": {
+		request: {
+			email: string;
+			username: string;
+			password: string;
+		};
+		response: {
+			isError: boolean;
+			message: string;
+		};
+	};
+	"api/login": {
+		request: {
+			email: string;
+			password: string;
+		};
+		response: {
+			isError: boolean;
+			message: string;
+			token?: string;
+		};
+	};
 };
 
 type formPostRequests = {
@@ -77,6 +100,7 @@ type jsonPostRequests = {
 		: K;
 }[keyof postRequests];
 
+let token: string | null = globalThis?.localStorage?.getItem("token");
 export async function backendPost<T extends jsonPostRequests>(
 	endpoint: T,
 	data: postRequests[T]["request"],
@@ -84,9 +108,17 @@ export async function backendPost<T extends jsonPostRequests>(
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		body: JSON.stringify(data),
-	}).then((response) => response.json()) as Promise<
-		postRequests[T]["response"]
-	>;
+	})
+		.then((response) => response.json())
+		.then((response) => {
+			if (endpoint == "api/login" && response.token) {
+				token = response.token;
+				if (token) {
+					globalThis?.localStorage?.setItem("token", token);
+				}
+			}
+			return response;
+		}) as Promise<postRequests[T]["response"]>;
 }
 
 export async function backendFormPost<T extends formPostRequests>(
@@ -95,6 +127,9 @@ export async function backendFormPost<T extends formPostRequests>(
 ): Promise<postRequests[T]["response"]> {
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
+		headers: {
+			token: token ?? "",
+		},
 		body: data,
 	}).then((response) => response.json()) as Promise<
 		postRequests[T]["response"]
