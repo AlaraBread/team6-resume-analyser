@@ -31,6 +31,7 @@ export function Login() {
 			return;
 		}
 		setBlankMessage("");
+    setLoading(true);
 
 		//input is valid
 		backendPost("api/login", {
@@ -38,10 +39,12 @@ export function Login() {
 			password: data.get("password")?.toString() ?? "",
 		})
 			.then((data) => {
+        setLoading(false);
 				setPostData(data.message);
 				router.push("/form");
 			})
 			.catch((reason) => {
+        setLoading(false);
 				setPostData("" + reason);
 			});
 	}
@@ -61,7 +64,7 @@ export function Login() {
 					/>
 					<br />
 					{/* will let the user know when that fields cannot be left blank*/}
-					<label data-testid="blank-message">{blankMessage}</label>
+					<span data-testid="blank-message">{blankMessage}</span>
 					<br />
 					<Button variant="contained" type="submit">
 						login
