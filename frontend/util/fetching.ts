@@ -100,7 +100,7 @@ type jsonPostRequests = {
 		: K;
 }[keyof postRequests];
 
-let token: string | null = localStorage.getItem("token");
+let token: string | null = localStorage?.getItem("token");
 export async function backendPost<T extends jsonPostRequests>(
 	endpoint: T,
 	data: postRequests[T]["request"],
@@ -114,7 +114,7 @@ export async function backendPost<T extends jsonPostRequests>(
 			if (endpoint == "api/login" && response.token) {
 				token = response.token;
 				if (token) {
-					localStorage.setItem("token", token);
+					localStorage?.setItem("token", token);
 				}
 			}
 			return response;
