@@ -1,7 +1,12 @@
+"use client";
+
 import FitScoreChart from "./fit_score_chart";
 import SkillsMatched from "./skills_matched";
 import ImprovementSuggestions from "./improvement_suggestions";
 import styles from "./dashboard.module.css";
+import { useRouter } from "next/navigation";
+import { isLoggedIn } from "util/fetching";
+import { useEffect } from "react";
 export interface MockData {
 	fitScore: number;
 	matchedSkills: string[];
@@ -27,6 +32,12 @@ const mockData: MockData = {
 };
 
 export default function Dashboard() {
+	const router = useRouter();
+	useEffect(() => {
+		if (!isLoggedIn()) {
+			router.push("/");
+		}
+	});
 	return (
 		<div className={styles.dashboardContainer}>
 			<h1 className={styles.dashboardTitle}>Resume Analysis Dashboard</h1>

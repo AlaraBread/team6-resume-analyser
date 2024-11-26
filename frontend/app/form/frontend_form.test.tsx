@@ -3,6 +3,21 @@ import FrontendForm from "./frontend_form";
 import ResumeForm from "./resume_form";
 import JobDescriptionForm from "./job_description_form";
 
+const useRouterMock = jest.fn(() => {
+	return {
+		push: (_route: string) => {},
+	};
+});
+
+jest.mock("next/navigation", () => {
+	const originalModule: object = jest.requireActual("next/navigation");
+	return {
+		__esModule: true,
+		...originalModule,
+		useRouter: () => useRouterMock(),
+	};
+});
+
 jest.mock("./resume_form");
 jest.mock("./job_description_form");
 
