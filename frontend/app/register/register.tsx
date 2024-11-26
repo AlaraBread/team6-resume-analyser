@@ -81,10 +81,12 @@ export function Register() {
 							placeholder="confirm password"
 						/>
 						{/* will let the user know when the passwords dont match*/}
-						<label>{passMessage}</label>
+						<label data-testid="pass-message">{passMessage}</label>
 						<br />
 						{/* will let the user know when that fields cannot be left blank*/}
-						<label>{blankMessage}</label>
+						<label data-testid="blank-message">
+							{blankMessage}
+						</label>
 						<br />
 						<Button variant="contained" type="submit">
 							register
