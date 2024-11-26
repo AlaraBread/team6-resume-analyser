@@ -2,9 +2,17 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import JobDescriptionForm from "./job_description_form";
 import { backendPost } from "util/fetching";
 
-jest.mock("../../util/fetching", () => ({
-	backendPost: jest.fn(),
-}));
+const backendPostMock = jest.fn();
+
+jest.mock("../../util/fetching", () => {
+	const originalModule: object = jest.requireActual("../../util/fetching");
+	return {
+		__esModule: true,
+		...originalModule,
+		backendPost: ((...args) =>
+			backendPostMock(...args)) as typeof backendPost,
+	};
+});
 
 it("Displays the job description form with input and button", () => {
 	render(<JobDescriptionForm />);
@@ -50,7 +58,7 @@ it("Displays an error if the job description exceeds 5000 characters", () => {
 });
 
 it("Displays a success message if the job description is valid", async () => {
-	(backendPost as jest.Mock).mockResolvedValueOnce({
+	backendPostMock.mockResolvedValueOnce({
 		message: "Job description submitted successfully",
 	});
 
@@ -69,4 +77,25 @@ it("Displays a success message if the job description is valid", async () => {
 		/job description submitted successfully/i,
 	);
 	expect(successMessage).toBeInTheDocument();
+});
+
+it("Displays error message from backend", async () => {
+	backendPostMock.mockRejectedValueOnce({
+		isError: true,
+		message: "an error message",
+	});
+
+	render(<JobDescriptionForm />);
+	const textarea = screen.getByPlaceholderText(/enter job description/i);
+	const submitButton = screen.getByRole("button", {
+		name: /submit job description/i,
+	});
+
+	fireEvent.change(textarea, {
+		target: { value: "weird job description" },
+	});
+	fireEvent.click(submitButton);
+
+	const message = await screen.findByText(/an error message/i);
+	expect(message).toBeInTheDocument();
 });

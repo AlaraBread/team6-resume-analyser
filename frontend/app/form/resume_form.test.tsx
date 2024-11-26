@@ -2,9 +2,17 @@ import { render, fireEvent, screen } from "@testing-library/react";
 import ResumeForm from "./resume_form";
 import { backendFormPost } from "util/fetching";
 
-jest.mock("../../util/fetching", () => ({
-	backendFormPost: jest.fn(),
-}));
+const backendFormPostMock = jest.fn();
+
+jest.mock("../../util/fetching", () => {
+	const originalModule: object = jest.requireActual("../../util/fetching");
+	return {
+		__esModule: true,
+		...originalModule,
+		backendFormPost: ((...args) =>
+			backendFormPostMock(...args)) as typeof backendFormPost,
+	};
+});
 
 it("Displays the form with input field and button", () => {
 	render(<ResumeForm />);
@@ -69,7 +77,7 @@ it("Displays error if file is over 2MB", async () => {
 
 // TEST FAILED, OUTPUT IS "please select a file"
 it("Displays a successful response when PDF file is uploaded", async () => {
-	(backendFormPost as jest.Mock).mockResolvedValueOnce({
+	backendFormPostMock.mockResolvedValueOnce({
 		message: "Resume uploaded successfully",
 	});
 	render(<ResumeForm />);
@@ -90,4 +98,27 @@ it("Displays a successful response when PDF file is uploaded", async () => {
 		/resume uploaded successfully/i,
 	);
 	expect(successMessage).toBeInTheDocument();
+});
+
+it("Displays error message from backend", async () => {
+	backendFormPostMock.mockRejectedValueOnce({
+		isError: true,
+		message: "an error message",
+	});
+	render(<ResumeForm />);
+	globalThis.FormData.prototype.get = jest.fn((name: string) => {
+		switch (name) {
+			case "file":
+				return new File(["content"], "resume.pdf", {
+					type: "application/pdf",
+				});
+		}
+		return null;
+	});
+
+	const submitButton = screen.getByRole("button", { name: /submit resume/i });
+	fireEvent.click(submitButton);
+
+	const message = await screen.findByText(/an error message/i);
+	expect(message).toBeInTheDocument();
 });
