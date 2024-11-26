@@ -43,6 +43,8 @@ export default function ResumeForm(props: { onSubmit?: () => void }) {
 			return;
 		}
 
+		setMessage("");
+
 		// This will upload the resume
 		backendFormPost("api/resume-upload", formData)
 			.then((data) => {
@@ -51,8 +53,8 @@ export default function ResumeForm(props: { onSubmit?: () => void }) {
 					props.onSubmit();
 				}
 			})
-			.catch((error) => {
-				setMessage("" + error);
+			.catch((reason) => {
+				setMessage("Error: " + (reason?.message ?? reason));
 			});
 	};
 	return (

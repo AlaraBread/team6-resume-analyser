@@ -11,12 +11,6 @@ export default function FrontendForm() {
 	const [jobDescriptionSubmitted, setJobDescriptionSubmitted] =
 		useState(false);
 	const [resumeSubmitted, setResumeSubmitted] = useState(false);
-	function onJobDescriptionSubmit() {
-		setJobDescriptionSubmitted(true);
-	}
-	function onResumeSubmit() {
-		setResumeSubmitted(true);
-	}
 	return (
 		<div className={styles.container}>
 			<Card className={styles.card}>
@@ -25,8 +19,16 @@ export default function FrontendForm() {
 						Resume and Job Description
 					</h1>
 
-					<ResumeForm onSubmit={onResumeSubmit} />
-					<JobDescriptionForm onSubmit={onJobDescriptionSubmit} />
+					<ResumeForm
+						onSubmit={() => {
+							setResumeSubmitted(true);
+						}}
+					/>
+					<JobDescriptionForm
+						onSubmit={() => {
+							setJobDescriptionSubmitted(true);
+						}}
+					/>
 					{jobDescriptionSubmitted && resumeSubmitted ? (
 						<Link href={"/dashboard"}>View Analysis</Link>
 					) : undefined}

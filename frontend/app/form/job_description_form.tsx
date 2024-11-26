@@ -37,8 +37,8 @@ export default function JobDescriptionForm(props: { onSubmit?: () => void }) {
 					props.onSubmit();
 				}
 			})
-			.catch((error) => {
-				setMessage("" + error);
+			.catch((reason) => {
+				setMessage("Error: " + (reason?.message ?? reason));
 			});
 	};
 	return (
