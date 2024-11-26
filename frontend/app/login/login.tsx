@@ -52,7 +52,7 @@ export function Login() {
 							}
 						}}
 					>
-						<Input name="username" placeholder="username" />
+						<Input name="email" placeholder="email" />
 						<br />
 						<Input
 							name="password"
@@ -61,7 +61,9 @@ export function Login() {
 						/>
 						<br />
 						{/* will let the user know when that fields cannot be left blank*/}
-						<label>{blankMessage}</label>
+						<label data-testid="blank-message">
+							{blankMessage}
+						</label>
 						<br />
 						<Button variant="contained" type="submit">
 							login
