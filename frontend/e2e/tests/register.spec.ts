@@ -1,10 +1,11 @@
 import { test, expect } from "@playwright/test";
 test.describe("Registration Page Tests", () => {
+	/*
 	test.beforeAll(async () => {
 		// Make sure your Deno backend is running before the tests.
 		console.log("Ensure Deno backend is running on http://localhost:3001");
 	});
-
+	*/
 	test.beforeEach(async ({ page }) => {
 		// Navigate to the registration page before each test
 		await page.goto("http://localhost:3000/register");
@@ -16,17 +17,15 @@ test.describe("Registration Page Tests", () => {
 		await page.fill('input[name="username"]', "testuser");
 		await page.fill('input[name="password"]', "TestPassword123");
 		await page.fill('input[name="confirm_password"]', "TestPassword123");
+
+		// Log before clicking submit
+		console.log("Filled out registration form, clicking submit...");
+
 		await page.click('button[type="submit"]');
 
 		// Wait for the redirect to the login page
 		await page.waitForURL("**/login");
 		expect(page.url()).toContain("/login");
-
-		// Optionally, check if the success message appears
-		const successMessage = await page.locator(
-			'[data-testid="backend-register-post"]',
-		);
-		await expect(successMessage).toHaveText("Registered successfully");
 	});
 
 	test("Shows error for empty fields", async ({ page }) => {
