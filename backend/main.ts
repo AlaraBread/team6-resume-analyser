@@ -1,6 +1,7 @@
 import { Application } from "@oak/oak";
 import { router } from "./routes.ts";
 import { oakCors } from "@tajpouria/cors";
+import "jsr:@std/dotenv/load";
 
 if (import.meta.main) {
 	const app = new Application();

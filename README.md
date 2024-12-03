@@ -52,5 +52,5 @@ deno run dev
 
 (in `/backend`)
 ```sh
-deno test --allow-read --allow-env --trace-leaks
+deno task test
 ```
