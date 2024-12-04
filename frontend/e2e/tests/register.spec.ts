@@ -5,6 +5,14 @@ test.describe("Registration Page Tests", () => {
 		await page.goto("http://localhost:3000/register");
 	});
 
+	// Combinations of fields to test
+	const fieldCombinations = [
+		{ field: 'input[name="email"]' },
+		{ field: 'input[name="username"]' },
+		{ field: 'input[name="password"]' },
+		{ field: 'input[name="confirm_password"]' },
+	];
+
 	test("Successful registration redirects to login", async ({ page }) => {
 		// Fill out the registration form
 		await page.fill('input[name="email"]', "test@example.com");
@@ -18,7 +26,35 @@ test.describe("Registration Page Tests", () => {
 		expect(page.url()).toContain("/login");
 	});
 
-	test("Shows error for empty fields", async ({ page }) => {
+	test("Show error for an empty field", async ({ page }) => {
+		const data = {
+			'input[name="email"]': "test123@example.com",
+			'input[name="username"]': "testuser123",
+			'input[name="password"]': "TestPassword101",
+			'input[name="confirm_password"]': "TestPassword101",
+		};
+
+		for (const combo of fieldCombinations) {
+			for (const [field, value] of Object.entries(data)) {
+				if (field !== combo.field) {
+					await page.fill(field, value);
+				}
+			}
+			// Leave current field blank and submit
+			await page.fill(combo.field, "");
+			await page.click('button[type="submit"]');
+			const blankMessage = await page.locator(
+				'[data-testid="blank-message"]',
+			);
+			await expect(blankMessage).toHaveText(
+				"Please make sure you didn't leave any of the fields blank.",
+			);
+			// Reset the form for the next iteration
+			await page.reload();
+		}
+	});
+
+	test("Shows error for all empty fields", async ({ page }) => {
 		await page.click('button[type="submit"]');
 		const blankMessage = await page.locator(
 			'[data-testid="blank-message"]',
@@ -29,12 +65,12 @@ test.describe("Registration Page Tests", () => {
 	});
 
 	test("Shows error for password mismatch", async ({ page }) => {
-		await page.fill('input[name="email"]', "test@example.com");
-		await page.fill('input[name="username"]', "testuser");
-		await page.fill('input[name="password"]', "TestPassword123");
+		await page.fill('input[name="email"]', "test123@example.com");
+		await page.fill('input[name="username"]', "testuser123");
+		await page.fill('input[name="password"]', "TestPassword101");
 		await page.fill(
 			'input[name="confirm_password"]',
-			"DifferentPassword123",
+			"DifferentPassword101",
 		);
 		await page.click('button[type="submit"]');
 
