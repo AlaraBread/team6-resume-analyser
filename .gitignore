@@ -6,6 +6,3 @@
 
 # Environment variables
 .env
-
-# Test-results
-test-results/.last-run.json
