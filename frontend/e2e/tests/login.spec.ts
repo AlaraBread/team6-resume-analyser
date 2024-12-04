@@ -94,31 +94,4 @@ test.describe("Login Page Tests", () => {
 		);
 		await expect(backendMessage).toHaveText("Invalid credentials");
 	});
-
-	test("Shows error message for already registered email", async ({
-		page,
-	}) => {
-		// Mock backend API call to indicate email is already registered
-		await page.route("**/api/login", (route) => {
-			route.fulfill({
-				status: 409, // 409 Conflict for already registered email
-				body: JSON.stringify({
-					message: "Email is already registered",
-				}),
-			});
-		});
-
-		// Fill out the form with the registered email
-		await page.fill('input[name="email"]', "registered@example.com");
-		await page.fill('input[name="password"]', "SomePassword123");
-
-		// Click the login button
-		await page.click('button[type="submit"]');
-
-		// Verify the error message is displayed
-		const backendMessage = await page.locator(
-			'[data-testid="backend-login-post"]',
-		);
-		await expect(backendMessage).toHaveText("Email is already registered");
-	});
 });

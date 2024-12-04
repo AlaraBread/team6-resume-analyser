@@ -79,4 +79,33 @@ test.describe("Registration Page Tests", () => {
 			"Please make sure passwords match.",
 		);
 	});
+
+	test("Shows error message for already registered email", async ({
+		page,
+	}) => {
+		// Mock backend API call to indicate email is already registered
+		await page.route("**/api/register", (route) => {
+			route.fulfill({
+				status: 400,
+				body: JSON.stringify({
+					message: "Email already registered",
+				}),
+			});
+		});
+
+		// Fill out the form with the registered email
+		await page.fill('input[name="email"]', "test@example.com");
+		await page.fill('input[name="username"]', "testuser123");
+		await page.fill('input[name="password"]', "TestPassword101");
+		await page.fill('input[name="confirm_password"]', "TestPassword101");
+
+		// Click the login button
+		await page.click('button[type="submit"]');
+
+		// Verify the error message is displayed
+		const backendMessage = await page.locator(
+			'[data-testid="backend-register-post"]',
+		);
+		await expect(backendMessage).toHaveText("Email already registered");
+	});
 });
