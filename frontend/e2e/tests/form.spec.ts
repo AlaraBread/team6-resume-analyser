@@ -35,6 +35,7 @@ test.describe("Form Page Tests", () => {
 		const errorMessage = page.locator(
 			"text=Job description must be under 5000 characters.",
 		);
+		await jobDescriptionInput.fill("");
 		// Generates a job description with 5001 characters
 		const longDescription = "A".repeat(5001);
 
@@ -43,4 +44,25 @@ test.describe("Form Page Tests", () => {
 		await submitButton.click();
 		await expect(errorMessage).toBeVisible();
 	});
+
+	/*
+	TODO: Edit successMessage or the alike when form is completed
+	test("Test for valid job description", async ({ page }) => {
+		const jobDescriptionInput = page.locator(
+			'textarea[placeholder="Enter job description"]',
+		);
+		const submitButton = page.locator(
+			'button:has-text("Submit Job Description")',
+		);
+		const successMessage = page.locator("");
+		await jobDescriptionInput.fill("");
+		// Generates a job description with valid length
+		const validDescription = "A".repeat(300);
+
+		// Fill with description
+		await jobDescriptionInput.fill(validDescription);
+		await submitButton.click();
+		await expect(successMessage).toBeVisible();
+	});
+	*/
 });
