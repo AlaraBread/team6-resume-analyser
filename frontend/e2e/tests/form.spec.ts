@@ -2,7 +2,23 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Form Page Tests", () => {
 	test.beforeEach(async ({ page }) => {
-		await page.goto("http://localhost:3000/form");
+		await page.goto("http://localhost:3000/login");
+
+		// Mock backend API call for successful login
+		await page.route("**/api/login", (route) => {
+			route.fulfill({
+				status: 200,
+				body: JSON.stringify({ message: "Login successful" }),
+			});
+		});
+
+		// Fill out the form with valid credentials
+		await page.fill('input[name="email"]', "test@example.com");
+		await page.fill('input[name="password"]', "TestPassword123");
+		// Click the login button
+		await page.click('button[type="submit"]');
+
+		await page.waitForURL("**/form");
 	});
 
 	test("Show error when job description is empty", async ({ page }) => {
