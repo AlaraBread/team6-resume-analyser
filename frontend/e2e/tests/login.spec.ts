@@ -12,6 +12,13 @@ test.describe("Login Page Tests", () => {
 		{ field: 'input[name="password"]' },
 	];
 
+	test("All login components are displayed", async ({ page }) => {
+		await expect(page.locator('input[name="email"]')).toBeVisible();
+		await expect(page.locator('input[name="password"]')).toBeVisible();
+
+		// Verify the submit button is present
+		await expect(page.locator('button[type="submit"]')).toBeVisible();
+	});
 	test("Shows error for an empty field", async ({ page }) => {
 		// Fill out the form with credentials (one field left blank)
 		const data = {
