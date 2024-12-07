@@ -70,14 +70,12 @@ test.describe("Login Page Tests", () => {
 		expect(page.url()).toContain("/form");
 	});
 
-	test("Displays backend error message on login failure", async ({
-		page,
-	}) => {
+	test("Displays error for login failure", async ({ page }) => {
 		// Mock backend API call for failed login
 		await page.route("**/api/login", (route) => {
 			route.fulfill({
 				status: 401,
-				body: JSON.stringify({ message: "Invalid credentials" }),
+				body: JSON.stringify({ message: "Invalid email or password" }),
 			});
 		});
 
@@ -92,6 +90,6 @@ test.describe("Login Page Tests", () => {
 		const backendMessage = await page.locator(
 			'[data-testid="backend-login-post"]',
 		);
-		await expect(backendMessage).toHaveText("Invalid credentials");
+		await expect(backendMessage).toHaveText("Invalid email or password");
 	});
 });
