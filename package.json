@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
 		"dev:frontend": "cd frontend && npm run dev",
-		"dev:backend": "cd backend && deno run --allow-net --allow-read --allow-env main.ts",
+		"dev:backend": "cd backend && deno run --allow-net --allow-env --watch main.ts",
 		"format": "prettier -uw \"**/*\""
 	},
 	"author": "",
