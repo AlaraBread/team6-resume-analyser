@@ -13,9 +13,13 @@ test.describe("Form Page Tests", () => {
 		const submitButton = page.locator(
 			'button:has-text("Submit Job Description")',
 		);
-
+		const errorMessage = page.locator(
+			"text=Job description cannot be empty.",
+		);
 		// Ensures empty job description
 		await jobDescriptionInput.fill("");
 		await submitButton.click();
+
+		await expect(errorMessage).toBeVisible();
 	});
 });
