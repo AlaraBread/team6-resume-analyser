@@ -6,12 +6,19 @@ import { dedup } from "../util/util.ts";
 const wordnet = new natural.WordNet();
 const tokenizer = new natural.WordTokenizer();
 
+const wnCache: Record<string, DataRecord[]> = {};
 // lookup a word in the wordnet database
 // https://wordnet.princeton.edu/
 async function wnLookup(word: string): Promise<DataRecord[]> {
+	if (Object.hasOwn(wnCache, word)) {
+		return Promise.resolve(wnCache[word]);
+	}
 	// wordnet doesnt use promises :(
 	return await new Promise((resolve, _reject) => {
-		wordnet.lookup(word, resolve);
+		wordnet.lookup(word, (record) => {
+			wnCache[word] = record;
+			resolve(record);
+		});
 	});
 }
 
@@ -31,7 +38,7 @@ export async function keywords(text: string): Promise<string[]> {
 		}
 	});
 	const tokens = tokenizer.tokenize(text).filter((word) =>
-		!stopwords.includes(word)
+		!stopwords.has(word)
 	);
 	return dedup(
 		(await Promise.all(
@@ -52,7 +59,11 @@ export async function keywords(text: string): Promise<string[]> {
 			word,
 			lookup: lookup.sort((a, b) => a.synsetOffset - b.synsetOffset), // sort meanings by most frequently used
 		})).map(({ word, lookup }) =>
-			keepWords.includes(word) ? word : lookup[0].lemma.toLowerCase()
+			keepWords.has(word)
+				? word
+				: /^(?<lemma>.*?)(:?\(.+\))?$/.exec(lookup[0].lemma.toLowerCase())
+					?.groups
+					?.lemma as string
 		)
 			.concat(special),
 	);
