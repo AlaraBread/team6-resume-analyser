@@ -103,6 +103,7 @@ export function Register() {
 						type="password"
 						placeholder="confirm password"
 					/>
+					<br />
 					{/* will let the user know when the passwords dont match*/}
 					<span data-testid="pass-message">{passMessage}</span>
 					<br />
