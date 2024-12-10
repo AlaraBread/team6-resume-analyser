@@ -61,7 +61,9 @@ export function Register() {
 			.then((data) => {
 				setPostData(data.message);
 				setLoading(false);
-				router.push("/login");
+				setTimeout(() => {
+					router.push("/form");
+				}, 2000);
 			})
 			.catch((reason) => {
 				setPostData("Error: " + (reason?.message ?? reason));
