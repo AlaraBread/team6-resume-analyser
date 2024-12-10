@@ -25,13 +25,16 @@ export function Login() {
 		const email = data.get("email")?.toString() ?? "";
 		const password = data.get("password")?.toString() ?? "";
 
+		setBlankMessage("");
+		setEmailMessage("");
+
 		if (!email || !password) {
 			setBlankMessage(
 				"Please make sure you didn't leave any of the fields blank.",
 			);
 			return;
 		}
-		setBlankMessage("");
+
 		// verify email format
 		const emailRegex = /^[a-zA-Z0-9_]+@[a-zA-Z]+\.[a-z]{2,}$/;
 		if (!emailRegex.test(email)) {
@@ -40,7 +43,6 @@ export function Login() {
 			);
 			return;
 		}
-		setEmailMessage("");
 
 		setLoading(true);
 
@@ -72,7 +74,9 @@ export function Login() {
 			<CardHeader component="h2" title="Login" />
 			{isLoading ? <CircularProgress /> : undefined}
 			<CardContent>
-				<p data-testid="backend-login-post">{postData}</p>
+				<p data-testid="backend-login-post">
+					{!blankMessage && !emailMessage ? postData : ""}
+				</p>
 				<form encType="text/plain" onSubmit={onSubmit}>
 					<Input name="email" placeholder="email" />
 					<br />

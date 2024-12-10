@@ -28,6 +28,10 @@ export function Register() {
 		const password = data.get("password")?.toString() ?? "";
 		const confirmPassword = data.get("confirm_password")?.toString() ?? "";
 
+		setBlankMessage("");
+		setEmailMessage("");
+		setPassMessage("");
+
 		// verify fields are not empty
 		if (!email || !username || !password || !confirmPassword) {
 			setBlankMessage(
@@ -35,7 +39,6 @@ export function Register() {
 			);
 			return;
 		}
-		setBlankMessage("");
 
 		// verify email format
 		const emailRegex = /^[a-zA-Z0-9_]+@[a-zA-Z]+\.[a-z]{2,}$/;
@@ -43,14 +46,12 @@ export function Register() {
 			setEmailMessage("Please enter a valid email address.");
 			return;
 		}
-		setEmailMessage("");
 
 		// verify passwords match
 		if (password != confirmPassword) {
 			setPassMessage("Please make sure passwords match.");
 			return;
 		}
-		setPassMessage("");
 
 		// input is valid
 		setLoading(true);
@@ -60,23 +61,33 @@ export function Register() {
 			password,
 		})
 			.then((data) => {
-				setPostData(data.message);
 				setLoading(false);
-				setTimeout(() => {
-					router.push("/login");
-				}, 2000);
+				if (data.isError) {
+					setLoading(false);
+					setPostData(data.message);
+				} else {
+					setPostData(data.message);
+					setTimeout(() => {
+						router.push("/login");
+					}, 2000);
+				}
 			})
 			.catch((reason) => {
 				setPostData("Error: " + (reason?.message ?? reason));
 				setLoading(false);
 			});
 	}
+
 	return (
 		<Card>
 			<CardHeader component="h2" title="Register" />
 			{isLoading ? <CircularProgress /> : undefined}
 			<CardContent>
-				<p data-testid="backend-register-post">{postData}</p>
+				<p data-testid="backend-register-post">
+					{!blankMessage && !emailMessage && !passMessage
+						? postData
+						: ""}
+				</p>
 				<form encType="text/plain" onSubmit={onSubmit}>
 					<Input name="email" placeholder="email" />
 					<br />
