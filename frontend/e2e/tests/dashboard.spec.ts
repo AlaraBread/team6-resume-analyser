@@ -1,3 +1,4 @@
+/*
 import { test, expect } from "@playwright/test";
 
 test.describe("Dashboard Page Tests", () => {
@@ -5,3 +6,4 @@ test.describe("Dashboard Page Tests", () => {
 		// Add tests here
 	});
 });
+*/
