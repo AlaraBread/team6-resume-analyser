@@ -28,10 +28,6 @@ export function Register() {
 		const password = data.get("password")?.toString() ?? "";
 		const confirmPassword = data.get("confirm_password")?.toString() ?? "";
 
-		setBlankMessage("");
-		setEmailMessage("");
-		setPassMessage("");
-
 		// verify fields are not empty
 		if (!email || !username || !password || !confirmPassword) {
 			setBlankMessage(
@@ -39,6 +35,7 @@ export function Register() {
 			);
 			return;
 		}
+		setBlankMessage("");
 
 		// verify email format
 		const emailRegex = /^[a-zA-Z0-9_]+@[a-zA-Z]+\.[a-z]{2,}$/;
@@ -47,12 +44,14 @@ export function Register() {
 			return;
 		}
 
+		setEmailMessage("");
 		// verify passwords match
 		if (password != confirmPassword) {
 			setPassMessage("Please make sure passwords match.");
 			return;
 		}
 
+		setPassMessage("");
 		// input is valid
 		setLoading(true);
 		backendPost("api/register", {
