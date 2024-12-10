@@ -62,7 +62,7 @@ export function Register() {
 				setPostData(data.message);
 				setLoading(false);
 				setTimeout(() => {
-					router.push("/form");
+					router.push("/login");
 				}, 2000);
 			})
 			.catch((reason) => {
