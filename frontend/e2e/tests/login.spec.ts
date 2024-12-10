@@ -45,7 +45,18 @@ test.describe("Login Page Tests", () => {
 			await page.reload();
 		}
 	});
+	test("Shows error for email format", async ({ page }) => {
+		await page.fill('input[name="email"]', "test12.com");
+		await page.fill('input[name="password"]', "TestPassword101");
+		await page.click('button[type="submit"]');
 
+		const emailMessage = await page.locator(
+			'[data-testid="email-message"]',
+		);
+		await expect(emailMessage).toHaveText(
+			"Please enter a valid email address for logging in.",
+		);
+	});
 	test("Shows error for empty fields", async ({ page }) => {
 		await page.click('button[type="submit"]');
 		const blankMessage = await page.locator(

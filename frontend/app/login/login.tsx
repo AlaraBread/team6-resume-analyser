@@ -15,6 +15,7 @@ import { backendPost } from "util/fetching";
 export function Login() {
 	const [postData, setPostData] = useState<string | undefined>();
 	const [blankMessage, setBlankMessage] = useState("");
+	const [emailMessage, setEmailMessage] = useState("");
 	const [isLoading, setLoading] = useState(false);
 	const router = useRouter();
 	function onSubmit(event: FormEvent) {
@@ -34,12 +35,12 @@ export function Login() {
 		// verify email format
 		const emailRegex = /^[a-zA-Z0-9_]+@[a-zA-Z]+\.[a-z]{2,}$/;
 		if (!emailRegex.test(email)) {
-			setBlankMessage(
+			setEmailMessage(
 				"Please enter a valid email address for logging in.",
 			);
 			return;
 		}
-		setBlankMessage("");
+		setEmailMessage("");
 
 		setLoading(true);
 
@@ -60,11 +61,6 @@ export function Login() {
 						router.push("/form");
 					}, 2000);
 				}
-				/*
-				setLoading(false);
-				setPostData(data.message);
-				router.push("/form");
-				*/
 			})
 			.catch((reason) => {
 				setLoading(false);
@@ -88,6 +84,8 @@ export function Login() {
 					<br />
 					{/* will let the user know when that fields cannot be left blank*/}
 					<span data-testid="blank-message">{blankMessage}</span>
+					<br />
+					<span data-testid="email-message">{emailMessage}</span>
 					<br />
 					<Button variant="contained" type="submit">
 						login

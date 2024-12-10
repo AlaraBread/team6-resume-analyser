@@ -15,6 +15,7 @@ import { backendPost } from "util/fetching";
 export function Register() {
 	const [postData, setPostData] = useState<string | undefined>();
 	const [blankMessage, setBlankMessage] = useState("");
+	const [emailMessage, setEmailMessage] = useState("");
 	const [passMessage, setPassMessage] = useState("");
 	const [isLoading, setLoading] = useState(false);
 	const router = useRouter();
@@ -39,10 +40,10 @@ export function Register() {
 		// verify email format
 		const emailRegex = /^[a-zA-Z0-9_]+@[a-zA-Z]+\.[a-z]{2,}$/;
 		if (!emailRegex.test(email)) {
-			setBlankMessage("Please enter a valid email address.");
+			setEmailMessage("Please enter a valid email address.");
 			return;
 		}
-		setBlankMessage("");
+		setEmailMessage("");
 
 		// verify passwords match
 		if (password != confirmPassword) {
@@ -97,6 +98,9 @@ export function Register() {
 					<br />
 					{/* will let the user know when that fields cannot be left blank*/}
 					<span data-testid="blank-message">{blankMessage}</span>
+					<br />
+					{/* will let the user know when that fields cannot be left blank*/}
+					<span data-testid="email-message">{emailMessage}</span>
 					<br />
 					<Button variant="contained" type="submit">
 						register
