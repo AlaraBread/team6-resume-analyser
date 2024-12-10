@@ -23,7 +23,7 @@ async function login(ctx: Context) {
 
 	const hashedPassword = await generateHash(email, password);
 
-	if (user.email !== email || user.password !== hashedPassword) {
+	if (!user || user.password !== hashedPassword) {
 		ctx.response.status = 401;
 		ctx.response.body = JSON.stringify({
 			isError: true,

@@ -36,6 +36,14 @@ export function Register() {
 		}
 		setBlankMessage("");
 
+		// verify email format
+		const emailRegex = /^[a-zA-Z0-9_]+@[a-zA-Z]+\.[a-z]{2,}$/;
+		if (!emailRegex.test(email)) {
+			setBlankMessage("Please enter a valid email address.");
+			return;
+		}
+		setBlankMessage("");
+
 		// verify passwords match
 		if (password != confirmPassword) {
 			setPassMessage("Please make sure passwords match.");

@@ -31,6 +31,16 @@ export function Login() {
 			return;
 		}
 		setBlankMessage("");
+		// verify email format
+		const emailRegex = /^[a-zA-Z0-9_]+@[a-zA-Z]+\.[a-z]{2,}$/;
+		if (!emailRegex.test(email)) {
+			setBlankMessage(
+				"Please enter a valid email address for logging in.",
+			);
+			return;
+		}
+		setBlankMessage("");
+
 		setLoading(true);
 
 		//input is valid
@@ -40,8 +50,21 @@ export function Login() {
 		})
 			.then((data) => {
 				setLoading(false);
+				if (data.isError) {
+					setLoading(false);
+					// Show error and stay on login
+					setPostData(data.message);
+				} else {
+					setPostData(data.message);
+					setTimeout(() => {
+						router.push("/form");
+					}, 2000);
+				}
+				/*
+				setLoading(false);
 				setPostData(data.message);
 				router.push("/form");
+				*/
 			})
 			.catch((reason) => {
 				setLoading(false);
