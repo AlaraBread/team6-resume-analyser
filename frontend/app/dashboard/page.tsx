@@ -10,7 +10,10 @@ import { useEffect } from "react";
 export interface MockData {
 	fitScore: number;
 	matchedSkills: string[];
-	improvementSuggestions: string[];
+	improvementSuggestions: {
+		category: "skills" | "experience";
+		text: string;
+	}[];
 }
 
 const mockData: MockData = {
@@ -25,9 +28,9 @@ const mockData: MockData = {
 		"C#",
 	],
 	improvementSuggestions: [
-		"Add personal characteristics.",
-		"Include measurable achievements.",
-		"Add personal project(s)",
+		{ category: "skills", text: "Add personal characteristics." },
+		{ category: "experience", text: "Include measurable achievements." },
+		{ category: "skills", text: "Add personal project(s)." },
 	],
 };
 
