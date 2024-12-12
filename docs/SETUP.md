@@ -68,7 +68,19 @@ The backend is in `/backend`. It is an [oak server](https://oakserver.org/) that
 3. ```sh
    deno install
    ```
-
+4. Create a `local.env` file inside of backend directory as shown below:
+   ```bash
+   .
+   ├── api
+   │   ├── login
+   │   ├── register
+   │   └── upload
+   ├── in_memory
+   ├── local.env
+   ├── middleware
+   └── util
+   ```
+   All API credentials and secrets will be saved here.
 ### Formatting
 
 We are using deno for formatting the backend.
