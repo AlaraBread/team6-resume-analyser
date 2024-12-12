@@ -68,19 +68,38 @@ The backend is in `/backend`. It is an [oak server](https://oakserver.org/) that
 3. ```sh
    deno install
    ```
-4. Create a `local.env` file inside of backend directory as shown below:
+4. Set up the environment variables:
+
+   **Step 4.1:** Create a file named `local.env` inside the `backend` directory. The directory structure should look similar to this:
    ```bash
    .
    ├── api
-   │   ├── login
-   │   ├── register
-   │   └── upload
    ├── in_memory
    ├── local.env
    ├── middleware
    └── util
    ```
-   All API credentials and secrets will be saved here.
+
+   **Step 4.2:** Create a free account on [Hugging Face](https://huggingface.co/).
+
+   **Step 4.3:** Generate an API token:
+   - Go to your Hugging Face account settings.
+   - Navigate to **Access Tokens**.
+   - Select **+Create new Token**.
+   - Choose **Fine-grained** as the token type.
+   - Assign a name to your token.
+   - Under **Inference**, select **Make calls to the serverless Inference API**.
+   - Click **Create token**.
+
+   **Step 4.4:** Copy the generated token key.
+
+   **Step 4.5:** Add the token key to your `local.env` file as an environment variable. Use the following format:
+   ```env
+   HUGGINGFACE_API_KEY=your-token-key
+   ```
+   - Replace `your-token-key` with the actual token key.
+   - Do **not** enclose the token key in any kind of quotes.
+
 ### Formatting
 
 We are using deno for formatting the backend.
