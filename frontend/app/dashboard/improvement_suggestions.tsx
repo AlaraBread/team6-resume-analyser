@@ -35,10 +35,11 @@ export default function ImprovementSuggestions({
 	const suggestionsFiltered = suggestions.filter((item) =>
 		selectedCategories.has(item.category),
 	);
-	const hasAnySelected =
-		allCategories.intersection(selectedCategories).size > 0;
+	const hasAnySelected = selectedCategories.size > 0;
 	const hasAnyDeselected =
-		allCategories.difference(selectedCategories).size > 0;
+		Array.from(allCategories.values()).find(
+			(category) => !selectedCategories.has(category),
+		) != undefined;
 	const hasSomeSelected = hasAnySelected && hasAnyDeselected;
 
 	return (
