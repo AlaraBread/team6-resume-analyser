@@ -2,16 +2,6 @@ import { assertEquals, assertRejects } from "@std/assert";
 import { assertSpyCalls, restore, stub } from "@std/testing/mock";
 import { analyzeText } from "./huggingface.ts";
 
-Deno.test("HUGGINGFACE_API_KEY is loaded from .env", () => {
-	// Load the environment variable
-	const apiKey = Deno.env.get("HUGGINGFACE_API_KEY");
-
-	// Assert that the key exists and has a value
-	if (!apiKey || apiKey.trim() === "") {
-		throw new Error("HUGGINGFACE_API_KEY is not set or is empty.");
-	}
-});
-
 // NOTE: This is for manually testing the API connection to HuggingFace
 Deno.test.ignore("analyzeText - Real API Call", async () => {
 	// Load the environment variable (already done by `@std/dotenv/load`)

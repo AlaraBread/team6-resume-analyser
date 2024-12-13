@@ -1,77 +1,46 @@
 import { Context, Router } from "@oak/oak";
 import { analyzeTextHelper } from "../huggingface/huggingface.ts";
-import {
-	AnalyzeRequest,
-	AnalyzeResponse,
-	ErrorResponse,
-} from "../../interfaces/analyze.ts";
-
-const MAX_CHAR_LIMIT = 10000;
+import { AnalyzeResponse, ErrorResponse } from "../../interfaces/analyze.ts";
+import { SessionData } from "../../in_memory/in_memory.ts";
 
 export default function (router: Router) {
-	router.post("/api/analyze", createAnalyzeHandler({ analyzeTextHelper }));
+	router.post(
+		"/api/analyze",
+		analyzeHandler.bind(undefined, analyzeTextHelper),
+	);
 }
 
-// Dependency-injected handler factory
-export function createAnalyzeHandler(
-	dependencies: { analyzeTextHelper: typeof analyzeTextHelper },
+export async function analyzeHandler(
+	analyzeText: typeof analyzeTextHelper,
+	ctx: Context,
 ) {
-	return async function analyzeHandler(ctx: Context) {
-		try {
-			const { resumeText, jobDescription }: AnalyzeRequest = await ctx.request
-				.body.json();
+	const sessionData = ctx.state.sessionData as SessionData | null;
+	// Validate input
+	if (
+		!sessionData || !sessionData.jobDescription || !sessionData.resumeText
+	) {
+		ctx.response.status = 400;
+		ctx.response.body = <ErrorResponse> {
+			isError: true,
+			message: "You must upload a resume and job description.",
+		};
+		return;
+	}
 
-			// Validate input
-			if (!resumeText || !jobDescription) {
-				ctx.response.status = 400;
-				ctx.response.body = <ErrorResponse> {
-					isError: true,
-					message: "Both resumeText and jobDescription are required.",
-				};
-				return;
-			}
+	// Call analyzeText
+	const result = await analyzeText(
+		sessionData.resumeText,
+		sessionData.jobDescription,
+	);
 
-			if (
-				typeof resumeText !== "string" ||
-				typeof jobDescription !== "string" ||
-				resumeText.length > MAX_CHAR_LIMIT ||
-				jobDescription.length > MAX_CHAR_LIMIT
-			) {
-				ctx.response.status = 400;
-				ctx.response.body = <ErrorResponse> {
-					isError: true,
-					message:
-						`Inputs must be strings and under ${MAX_CHAR_LIMIT} characters.`,
-				};
-				return;
-			}
-
-			// Call analyzeTextHelper
-			const result = await dependencies.analyzeTextHelper(
-				resumeText,
-				jobDescription,
-			);
-
-			// Respond with result
-			ctx.response.status = 200;
-			ctx.response.body = <AnalyzeResponse> {
-				isError: false,
-				message: "Analysis successful.",
-				data: {
-					fitScore: result.fitScore,
-					feedback: result.feedback,
-				},
-			};
-		} catch (error) {
-			console.error("Error in analyzeHandler:", error);
-
-			// Respond with error
-			ctx.response.status = 500;
-			ctx.response.body = <ErrorResponse> {
-				isError: true,
-				message: "Failed to analyze the text. Please try again later.",
-				errorDetails: error instanceof Error ? error.message : undefined,
-			};
-		}
+	// Respond with result
+	ctx.response.status = 200;
+	ctx.response.body = <AnalyzeResponse> {
+		isError: false,
+		message: "Analysis successful.",
+		data: {
+			fitScore: result.fitScore,
+			feedback: result.feedback,
+		},
 	};
 }

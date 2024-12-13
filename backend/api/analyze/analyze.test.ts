@@ -1,24 +1,19 @@
 import { assertEquals } from "@std/assert";
 import { createMockContext } from "@oak/oak/testing";
 import { Router } from "@oak/oak";
-import analyze from "./analyze.ts";
+import analyze, { analyzeHandler } from "./analyze.ts";
 import { createBody } from "../../util/util.test.ts";
-import { restore, stub } from "@std/testing/mock";
-import * as huggingface from "../huggingface/huggingface.ts";
-import { createAnalyzeHandler } from "./analyze.ts";
+import { restore } from "@std/testing/mock";
 import { AnalyzeResponse, ErrorResponse } from "../../interfaces/analyze.ts";
+import { SessionData } from "../../in_memory/in_memory.ts";
 
-// FIXME: Fix "Cannot stub: non-configurable instance method"
-Deno.test.ignore("POST /api/analyze - Valid Input", async () => {
-	const mockAnalyzeTextHelper = stub(
-		huggingface,
-		"analyzeTextHelper",
-		() =>
-			Promise.resolve({
-				fitScore: 85,
-				feedback: ["Great alignment with job reqierments."],
-			}),
-	);
+Deno.test("POST /api/analyze - Valid Input", async () => {
+	restore();
+	const mockAnalyzeTextHelper = () =>
+		Promise.resolve({
+			fitScore: 85,
+			feedback: ["Great alignment with job reqierments."],
+		});
 
 	const ctx = createMockContext({
 		method: "POST",
@@ -30,12 +25,18 @@ Deno.test.ignore("POST /api/analyze - Valid Input", async () => {
 				jobDescription: "Job content",
 			}),
 		),
+		state: {
+			sessionData: {
+				resumeText: "my resume",
+				jobDescription: "my job description",
+			} as SessionData,
+		},
 	});
 
 	const router = new Router();
 	router.post(
 		"/api/analyze",
-		createAnalyzeHandler({ analyzeTextHelper: mockAnalyzeTextHelper }),
+		analyzeHandler.bind(undefined, mockAnalyzeTextHelper),
 	);
 
 	const next = async () => {};
@@ -48,8 +49,6 @@ Deno.test.ignore("POST /api/analyze - Valid Input", async () => {
 	assertEquals(responseBody.isError, false);
 	assertEquals(responseBody.message, "Analysis successful.");
 	assertEquals(responseBody.data?.fitScore, 85);
-
-	mockAnalyzeTextHelper.restore();
 });
 
 Deno.test("POST /api/analyze - Missing Input", async () => {
@@ -79,7 +78,7 @@ Deno.test("POST /api/analyze - Missing Input", async () => {
 	assertEquals(responseBody.isError, true);
 	assertEquals(
 		responseBody.message,
-		"Both resumeText and jobDescription are required.",
+		"You must upload a resume and job description.",
 	);
 });
 
@@ -113,6 +112,6 @@ Deno.test("POST /api/analyze - Input Too Long", async () => {
 	assertEquals(responseBody.isError, true);
 	assertEquals(
 		responseBody.message,
-		"Inputs must be strings and under 10000 characters.",
+		"You must upload a resume and job description.",
 	);
 });
