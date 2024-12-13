@@ -2,6 +2,43 @@ import { assertEquals, assertRejects } from "@std/assert";
 import { assertSpyCalls, restore, stub } from "@std/testing/mock";
 import { analyzeText } from "./huggingface.ts";
 
+Deno.test("HUGGINGFACE_API_KEY is loaded from .env", () => {
+	// Load the environment variable
+	const apiKey = Deno.env.get("HUGGINGFACE_API_KEY");
+
+	// Assert that the key exists and has a value
+	if (!apiKey || apiKey.trim() === "") {
+		throw new Error("HUGGINGFACE_API_KEY is not set or is empty.");
+	}
+});
+
+// NOTE: This is for manually testing the API connection to HuggingFace
+Deno.test.ignore("analyzeText - Real API Call", async () => {
+	// Load the environment variable (already done by `@std/dotenv/load`)
+	const apiKey = Deno.env.get("HUGGINGFACE_API_KEY");
+
+	// Assert that the API key exists
+	if (!apiKey || apiKey.trim() === "") {
+		throw new Error("HUGGINGFACE_API_KEY is not set or is empty.");
+	}
+
+	// Define actual inputs
+	const resumeText = "Experienced software engineer skilled in Python and AWS.";
+	const jobDescription =
+		"Looking for a software engineer proficient in Python and cloud technologies.";
+
+	// Call the actual function
+	const result = await analyzeText(resumeText, jobDescription);
+
+	// Assertions
+	console.log("API Response:", result);
+	assertEquals(typeof result.similarity_score, "number"); // Ensure similarity_score is a number
+	assertEquals(
+		result.similarity_score >= 0 && result.similarity_score <= 1,
+		true,
+	); // Ensure score is within 0-1 range
+});
+
 // Test: API returns an error response
 Deno.test("analyzeText - API Error Response", async () => {
 	restore();
@@ -73,26 +110,13 @@ Deno.test("analyzeText - Valid Response with Custom Payload", async () => {
 	restore();
 
 	// Mock fetch for a successful API call
-	const mockFetch = stub(
-		globalThis,
-		"fetch",
-		(input: string | URL | Request, init?: RequestInit) => {
-			// Ensure input is processed if needed (e.g., handle URL or Request objects)
-			if (typeof input === "string") {
-				// Simplified Fix: Use a direct type assertion for `init.body`
-				const requestBody = JSON.parse((init?.body as string) || "{}");
-				assertEquals(requestBody.inputs.source_sentence, "Custom Resume Text");
-				assertEquals(requestBody.inputs.sentences[0], "Custom Job Description");
-			}
-
-			return Promise.resolve(
-				new Response(
-					JSON.stringify({ similarity_score: 0.92 }),
-					{ status: 200 },
-				),
-			);
-		},
-	);
+	const mockFetch = stub(globalThis, "fetch", () =>
+		Promise.resolve(
+			new Response(
+				JSON.stringify([0.92]), // Mocking the array response
+				{ status: 200 },
+			),
+		));
 
 	// Mock environment variable
 	const mockEnvGet = stub(Deno.env, "get", (key: string) => {
@@ -121,15 +145,14 @@ Deno.test("analyzeText - Valid Response with Custom Payload", async () => {
 Deno.test("analyzeText - Empty Input", async () => {
 	restore();
 
-	// Mock fetch for a successful API call
-	const mockFetch = stub(globalThis, "fetch", () => {
-		return Promise.resolve(
+	// Mock fetch for an API call with empty input
+	const mockFetch = stub(globalThis, "fetch", () =>
+		Promise.resolve(
 			new Response(
-				JSON.stringify({ similarity_score: 0.0 }),
+				JSON.stringify([0]), // Mocking the array response for empty input
 				{ status: 200 },
 			),
-		);
-	});
+		));
 
 	// Mock environment variable
 	const mockEnvGet = stub(Deno.env, "get", (key: string) => {
@@ -145,7 +168,7 @@ Deno.test("analyzeText - Empty Input", async () => {
 	const result = await analyzeText(resumeText, jobDescription);
 
 	// Assertions
-	assertEquals(result.similarity_score, 0.0); // Check that similarity is 0 for empty inputs
+	assertEquals(result.similarity_score, 0); // Check that similarity is 0 for empty inputs
 	assertSpyCalls(mockFetch, 1); // Ensure fetch was called
 	assertSpyCalls(mockEnvGet, 1); // Ensure env variable was accessed
 

@@ -30,7 +30,7 @@ export async function analyzeText(
 		const response = await fetch(HUGGINGFACE_API_URL, {
 			method: "POST",
 			headers: {
-				"Authorization": `Bearer ${HUGGINGFACE_API_KEY}`,
+				Authorization: `Bearer ${HUGGINGFACE_API_KEY}`,
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(payload),
@@ -42,7 +42,18 @@ export async function analyzeText(
 			);
 		}
 
-		return await response.json();
+		// Properly handle real and mocked responses
+		const result = await response.json();
+
+		if (Array.isArray(result)) {
+			return { similarity_score: result[0] };
+		}
+
+		if (result.similarity_score !== undefined) {
+			return { similarity_score: result.similarity_score };
+		}
+
+		throw new Error("Unexpected API response format.");
 	} catch (error) {
 		console.error("Error interacting with Hugging Face API:", error);
 		throw error;
@@ -50,14 +61,40 @@ export async function analyzeText(
 }
 
 /**
+ * Parses the Hugging Face API response and generates fit scores and feedback.
+ * @param response The raw response from Hugging Face API.
+ * @returns A structured object containing fit score and feedback.
+ */
+function parseHuggingFaceResponse(response: {
+	similarity_score: number;
+}): { fitScore: number; feedback: string[] } {
+	const fitScore = Math.round(response.similarity_score * 100);
+	const feedback: string[] = [];
+
+	if (fitScore < 80) {
+		feedback.push(
+			"Consider aligning your resume better with the job description.",
+		);
+	}
+	if (fitScore < 50) {
+		feedback.push(
+			"Add more relevant keywords to increase the similarity score.",
+		);
+	}
+
+	return { fitScore, feedback };
+}
+
+/**
  * Helper function for testing and external use, wrapping analyzeText.
  * @param resumeText The resume content as a string.
  * @param jobDescription The job description content as a string.
- * @returns The API response as JSON.
+ * @returns A structured object containing fit score and feedback.
  */
 export async function analyzeTextHelper(
 	resumeText: string,
 	jobDescription: string,
-): Promise<{ similarity_score: number }> {
-	return await analyzeText(resumeText, jobDescription);
+): Promise<{ fitScore: number; feedback: string[] }> {
+	const response = await analyzeText(resumeText, jobDescription);
+	return parseHuggingFaceResponse(response);
 }
