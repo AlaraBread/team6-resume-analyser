@@ -11,7 +11,7 @@ export interface MockData {
 	fitScore: number;
 	matchedSkills: string[];
 	improvementSuggestions: {
-		category: "skills" | "experience";
+		category: string;
 		text: string;
 	}[];
 }

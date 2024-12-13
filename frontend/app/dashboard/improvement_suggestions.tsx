@@ -13,28 +13,33 @@ import {
 } from "@mui/material";
 import styles from "./dashboard.module.css";
 interface ImprovementSuggestionsProps {
-	suggestions: { category: "skills" | "experience"; text: string }[];
+	suggestions: { category: string; text: string }[];
 }
 
 export default function ImprovementSuggestions({
 	suggestions,
 }: ImprovementSuggestionsProps) {
-	const [CategorySelected, CategorySet] = useState<string[]>([
-		"skills",
-		"experience",
-	]);
+	const allCategories = new Set(suggestions.map((s) => s.category));
+	const [selectedCategories, setSelectedCategories] =
+		useState<Set<string>>(allCategories);
 
 	const handleCategoryChange = (category: string, checked: boolean) => {
-		CategorySet((prev) =>
-			checked
-				? [...prev, category]
-				: prev.filter((cat) => cat !== category),
-		);
+		if (checked) {
+			selectedCategories.add(category);
+		} else {
+			selectedCategories.delete(category);
+		}
+		setSelectedCategories(new Set(selectedCategories));
 	};
 
-	const suggestionsfiltered = suggestions.filter((item) =>
-		CategorySelected.includes(item.category),
+	const suggestionsFiltered = suggestions.filter((item) =>
+		selectedCategories.has(item.category),
 	);
+	const hasAnySelected =
+		allCategories.intersection(selectedCategories).size > 0;
+	const hasAnyDeselected =
+		allCategories.difference(selectedCategories).size > 0;
+	const hasSomeSelected = hasAnySelected && hasAnyDeselected;
 
 	return (
 		<Card className={styles.cardContainerImprovement}>
@@ -51,20 +56,16 @@ export default function ImprovementSuggestions({
 					<FormControlLabel
 						control={
 							<Checkbox
-								checked={
-									CategorySelected.includes("skills") &&
-									CategorySelected.includes("experience")
-								}
-								indeterminate={
-									CategorySelected.includes("skills") !==
-									CategorySelected.includes("experience")
-								}
+								checked={hasAnySelected}
+								indeterminate={hasSomeSelected}
 								onChange={(event) => {
 									const checked = event.target.checked;
 									if (checked) {
-										CategorySet(["skills", "experience"]);
+										setSelectedCategories(
+											new Set(allCategories),
+										);
 									} else {
-										CategorySet([]);
+										setSelectedCategories(new Set());
 									}
 								}}
 							/>
@@ -74,43 +75,30 @@ export default function ImprovementSuggestions({
 					<Box
 						sx={{ display: "flex", flexDirection: "column", ml: 3 }}
 					>
-						<FormControlLabel
-							control={
-								<Checkbox
-									checked={CategorySelected.includes(
-										"skills",
-									)}
-									onChange={(event) =>
-										handleCategoryChange(
-											"skills",
-											event.target.checked,
-										)
-									}
-								/>
-							}
-							label="Skills"
-						/>
-						<FormControlLabel
-							control={
-								<Checkbox
-									checked={CategorySelected.includes(
-										"experience",
-									)}
-									onChange={(event) =>
-										handleCategoryChange(
-											"experience",
-											event.target.checked,
-										)
-									}
-								/>
-							}
-							label="Experience"
-						/>
+						{Array.from(allCategories.values()).map((category) => (
+							<FormControlLabel
+								key={category}
+								control={
+									<Checkbox
+										checked={selectedCategories.has(
+											category,
+										)}
+										onChange={(event) =>
+											handleCategoryChange(
+												category,
+												event.target.checked,
+											)
+										}
+									/>
+								}
+								label={category}
+							/>
+						))}
 					</Box>
 				</Box>
 
 				<List className={styles.listContainerImprovement}>
-					{suggestionsfiltered.map((suggestion, index) => (
+					{suggestionsFiltered.map((suggestion, index) => (
 						<ListItem key={index} className={styles.listItem}>
 							<ListItemText primary={suggestion.text} />
 						</ListItem>
