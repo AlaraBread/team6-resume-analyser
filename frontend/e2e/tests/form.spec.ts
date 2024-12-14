@@ -24,6 +24,8 @@ test.describe("Form Page Tests", () => {
 		await page.waitForURL("**/form");
 	});
 
+	test("All form components are displayed", async ({ page }) => {});
+
 	test("Show error when job description is empty", async ({ page }) => {
 		// Locate the job description field
 		const jobDescriptionInput = page.locator(

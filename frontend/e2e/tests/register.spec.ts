@@ -14,6 +14,16 @@ test.describe("Registration Page Tests", () => {
 	];
 
 	test("All registration components are displayed", async ({ page }) => {
+		// Check for 'Registration'
+		const registrationHeading = page.locator("h1");
+		await expect(registrationHeading).toHaveText("Registration");
+		await expect(registrationHeading).toBeVisible();
+
+		// Check for 'Register'
+		const registerCardHeader = page.locator("h2");
+		await expect(registerCardHeader).toHaveText("Register");
+		await expect(registerCardHeader).toBeVisible();
+
 		// Verify the presence of each field
 		await expect(page.locator('input[name="email"]')).toBeVisible();
 		await expect(page.locator('input[name="username"]')).toBeVisible();

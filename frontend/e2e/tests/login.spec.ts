@@ -13,6 +13,15 @@ test.describe("Login Page Tests", () => {
 	];
 
 	test("All login components are displayed", async ({ page }) => {
+		// Checks for 'Login' being displayed
+		const registrationHeading = page.locator("h1");
+		await expect(registrationHeading).toHaveText("Login");
+		await expect(registrationHeading).toBeVisible();
+
+		const registerCardHeader = page.locator("h2");
+		await expect(registerCardHeader).toHaveText("Login");
+		await expect(registerCardHeader).toBeVisible();
+
 		await expect(page.locator('input[name="email"]')).toBeVisible();
 		await expect(page.locator('input[name="password"]')).toBeVisible();
 
