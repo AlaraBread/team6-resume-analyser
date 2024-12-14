@@ -13,8 +13,7 @@ The frontend is in `/frontend`. It is a [next.js](https://nextjs.org/) project t
    ```
 4. to setup end to end testing, run
    ```sh
-   npx playwright install
-   npx playwright install-deps
+   npx playwright install --with-deps
    ```
 
 ### Formatting
