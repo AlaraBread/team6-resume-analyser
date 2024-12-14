@@ -117,7 +117,9 @@ test.describe("Registration Page Tests", () => {
 		);
 	});
 
-	test("Shows error message for already registered email", async ({page,}) => {
+	test("Shows error message for already registered email", async ({
+		page,
+	}) => {
 		// Mock backend API call to indicate email is already registered
 		await page.route("**/api/register", (route) => {
 			route.fulfill({
