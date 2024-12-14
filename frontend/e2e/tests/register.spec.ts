@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 test.describe("Registration Page Tests", () => {
 	test.beforeEach(async ({ page }) => {
 		// Navigate to the registration page before each test
@@ -26,6 +26,16 @@ test.describe("Registration Page Tests", () => {
 	});
 
 	test("Successful registration redirects to login", async ({ page }) => {
+		await page.route("**/api/register", (route) => {
+			route.fulfill({
+				status: 200,
+				body: JSON.stringify({
+					email: "b@b.com",
+					username: "b",
+					password: "b",
+				}),
+			});
+		});
 		// Fill out the registration form
 		await page.fill('input[name="email"]', "test@example.com");
 		await page.fill('input[name="username"]', "testuser");
@@ -107,9 +117,7 @@ test.describe("Registration Page Tests", () => {
 		);
 	});
 
-	test("Shows error message for already registered email", async ({
-		page,
-	}) => {
+	test("Shows error message for already registered email", async ({page,}) => {
 		// Mock backend API call to indicate email is already registered
 		await page.route("**/api/register", (route) => {
 			route.fulfill({

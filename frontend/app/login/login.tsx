@@ -36,7 +36,7 @@ export function Login() {
 		}
 
 		// verify email format
-		const emailRegex = /^[a-zA-Z0-9_]+@[a-zA-Z]+\.[a-z]{2,}$/;
+		const emailRegex = /^.+@.+$/;
 		if (!emailRegex.test(email)) {
 			setEmailMessage(
 				"Please enter a valid email address for logging in.",
@@ -59,9 +59,7 @@ export function Login() {
 					setPostData(data.message);
 				} else {
 					setPostData(data.message);
-					setTimeout(() => {
-						router.push("/form");
-					}, 2000);
+					router.push("/form");
 				}
 			})
 			.catch((reason) => {

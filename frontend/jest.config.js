@@ -5,4 +5,5 @@ module.exports = nextJest({
 })({
 	setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
 	testEnvironment: "jsdom",
+	testPathIgnorePatterns: ["e2e/.*"],
 });

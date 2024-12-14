@@ -50,11 +50,7 @@ export default function JobDescriptionForm(props: { onSubmit?: () => void }) {
 		<Card>
 			<CardHeader title="Job Description" />
 			<CardContent>
-				<form
-					onSubmit={(event) => {
-						void handleSubmit(event);
-					}}
-				>
+				<form onSubmit={handleSubmit}>
 					{isLoading ? <CircularProgress /> : undefined}
 					<TextField
 						label="Job Description"

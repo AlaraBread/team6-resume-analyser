@@ -69,9 +69,7 @@ export function Register() {
 					setPostData(data.message);
 				} else {
 					setPostData(data.message);
-					setTimeout(() => {
-						router.push("/login");
-					}, 2000);
+					router.push("/login");
 				}
 			})
 			.catch((reason) => {

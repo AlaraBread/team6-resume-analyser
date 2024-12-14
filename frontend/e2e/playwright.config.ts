@@ -7,4 +7,9 @@ export default defineConfig({
 		baseURL: "http://localhost:3000", // Base URL for app
 		headless: true, // Run in headless mode
 	},
+	webServer: {
+		command: "npm run dev",
+		url: "http://localhost:3000",
+		reuseExistingServer: true,
+	},
 });

@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Form Page Tests", () => {
 	test.beforeEach(async ({ page }) => {
@@ -8,7 +8,10 @@ test.describe("Form Page Tests", () => {
 		await page.route("**/api/login", (route) => {
 			route.fulfill({
 				status: 200,
-				body: JSON.stringify({ message: "Login successful" }),
+				body: JSON.stringify({
+					message: "Login successful",
+					token: "jwt-token",
+				}),
 			});
 		});
 

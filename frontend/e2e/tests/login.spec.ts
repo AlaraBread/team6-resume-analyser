@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Login Page Tests", () => {
 	// Navigate to the login page for every test
@@ -72,7 +72,10 @@ test.describe("Login Page Tests", () => {
 		await page.route("**/api/login", (route) => {
 			route.fulfill({
 				status: 200,
-				body: JSON.stringify({ message: "Login successful" }),
+				body: JSON.stringify({
+					message: "Login successful",
+					token: "jwt-token",
+				}),
 			});
 		});
 
