@@ -124,6 +124,30 @@ test.describe("Form Page Tests", () => {
 		);
 		await expect(selectedFileMessage).toBeVisible();
 	});
+
+	test("File size error is displayed for files over 2MB", async ({
+		page,
+	}) => {
+		const fileInput = page.locator('input[type="file"][name="file"]');
+
+		// Simulate a large file (2.1 MB)
+		const largeFileBuffer = Buffer.alloc(2.1 * 1024 * 1024, "a");
+		await fileInput.setInputFiles({
+			name: "largefile.pdf",
+			mimeType: "application/pdf",
+			buffer: largeFileBuffer,
+		});
+
+		const submitButtonResume = page.locator(
+			'button:has-text("Submit Resume")',
+		);
+
+		await submitButtonResume.click();
+		// Check for the error message
+		const errorMessage = page.locator("text=File size must be under 2MB");
+		await expect(errorMessage).toBeVisible();
+	});
+
 	/*
 	TODO: Edit successMessage or the alike when form is completed
 	test("Test for valid job description", async ({ page }) => {
