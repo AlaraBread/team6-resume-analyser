@@ -24,7 +24,47 @@ test.describe("Form Page Tests", () => {
 		await page.waitForURL("**/form");
 	});
 
-	test("All form components are displayed", async ({ page }) => {});
+	test("All form components are displayed", async ({ page }) => {
+		const registrationHeading = page.locator("h1");
+		await expect(registrationHeading).toHaveText(
+			"Resume and Job Description",
+		);
+		await expect(registrationHeading).toBeVisible();
+
+		await expect(page.locator("text=Resume Upload")).toBeVisible();
+		const jobDescriptionLocator = page.locator(
+			'.MuiTypography-root.MuiTypography-h5.MuiCardHeader-title.css-16xl4zq-MuiTypography-root:has-text("Job Description")',
+		);
+		await expect(jobDescriptionLocator).toBeVisible();
+
+		// Textarea for job description
+		const jobDescriptionInput = page.locator(
+			'textarea[placeholder="Enter job description"]',
+		);
+
+		await expect(jobDescriptionInput).toBeVisible();
+
+		// Submit button for job description
+		const submitButtonDescription = page.locator(
+			'button:has-text("Submit Job Description")',
+		);
+
+		await expect(submitButtonDescription).toBeVisible();
+
+		// Submit button for Resume
+		const submitButtonResume = page.locator(
+			'button:has-text("Submit Resume")',
+		);
+
+		await expect(submitButtonResume).toBeVisible();
+
+		// Upload Resume Button ("UPLOAD RESUME")
+
+		const uploadResumeButton = page.getByRole("button", {
+			name: "UPLOAD RESUME",
+		});
+		await expect(uploadResumeButton).toBeVisible();
+	});
 
 	test("Show error when job description is empty", async ({ page }) => {
 		// Locate the job description field
@@ -66,6 +106,24 @@ test.describe("Form Page Tests", () => {
 		await expect(errorMessage).toBeVisible();
 	});
 
+	test("File name is displayed when selected", async ({ page }) => {
+		// Locate the file input directly
+		const fileInput = page.locator('input[type="file"][name="file"]');
+
+		// Simulate selecting a file by setting input files
+		await fileInput.setInputFiles({
+			name: "resume.pdf",
+			mimeType: "application/pdf",
+			// Content within file
+			buffer: Buffer.from("This is a test PDF file content."),
+		});
+
+		// Verify the file name is displayed in the UI
+		const selectedFileMessage = page.locator(
+			"text=Selected File: resume.pdf",
+		);
+		await expect(selectedFileMessage).toBeVisible();
+	});
 	/*
 	TODO: Edit successMessage or the alike when form is completed
 	test("Test for valid job description", async ({ page }) => {
