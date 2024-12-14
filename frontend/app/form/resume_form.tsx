@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { backendFormPost } from "util/fetching";
 import {
 	Button,
@@ -9,6 +9,7 @@ import {
 	CardHeader,
 	CircularProgress,
 	styled,
+	Typography,
 } from "@mui/material";
 
 /*https://mui.com/material-ui/react-button/#file-upload*/
@@ -27,6 +28,12 @@ const VisuallyHiddenInput = styled("input")({
 export default function ResumeForm(props: { onSubmit?: () => void }) {
 	const [message, setMessage] = useState<string | null>(null);
 	const [isLoading, setLoading] = useState(false);
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0] || null;
+		setSelectedFile(file);
+	};
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
@@ -84,8 +91,17 @@ export default function ResumeForm(props: { onSubmit?: () => void }) {
 							name="file"
 							type="file"
 							accept="application/pdf"
+							onChange={handleFileChange}
 						/>
 					</Button>
+					{selectedFile && (
+						<Typography
+							variant="body2"
+							style={{ marginTop: "0.5rem" }}
+						>
+							Selected File: {selectedFile.name}
+						</Typography>
+					)}
 					<Button
 						type="submit"
 						variant="contained"
