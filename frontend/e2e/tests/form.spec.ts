@@ -148,6 +148,30 @@ test.describe("Form Page Tests", () => {
 		await expect(errorMessage).toBeVisible();
 	});
 
+	test("Shows error for no file uploaded", async ({ page }) => {
+		// Locate the file input and submit button
+		const fileInput = page.locator('input[type="file"][name="file"]');
+		const submitButtonResume = page.locator(
+			'button:has-text("Submit Resume")',
+		);
+
+		// Ensure no file is uploaded
+		await fileInput.setInputFiles([]); // Clears any selected file
+
+		await submitButtonResume.click();
+
+		// Check if the error message appears
+		const errorMessage = page.locator("text=Please select a file");
+		await expect(errorMessage).toBeVisible();
+	});
+
+	/*
+	const submitButtonResume = page.locator(
+			'button:has-text("Submit Resume")',
+		);
+
+		await submitButtonResume.click();
+	*/
 	/*
 	TODO: Edit successMessage or the alike when form is completed
 	test("Test for valid job description", async ({ page }) => {
