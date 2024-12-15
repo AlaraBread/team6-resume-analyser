@@ -36,13 +36,16 @@ export type getRequests = {
 		};
 	};
 	"api/fit-score": {
-		response:  {
-    fitScore: number;
-    matchedSkills: string[];
-    improvementSuggestions: {
-      category: string;
-      text: string;
-    }[];
+		response: {
+			isError: boolean;
+			message: string;
+			fitScore: number;
+			matchedSkills: string[];
+			improvementSuggestions: {
+				category: string;
+				text: string;
+			}[];
+		};
 	};
 };
 
