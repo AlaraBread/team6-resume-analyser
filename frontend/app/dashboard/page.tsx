@@ -42,9 +42,18 @@ const mockData: MockData = {
 const mockError: MockData = {
 	isError: true,
 	message: "failed to get fit score",
+	fitScore: 85,
+	matchedSkills: [],
+	improvementSuggestions: [],
+};
+const mockEmpty: MockData = {
+	isError: false,
+	message: "get fit score successful",
+	fitScore: 0,
+	matchedSkills: [],
+	improvementSuggestions: [],
 };
 */
-
 export default function Dashboard() {
 	useProtectRoute();
 	const response = useBackendGet("api/fit-score").data;
