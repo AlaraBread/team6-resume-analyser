@@ -4,9 +4,15 @@ import FitScoreChart from "./fit_score_chart";
 import SkillsMatched from "./skills_matched";
 import ImprovementSuggestions from "./improvement_suggestions";
 import styles from "./dashboard.module.css";
-
 import { useBackendGet } from "util/fetching";
-
+import { useState } from "react";
+import React from "react";
+import Button from "@mui/material/Button";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
+import { generatePDF, generateWord } from "./report_generator";
 import { useProtectRoute } from "util/fetching";
 export interface MockData {
 	isError: boolean;
@@ -57,7 +63,24 @@ const mockEmpty: MockData = {
 export default function Dashboard() {
 	useProtectRoute();
 	const response = useBackendGet("api/fit-score").data;
-	if (response == null) {
+
+	const [fileFormat, setFileFormat] = useState("PDF"); // Default format is PDF
+	const handleDownload = () => {
+		if (fileFormat === "PDF") {
+			generatePDF(
+				response.fitScore,
+				response.matchedSkills,
+				response.improvementSuggestions,
+			);
+		} else if (fileFormat === "Word") {
+			generateWord(
+				response.fitScore,
+				response.matchedSkills,
+				response.improvementSuggestions,
+			);
+		}
+	};
+if (response == null) {
 		return (
 			<div className={styles.dashboardContainer}>
 				<h1>Error retrieving results</h1>
@@ -73,6 +96,7 @@ export default function Dashboard() {
 		);
 	} else {
 		return (
+		<>
 			<div className={styles.dashboardContainer}>
 				<h1 className={styles.dashboardTitle}>
 					Resume Analysis Dashboard
@@ -86,4 +110,38 @@ export default function Dashboard() {
 			</div>
 		);
 	}
+				<FitScoreChart score={response.fitScore} />
+				<SkillsMatched skills={response.matchedSkills} />
+				<ImprovementSuggestions
+					suggestions={response.improvementSuggestions}
+				/>
+			</div>
+
+			{/* Button Container for Download Report */}
+			<div className={styles.buttonContainer}>
+				{/* Select Button for File Format */}
+				<Button
+					variant="contained"
+					color="primary"
+					onClick={handleDownload}
+				>
+					Download Report
+				</Button>
+				<FormControl>
+					<InputLabel id="file-format-select-label">
+						Format
+					</InputLabel>
+					<Select
+						labelId="file-format-select-label"
+						value={fileFormat}
+						label="Format"
+						onChange={(event) => setFileFormat(event.target.value)}
+					>
+						<MenuItem value="PDF">PDF</MenuItem>
+						<MenuItem value="Word">Word</MenuItem>
+					</Select>
+				</FormControl>
+			</div>
+		</>
+	);
 }
