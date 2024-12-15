@@ -9,8 +9,12 @@ const CONTENT_TEMPLATES: Record<string, string> = {
 	jobDescription:
 		"You are an assistant that extracts keywords from job descriptions. Provide only the keywords, separated by commas. Classify the keywords into two categories: must-have and nice-to-have.",
 	resume:
-		"You are an assistant that extracts keywords from resumes. Provide only the keywords, separated by commas. Classify the keywords into two categories: must-have and nice-to-have.",
+		"You are an assistant that extracts keywords from resumes. Provide only the keywords, separated by commas.",
 };
+
+type AnalyseResponse<Type> = Type extends "resume" ? string[]
+	: Type extends "jobDescription" ? { mustHave: string[]; niceToHave: string[] }
+	: never;
 
 /**
  * Sends a request to the OpenAI API for analysis and extracts the assistant's message content.
@@ -18,10 +22,10 @@ const CONTENT_TEMPLATES: Record<string, string> = {
  * @param type The type of input ("resume" | "jobDescription").
  * @returns The assistant's response content as a string.
  */
-export async function analyzeText(
+export async function analyzeText<Type extends "resume" | "jobDescription">(
 	inputText: string,
-	type: "resume" | "jobDescription",
-): Promise<string> {
+	type: Type,
+): Promise<AnalyseResponse<Type>> {
 	const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
 	if (!OPENAI_API_KEY) {
@@ -66,7 +70,33 @@ export async function analyzeText(
 		throw new Error("Unexpected API response format: missing message content.");
 	}
 
-	return messageContent;
+	if (type == "jobDescription") {
+		const mustHaveStr = /Must-have: ?(?<csv>[^\n;]*)/gi.exec(messageContent)
+			?.groups
+			?.csv;
+		if (mustHaveStr == undefined) {
+			throw new Error("Unexpected API response format: missing must-haves.");
+		}
+		const mustHave = mustHaveStr.split(",").map((keyword) => keyword.trim())
+			.filter((keyword) => keyword != "");
+
+		const niceToHaveStr = /Nice-to-have: ?(?<csv>[^\n;]*)/gi.exec(
+			messageContent,
+		)
+			?.groups
+			?.csv;
+		if (niceToHaveStr == undefined) {
+			throw new Error("Unexpected API response format: missing must-haves.");
+		}
+		const niceToHave = niceToHaveStr.split(",").map((keyword) => keyword.trim())
+			.filter((keyword) => keyword != "");
+
+		return { mustHave, niceToHave } as AnalyseResponse<Type>;
+	} else {
+		return messageContent.split(",").map((keyword) => keyword.trim()).filter((
+			keyword,
+		) => keyword != "") as AnalyseResponse<Type>;
+	}
 }
 
 /**

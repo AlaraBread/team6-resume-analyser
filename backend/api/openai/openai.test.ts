@@ -1,4 +1,4 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { assert, assertEquals, assertRejects } from "@std/assert";
 import { assertSpyCalls, restore, stub } from "@std/testing/mock";
 import { analyzeText, generateResumeFeedback } from "./openai.ts";
 import { OpenAIResponse } from "../../interfaces/openai_interface.ts";
@@ -21,17 +21,16 @@ Deno.test.ignore(
 
 		// Call the actual function
 		const result = await analyzeText(jobDescription, "jobDescription");
+		console.log(result);
 
 		// Assertions: Validate the response contains expected formatting
-		assertEquals(
-			result.includes("Must-have:"),
-			true,
-			"Expected the response to include 'Must-have:'",
+		assert(
+			result.mustHave.includes("machine learning"),
+			"Expected the must have response to include machine learning",
 		);
-		assertEquals(
-			result.includes("Nice-to-have:"),
-			true,
-			"Expected the response to include 'Nice-to-have:'",
+		assert(
+			result.niceToHave.includes("Spark"),
+			"Expected the nice to have response to include spark",
 		);
 	},
 );
@@ -52,17 +51,12 @@ Deno.test.ignore("analyzeText - Live API Call with Resume", async () => {
 
 	// Call the actual function
 	const result = await analyzeText(resumeText, "resume");
+	console.log(result);
 
 	// Assertions: Validate the response contains expected formatting
-	assertEquals(
-		result.includes("Must-have:"),
-		true,
-		"Expected the response to include 'Must-have:'",
-	);
-	assertEquals(
-		result.includes("Nice-to-have:"),
-		true,
-		"Expected the response to include 'Nice-to-have:'",
+	assert(
+		result.includes("machine learning"),
+		"Expected the response to include machine learning",
 	);
 });
 
@@ -126,7 +120,39 @@ Deno.test("analyzeText - Valid Input for Job Description (Mocked)", async () => 
 	const result = await analyzeText(jobDescription, "jobDescription");
 
 	// Assertions
-	assertEquals(result, "Must-have: Python, AWS; Nice-to-have: Docker");
+	assertEquals(result, { mustHave: ["Python", "AWS"], niceToHave: ["Docker"] });
+	assertSpyCalls(mockFetch, 1);
+
+	// Clean up
+	mockFetch.restore();
+});
+
+Deno.test("analyzeText - Valid Input for Job Description (Mocked)", async () => {
+	restore();
+
+	// Mock the fetch API for a successful response
+	const mockFetch = stub(globalThis, "fetch", () =>
+		Promise.resolve(
+			new Response(
+				JSON.stringify({
+					choices: [
+						{
+							message: {
+								role: "assistant",
+								content: "Python, AWS, Docker",
+							},
+						},
+					],
+				} as OpenAIResponse),
+				{ status: 200 },
+			),
+		));
+
+	const jobDescription = "Looking for a Python developer with AWS expertise.";
+	const result = await analyzeText(jobDescription, "resume");
+
+	// Assertions
+	assertEquals(result, ["Python", "AWS", "Docker"]);
 	assertSpyCalls(mockFetch, 1);
 
 	// Clean up
