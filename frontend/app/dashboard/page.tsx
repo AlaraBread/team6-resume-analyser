@@ -65,6 +65,8 @@ export default function Dashboard() {
 	//if you wanna use the mock data just swap out useBackendGet().data for the mock data
 	const response = useBackendGet("api/fit-score").data;
 
+	const [fileFormat, setFileFormat] = useState("PDF"); // Default format is PDF
+
 	if (response == null) {
 		// response is null, display error page
 		return (
@@ -83,7 +85,6 @@ export default function Dashboard() {
 		);
 	} else {
 		// no errors, display dashboard
-		const [fileFormat, setFileFormat] = useState("PDF"); // Default format is PDF
 		const handleDownload = () => {
 			if (fileFormat === "PDF") {
 				generatePDF(

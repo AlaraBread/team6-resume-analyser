@@ -2,8 +2,6 @@
 
 import { useProtectRoute } from "util/fetching";
 import FrontendForm from "./frontend_form";
-import { isLoggedIn } from "util/fetching";
-import { useEffect } from "react";
 
 export default function FormPage() {
 	useProtectRoute();

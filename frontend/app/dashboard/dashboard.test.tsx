@@ -2,8 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Dashboard from "./page";
 import { MockData } from "./page";
 import FitScoreChart from "./fit_score_chart";
-import { useBackendGet, useProtectRoute } from "util/fetching";
-import * as SWR from "swr";
+import { useBackendGet } from "util/fetching";
 
 jest.mock("../../util/fetching", () => ({
 	useBackendGet: jest.fn(),
@@ -278,7 +277,7 @@ describe("Dashboard Component", () => {
 			isLoading: false,
 		});
 		rerender(<Dashboard />);
-		var ratingElement = screen.getByRole("img");
+		let ratingElement = screen.getByRole("img");
 		expect(ratingElement).toHaveAttribute("aria-label", "0 Stars");
 		(useBackendGet as jest.Mock).mockReturnValue({
 			data: {

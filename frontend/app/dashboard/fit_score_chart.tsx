@@ -6,7 +6,7 @@ type FitScoreChartProps = {
 
 export default function FitScoreChart({ score }: FitScoreChartProps) {
 	// handle null score
-	var noScore = score == null;
+	const noScore = score == null;
 	if (noScore) {
 		score = 0;
 	}
