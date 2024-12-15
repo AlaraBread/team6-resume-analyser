@@ -18,6 +18,8 @@
 		"next": "latest",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"recoil": "^0.7.7",
+		"recoil-nexus": "^0.5.1",
 		"server-only": "^0.0.1",
 		"swr": "^2.2.5"
 	},

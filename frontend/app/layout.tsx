@@ -1,5 +1,7 @@
 import "./global.css";
 import { Theme } from "./theme";
+import { Fetching } from "util/fetching";
+import { RecoilContextProvider } from "./recoil";
 
 export default function RootLayout({
 	children,
@@ -8,9 +10,12 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<Theme>
-				<body>{children}</body>
-			</Theme>
+			<RecoilContextProvider>
+				<Fetching />
+				<Theme>
+					<body>{children}</body>
+				</Theme>
+			</RecoilContextProvider>
 		</html>
 	);
 }

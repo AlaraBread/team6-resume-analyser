@@ -1,9 +1,17 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { atom, useRecoilState } from "recoil";
+import { getRecoil, setRecoil } from "recoil-nexus";
 import useSWR, { SWRResponse } from "swr";
 
 export const jsonFetcher: (
 	...args: Parameters<typeof fetch>
 ) => Promise<object> = (url) =>
-	fetch(url, { headers: { token: token ?? "" } }).then((res) => res.json());
+	fetch(url, { headers: { token: getRecoil(token) ?? "" } }).then((res) =>
+		res.json(),
+	);
 
 function getEndpointPath(endpoint: string) {
 	let server = process.env.NEXT_PUBLIC_BACKEND ?? "";
@@ -100,7 +108,10 @@ type jsonPostRequests = {
 		: K;
 }[keyof postRequests];
 
-let token: string | null = globalThis?.localStorage?.getItem("token");
+export let token = atom({
+	key: "token",
+	default: globalThis.localStorage?.getItem("token"),
+});
 export async function backendPost<T extends jsonPostRequests>(
 	endpoint: T,
 	data: postRequests[T]["request"],
@@ -108,16 +119,15 @@ export async function backendPost<T extends jsonPostRequests>(
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		headers: {
-			token: token ?? "",
+			token: getRecoil(token) ?? "",
 		},
 		body: JSON.stringify(data),
 	})
 		.then((response) => response.json())
 		.then((response) => {
-			if (endpoint == "api/login" && response.token) {
-				token = response.token;
-				if (token) {
-					globalThis?.localStorage?.setItem("token", token);
+			if (endpoint == "api/login") {
+				if (response.token) {
+					setRecoil(token, response.token);
 				}
 			}
 			return response;
@@ -131,7 +141,7 @@ export async function backendFormPost<T extends formPostRequests>(
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		headers: {
-			token: token ?? "",
+			token: getRecoil(token) ?? "",
 		},
 		body: data,
 	}).then((response) => response.json()) as Promise<
@@ -139,6 +149,20 @@ export async function backendFormPost<T extends formPostRequests>(
 	>;
 }
 
-export function isLoggedIn(): boolean {
-	return token != null;
+export function Fetching() {
+	const [t] = useRecoilState(token);
+	useEffect(() => {
+		globalThis.localStorage?.setItem("token", t ?? "");
+	}, [t]);
+	return <></>;
+}
+
+export function useProtectRoute() {
+	const router = useRouter();
+	const [tok] = useRecoilState(token);
+	useEffect(() => {
+		if (!tok) {
+			router.push("/");
+		}
+	}, [tok]);
 }
