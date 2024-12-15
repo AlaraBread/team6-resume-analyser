@@ -97,7 +97,8 @@ export default function ImprovementSuggestions({
 						))}
 					</Box>
 				</Box>
-
+				//if suggestions is empty display a message
+				{suggestions.length == 0 && <p>No suggestions available</p>}
 				<List className={styles.listContainerImprovement}>
 					{suggestionsFiltered.map((suggestion, index) => (
 						<ListItem key={index} className={styles.listItem}>
