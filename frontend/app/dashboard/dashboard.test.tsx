@@ -2,12 +2,13 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Dashboard from "./page";
 import { MockData } from "./page";
 import FitScoreChart from "./fit_score_chart";
-import { useBackendGet } from "util/fetching";
+import { useBackendGet, useProtectRoute } from "util/fetching";
 import * as SWR from "swr";
 
 jest.mock("../../util/fetching", () => ({
 	useBackendGet: jest.fn(),
 	isLoggedIn: jest.fn(),
+	useProtectRoute: jest.fn(),
 }));
 
 const useRouterMock = jest.fn(() => {
@@ -261,5 +262,51 @@ describe("Dashboard Component", () => {
 		render(<Dashboard />);
 		const titleElement = screen.getByText(/Error retrieving results/i);
 		expect(titleElement).toBeInTheDocument();
+	});
+
+	it("rating element should render with the correct fit score", () => {
+		const { rerender } = render(<Dashboard />);
+		(useBackendGet as jest.Mock).mockReturnValue({
+			data: {
+				isError: false,
+				message: "get fit score successful",
+				fitScore: 0,
+				matchedSkills: [],
+				improvementSuggestions: [],
+			},
+			error: null,
+			isLoading: false,
+		});
+		rerender(<Dashboard />);
+		var ratingElement = screen.getByRole("img");
+		expect(ratingElement).toHaveAttribute("aria-label", "0 Stars");
+		(useBackendGet as jest.Mock).mockReturnValue({
+			data: {
+				isError: false,
+				message: "get fit score successful",
+				fitScore: 50,
+				matchedSkills: [],
+				improvementSuggestions: [],
+			},
+			error: null,
+			isLoading: false,
+		});
+		rerender(<Dashboard />);
+		ratingElement = screen.getByRole("img");
+		expect(ratingElement).toHaveAttribute("aria-label", "2.5 Stars");
+		(useBackendGet as jest.Mock).mockReturnValue({
+			data: {
+				isError: false,
+				message: "get fit score successful",
+				fitScore: 100,
+				matchedSkills: [],
+				improvementSuggestions: [],
+			},
+			error: null,
+			isLoading: false,
+		});
+		rerender(<Dashboard />);
+		ratingElement = screen.getByRole("img");
+		expect(ratingElement).toHaveAttribute("aria-label", "5 Stars");
 	});
 });
