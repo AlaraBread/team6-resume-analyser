@@ -309,4 +309,22 @@ describe("Dashboard Component", () => {
 		ratingElement = screen.getByRole("img");
 		expect(ratingElement).toHaveAttribute("aria-label", "5 Stars");
 	});
+	it("empty imporovementSuggestions list should render an empty feedback box", () => {
+		(useBackendGet as jest.Mock).mockReturnValue({
+			data: {
+				isError: false,
+				message: "get fit score successful",
+				fitScore: 100,
+				matchedSkills: [],
+				improvementSuggestions: [],
+			},
+			error: null,
+			isLoading: false,
+		});
+		render(<Dashboard />);
+		const emptyStateMessage = screen.queryByText(
+			/No suggestions available/i,
+		);
+		expect(emptyStateMessage).toBeInTheDocument();
+	});
 });
