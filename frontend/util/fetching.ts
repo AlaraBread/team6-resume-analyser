@@ -28,6 +28,15 @@ export type getRequests = {
 			message: string;
 		};
 	};
+	"api/fit-score": {
+		response: {
+			isError: boolean;
+			message: string;
+			fitScore?: number;
+			matchedSkills?: Array<string>;
+			improvementSuggestions?: Array<string>;
+		};
+	};
 };
 
 export function useBackendGet<T extends keyof getRequests>(
