@@ -309,7 +309,7 @@ describe("Dashboard Component", () => {
 		ratingElement = screen.getByRole("img");
 		expect(ratingElement).toHaveAttribute("aria-label", "5 Stars");
 	});
-	it("empty imporovementSuggestions list should render an empty feedback box", () => {
+	it("empty imporovementSuggestions list should display a message", () => {
 		(useBackendGet as jest.Mock).mockReturnValue({
 			data: {
 				isError: false,
@@ -326,5 +326,21 @@ describe("Dashboard Component", () => {
 			/No suggestions available/i,
 		);
 		expect(emptyStateMessage).toBeInTheDocument();
+	});
+	it("null fit score should display a message", () => {
+		(useBackendGet as jest.Mock).mockReturnValue({
+			data: {
+				isError: false,
+				message: "get fit score successful",
+				fitScore: null,
+				matchedSkills: [],
+				improvementSuggestions: [],
+			},
+			error: null,
+			isLoading: false,
+		});
+		render(<Dashboard />);
+		const nullStateMessage = screen.queryByText(/No fit score available/i);
+		expect(nullStateMessage).toBeInTheDocument();
 	});
 });
