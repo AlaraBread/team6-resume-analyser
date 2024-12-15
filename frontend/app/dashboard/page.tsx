@@ -9,6 +9,8 @@ import { useBackendGet } from "util/fetching";
 
 import { useProtectRoute } from "util/fetching";
 export interface MockData {
+	isError: boolean;
+	message: string;
 	fitScore: number;
 	matchedSkills: string[];
 	improvementSuggestions: {
@@ -16,7 +18,8 @@ export interface MockData {
 		text: string;
 	}[];
 }
-
+// mock data for testing
+/*
 const mockData: MockData = {
 	isError: false,
 	message: "get fit score successful",
@@ -36,11 +39,11 @@ const mockData: MockData = {
 		{ category: "skills", text: "Add personal project(s)." },
 	],
 };
-
 const mockError: MockData = {
 	isError: true,
 	message: "failed to get fit score",
 };
+*/
 
 export default function Dashboard() {
 	useProtectRoute();
@@ -62,11 +65,15 @@ export default function Dashboard() {
 	} else {
 		return (
 			<div className={styles.dashboardContainer}>
-				<h1 className={styles.dashboardTitle}>Resume Analysis Dashboard</h1>
+				<h1 className={styles.dashboardTitle}>
+					Resume Analysis Dashboard
+				</h1>
 				<br></br>
 				<FitScoreChart score={response.fitScore} />
 				<SkillsMatched skills={response.matchedSkills} />
-				<ImprovementSuggestions suggestions={response.improvementSuggestions} />
+				<ImprovementSuggestions
+					suggestions={response.improvementSuggestions}
+				/>
 			</div>
 		);
 	}
