@@ -4,7 +4,10 @@ import { Router } from "@oak/oak";
 import analyze, { analyzeHandler } from "./analyze.ts";
 import { createBody } from "../../util/util.test.ts";
 import { restore } from "@std/testing/mock";
-import { AnalyzeResponse, ErrorResponse } from "../../interfaces/analyze.ts";
+import {
+	AnalyzeResponse,
+	ErrorResponse,
+} from "../../interfaces/openai_interface.ts";
 import { SessionData } from "../../in_memory/in_memory.ts";
 
 Deno.test("POST /api/analyze - Valid Input", async () => {

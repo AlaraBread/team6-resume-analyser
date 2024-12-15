@@ -1,46 +1,56 @@
 import { Context, Router } from "@oak/oak";
-import { analyzeTextHelper } from "../huggingface/huggingface.ts";
-import { AnalyzeResponse, ErrorResponse } from "../../interfaces/analyze.ts";
+import { analyzeText } from "../openai/openai.ts";
 import { SessionData } from "../../in_memory/in_memory.ts";
 
 export default function (router: Router) {
-	router.post(
-		"/api/analyze",
-		analyzeHandler.bind(undefined, analyzeTextHelper),
-	);
+	router.post("/api/analyze", analyzeHandler);
 }
 
-export async function analyzeHandler(
-	analyzeText: typeof analyzeTextHelper,
-	ctx: Context,
-) {
+export async function analyzeHandler(ctx: Context) {
+	// Retrieve session data
 	const sessionData = ctx.state.sessionData as SessionData | null;
-	// Validate input
-	if (
-		!sessionData || !sessionData.jobDescription || !sessionData.resumeText
-	) {
+
+	// Validate session data
+	if (!sessionData || !sessionData.resumeText || !sessionData.jobDescription) {
 		ctx.response.status = 400;
-		ctx.response.body = <ErrorResponse> {
+		ctx.response.body = {
 			isError: true,
 			message: "You must upload a resume and job description.",
 		};
 		return;
 	}
 
-	// Call analyzeText
-	const result = await analyzeText(
-		sessionData.resumeText,
-		sessionData.jobDescription,
-	);
+	try {
+		// Analyze the resume
+		const resumeAnalysis = await analyzeText(sessionData.resumeText, "resume");
 
-	// Respond with result
-	ctx.response.status = 200;
-	ctx.response.body = <AnalyzeResponse> {
-		isError: false,
-		message: "Analysis successful.",
-		data: {
-			fitScore: result.fitScore,
-			feedback: result.feedback,
-		},
-	};
+		// Analyze the job description
+		const jobDescriptionAnalysis = await analyzeText(
+			sessionData.jobDescription,
+			"jobDescription",
+		);
+
+		// Combine results
+		const analysisResult = {
+			resumeAnalysis,
+			jobDescriptionAnalysis,
+		};
+
+		// Return success response
+		ctx.response.status = 200;
+		ctx.response.body = {
+			isError: false,
+			message: "Analysis successful.",
+			data: analysisResult,
+		};
+	} catch (error) {
+		console.error("Error during analysis:", error);
+
+		// Return error response
+		ctx.response.status = 500;
+		ctx.response.body = {
+			isError: true,
+			message: "Failed to analyze the text. Please try again later.",
+		};
+	}
 }
