@@ -2,28 +2,13 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Dashboard from "./page";
 import { MockData } from "./page";
 import FitScoreChart from "./fit_score_chart";
-import { isLoggedIn, useBackendGet } from "util/fetching";
+import { useBackendGet } from "util/fetching";
 import * as SWR from "swr";
 
 jest.mock("../../util/fetching", () => ({
 	useBackendGet: jest.fn(),
 	isLoggedIn: jest.fn(),
 }));
-
-const useRouterMock = jest.fn(() => {
-	return {
-		push: (_route: string) => {},
-	};
-});
-
-jest.mock("next/navigation", () => {
-	const originalModule: object = jest.requireActual("next/navigation");
-	return {
-		__esModule: true,
-		...originalModule,
-		useRouter: () => useRouterMock(),
-	};
-});
 
 const useRouterMock = jest.fn(() => {
 	return {
@@ -67,11 +52,14 @@ describe("Dashboard Component", () => {
 	const mockError: MockData = {
 		isError: true,
 		message: "failed to get fit score",
+		//TODO: do we want to assign these garbage values, make them optional, or get rid of isError?
+		fitScore: 0,
+		matchedSkills: [],
+		improvementSuggestions: [],
 	};
 
 	beforeEach(() => {
-		//jest.clearAllMocks();
-		(isLoggedIn as jest.Mock).mockReturnValue(true);
+		jest.clearAllMocks();
 		(useBackendGet as jest.Mock).mockReturnValue({
 			data: mockData,
 			error: null,
