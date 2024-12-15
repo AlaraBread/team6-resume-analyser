@@ -62,25 +62,11 @@ const mockEmpty: MockData = {
 */
 export default function Dashboard() {
 	useProtectRoute();
+	//if you wanna use the mock data just swap out useBackendGet().data for the mock data
 	const response = useBackendGet("api/fit-score").data;
 
-	const [fileFormat, setFileFormat] = useState("PDF"); // Default format is PDF
-	const handleDownload = () => {
-		if (fileFormat === "PDF") {
-			generatePDF(
-				response.fitScore,
-				response.matchedSkills,
-				response.improvementSuggestions,
-			);
-		} else if (fileFormat === "Word") {
-			generateWord(
-				response.fitScore,
-				response.matchedSkills,
-				response.improvementSuggestions,
-			);
-		}
-	};
-if (response == null) {
+	if (response == null) {
+		// response is null, display error page
 		return (
 			<div className={styles.dashboardContainer}>
 				<h1>Error retrieving results</h1>
@@ -88,6 +74,7 @@ if (response == null) {
 			</div>
 		);
 	} else if (response.isError) {
+		// isError is true, display error page
 		return (
 			<div className={styles.dashboardContainer}>
 				<h1>Error retrieving results</h1>
@@ -95,53 +82,65 @@ if (response == null) {
 			</div>
 		);
 	} else {
+		// no errors, display dashboard
+		const [fileFormat, setFileFormat] = useState("PDF"); // Default format is PDF
+		const handleDownload = () => {
+			if (fileFormat === "PDF") {
+				generatePDF(
+					response.fitScore,
+					response.matchedSkills,
+					response.improvementSuggestions,
+				);
+			} else if (fileFormat === "Word") {
+				generateWord(
+					response.fitScore,
+					response.matchedSkills,
+					response.improvementSuggestions,
+				);
+			}
+		};
 		return (
-		<>
-			<div className={styles.dashboardContainer}>
-				<h1 className={styles.dashboardTitle}>
-					Resume Analysis Dashboard
-				</h1>
-				<br></br>
-				<FitScoreChart score={response.fitScore} />
-				<SkillsMatched skills={response.matchedSkills} />
-				<ImprovementSuggestions
-					suggestions={response.improvementSuggestions}
-				/>
-			</div>
+			<>
+				<div className={styles.dashboardContainer}>
+					<h1 className={styles.dashboardTitle}>
+						Resume Analysis Dashboard
+					</h1>
+					<br></br>
+					<FitScoreChart score={response.fitScore} />
+					<SkillsMatched skills={response.matchedSkills} />
+					<ImprovementSuggestions
+						suggestions={response.improvementSuggestions}
+					/>
+				</div>
+
+				{/* Button Container for Download Report */}
+				<div className={styles.buttonContainer}>
+					{/* Select Button for File Format */}
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={handleDownload}
+					>
+						Download Report
+					</Button>
+					<FormControl>
+						<InputLabel id="file-format-select-label">
+							Format
+						</InputLabel>
+						<Select
+							labelId="file-format-select-label"
+							value={fileFormat}
+							label="Format"
+							onChange={(event) =>
+								setFileFormat(event.target.value)
+							}
+						>
+							<MenuItem value="PDF">PDF</MenuItem>
+							<MenuItem value="Word">Word</MenuItem>
+						</Select>
+					</FormControl>
+				</div>
+			</>
 		);
 	}
-				<FitScoreChart score={response.fitScore} />
-				<SkillsMatched skills={response.matchedSkills} />
-				<ImprovementSuggestions
-					suggestions={response.improvementSuggestions}
-				/>
-			</div>
-
-			{/* Button Container for Download Report */}
-			<div className={styles.buttonContainer}>
-				{/* Select Button for File Format */}
-				<Button
-					variant="contained"
-					color="primary"
-					onClick={handleDownload}
-				>
-					Download Report
-				</Button>
-				<FormControl>
-					<InputLabel id="file-format-select-label">
-						Format
-					</InputLabel>
-					<Select
-						labelId="file-format-select-label"
-						value={fileFormat}
-						label="Format"
-						onChange={(event) => setFileFormat(event.target.value)}
-					>
-						<MenuItem value="PDF">PDF</MenuItem>
-						<MenuItem value="Word">Word</MenuItem>
-					</Select>
-				</FormControl>
-			</div>
-		</>
-	);
 }
