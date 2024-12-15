@@ -1,17 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useProtectRoute } from "util/fetching";
 import FrontendForm from "./frontend_form";
 import { isLoggedIn } from "util/fetching";
 import { useEffect } from "react";
 
 export default function FormPage() {
-	const router = useRouter();
-	useEffect(() => {
-		if (!isLoggedIn()) {
-			router.push("/");
-		}
-	});
+	useProtectRoute();
 	return (
 		<>
 			<FrontendForm />

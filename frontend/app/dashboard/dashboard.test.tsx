@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import Dashboard from "./page";
 import { MockData } from "./page";
 import FitScoreChart from "./fit_score_chart";
@@ -9,6 +9,21 @@ jest.mock("../../util/fetching", () => ({
 	useBackendGet: jest.fn(),
 	isLoggedIn: jest.fn(),
 }));
+
+const useRouterMock = jest.fn(() => {
+	return {
+		push: (_route: string) => {},
+	};
+});
+
+jest.mock("next/navigation", () => {
+	const originalModule: object = jest.requireActual("next/navigation");
+	return {
+		__esModule: true,
+		...originalModule,
+		useRouter: () => useRouterMock(),
+	};
+});
 
 const useRouterMock = jest.fn(() => {
 	return {
@@ -41,9 +56,12 @@ describe("Dashboard Component", () => {
 			"C#",
 		],
 		improvementSuggestions: [
-			"Add personal characteristics.",
-			"Include measurable achievements.",
-			"Add personal project(s)",
+			{ category: "skills", text: "Add personal characteristics." },
+			{
+				category: "experience",
+				text: "Include measurable achievements.",
+			},
+			{ category: "skills", text: "Add personal project(s)." },
 		],
 	};
 	const mockError: MockData = {
@@ -93,8 +111,8 @@ describe("Dashboard Component", () => {
 		// Does the suggestions appear correctly?
 		//useBackendGetMock.mockResolvedValueOnce({ mockData });
 		render(<Dashboard />);
-		mockData.improvementSuggestions?.forEach((suggestion) => {
-			expect(screen.getByText(suggestion)).toBeInTheDocument();
+		mockData.improvementSuggestions.forEach((suggestion) => {
+			expect(screen.getByText(suggestion.text)).toBeInTheDocument();
 		});
 	});
 
@@ -122,9 +140,12 @@ describe("Dashboard Component", () => {
 			"PL/SQL",
 		];
 		const updatedSuggestions = [
-			"Learn deep learning techniques.",
-			"Contribute to open-source projects.",
-			"Improve algorithm design skills.",
+			{ category: "experience", text: "Learn deep learning techniques." },
+			{ category: "skills", text: "Contribute to open-source projects." },
+			{
+				category: "experience",
+				text: "Improve algorithm design skills.",
+			},
 		];
 
 		// New mock Dashboard component for testing
@@ -141,7 +162,7 @@ describe("Dashboard Component", () => {
 				<div>
 					{/* Render updated suggestions */}
 					{updatedSuggestions.map((suggestion) => (
-						<p key={suggestion}>{suggestion}</p>
+						<p key={suggestion.text}>{suggestion.text}</p>
 					))}
 				</div>
 			</div>
@@ -162,12 +183,73 @@ describe("Dashboard Component", () => {
 
 		// Check if updated suggestions are rendered
 		updatedSuggestions.forEach((suggestion) => {
-			expect(screen.getByText(suggestion)).toBeInTheDocument();
+			expect(screen.getByText(suggestion.text)).toBeInTheDocument();
 		});
 
 		// Check if old suggestions are not rendered
-		mockData.improvementSuggestions?.forEach((suggestion) => {
-			expect(screen.queryByText(suggestion)).toBeNull();
+		mockData.improvementSuggestions.forEach((suggestion) => {
+			expect(screen.queryByText(suggestion.text)).toBeNull();
+		});
+	});
+
+	it("should only display 'skills' feedback when checkbox is selected", () => {
+		render(<Dashboard />);
+
+		const skillsCheckbox = screen.getByLabelText(/skills/i);
+		const experienceCheckbox = screen.getByLabelText(/experience/i);
+
+		expect(skillsCheckbox).toBeInTheDocument();
+		expect(experienceCheckbox).toBeInTheDocument();
+
+		// Uncheck "experience" checkbox
+		fireEvent.click(experienceCheckbox);
+
+		// Checks if "skills" feedback are only displayed
+		const skillsFeedback = mockData.improvementSuggestions.filter(
+			(suggestion) => suggestion.category === "skills",
+		);
+
+		skillsFeedback.forEach((suggestion) => {
+			expect(screen.getByText(suggestion.text)).toBeInTheDocument();
+		});
+
+		// Checks if "experience" feedback are not displayed
+		const experienceFeedback = mockData.improvementSuggestions.filter(
+			(suggestion) => suggestion.category === "experience",
+		);
+
+		experienceFeedback.forEach((suggestion) => {
+			expect(screen.queryByText(suggestion.text)).toBeNull();
+		});
+	});
+
+	it("should only display 'experience' feedback when checkbox is selected", () => {
+		render(<Dashboard />);
+
+		const skillsCheckbox = screen.getByLabelText(/skills/i);
+		const experienceCheckbox = screen.getByLabelText(/experience/i);
+		expect(skillsCheckbox).toBeInTheDocument();
+		expect(experienceCheckbox).toBeInTheDocument();
+
+		// Uncheck "skills" checkbox
+		fireEvent.click(skillsCheckbox);
+
+		// Checks if "experience" feedback are only displayed
+		const experienceFeedback = mockData.improvementSuggestions.filter(
+			(suggestion) => suggestion.category === "experience",
+		);
+
+		experienceFeedback.forEach((suggestion) => {
+			expect(screen.getByText(suggestion.text)).toBeInTheDocument();
+		});
+
+		// Checks if "skills" feedback are not displayed
+		const skillsFeedback = mockData.improvementSuggestions.filter(
+			(suggestion) => suggestion.category === "skills",
+		);
+
+		skillsFeedback.forEach((suggestion) => {
+			expect(screen.queryByText(suggestion.text)).toBeNull();
 		});
 	});
 	it("should display an error with the corrosponding message if the isError is true", () => {

@@ -1,6 +1,6 @@
 {
 	"tasks": {
-		"dev": "deno run --allow-net --watch main.ts",
+		"dev": "deno run --allow-net --allow-env --watch main.ts",
 		"check": "deno fmt --check && deno lint && deno test"
 	},
 	"imports": {

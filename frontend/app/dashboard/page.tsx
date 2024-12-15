@@ -4,15 +4,17 @@ import FitScoreChart from "./fit_score_chart";
 import SkillsMatched from "./skills_matched";
 import ImprovementSuggestions from "./improvement_suggestions";
 import styles from "./dashboard.module.css";
-import { useRouter } from "next/navigation";
-import { isLoggedIn, useBackendGet } from "util/fetching";
-import { useEffect } from "react";
+
+import { useBackendGet } from "util/fetching";
+
+import { useProtectRoute } from "util/fetching";
 export interface MockData {
-	isError: boolean;
-	message: string;
-	fitScore?: number;
-	matchedSkills?: string[];
-	improvementSuggestions?: string[];
+	fitScore: number;
+	matchedSkills: string[];
+	improvementSuggestions: {
+		category: string;
+		text: string;
+	}[];
 }
 
 const mockData: MockData = {
@@ -29,9 +31,9 @@ const mockData: MockData = {
 		"C#",
 	],
 	improvementSuggestions: [
-		"Add personal characteristics.",
-		"Include measurable achievements.",
-		"Add personal project(s)",
+		{ category: "skills", text: "Add personal characteristics." },
+		{ category: "experience", text: "Include measurable achievements." },
+		{ category: "skills", text: "Add personal project(s)." },
 	],
 };
 
@@ -41,12 +43,7 @@ const mockError: MockData = {
 };
 
 export default function Dashboard() {
-	const router = useRouter();
-	useEffect(() => {
-		if (!isLoggedIn()) {
-			router.push("/");
-		}
-	});
+	useProtectRoute();
 	const response = useBackendGet("api/fit-score").data;
 	if (response == null) {
 		return (
@@ -63,19 +60,13 @@ export default function Dashboard() {
 			</div>
 		);
 	} else {
-		// handle null values
-		const score = response.fitScore ?? 0;
-		const skills = response.matchedSkills ?? [];
-		const suggestions = response.improvementSuggestions ?? [];
 		return (
 			<div className={styles.dashboardContainer}>
-				<h1 className={styles.dashboardTitle}>
-					Resume Analysis Dashboard
-				</h1>
+				<h1 className={styles.dashboardTitle}>Resume Analysis Dashboard</h1>
 				<br></br>
-				<FitScoreChart score={score} />
-				<SkillsMatched skills={skills} />
-				<ImprovementSuggestions suggestions={suggestions} />
+				<FitScoreChart score={response.fitScore} />
+				<SkillsMatched skills={response.matchedSkills} />
+				<ImprovementSuggestions suggestions={response.improvementSuggestions} />
 			</div>
 		);
 	}
