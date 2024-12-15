@@ -2,6 +2,13 @@ import { render, screen } from "@testing-library/react";
 import Dashboard from "./page";
 import { MockData } from "./page";
 import FitScoreChart from "./fit_score_chart";
+import { isLoggedIn, useBackendGet } from "util/fetching";
+import * as SWR from "swr";
+
+jest.mock("../../util/fetching", () => ({
+	useBackendGet: jest.fn(),
+	isLoggedIn: jest.fn(),
+}));
 
 const useRouterMock = jest.fn(() => {
 	return {
@@ -21,6 +28,8 @@ jest.mock("next/navigation", () => {
 describe("Dashboard Component", () => {
 	// Mock data for testing
 	const mockData: MockData = {
+		isError: false,
+		message: "get fit score successful",
 		fitScore: 85,
 		matchedSkills: [
 			"JavaScript",
@@ -37,6 +46,20 @@ describe("Dashboard Component", () => {
 			"Add personal project(s)",
 		],
 	};
+	const mockError: MockData = {
+		isError: true,
+		message: "failed to get fit score",
+	};
+
+	beforeEach(() => {
+		//jest.clearAllMocks();
+		(isLoggedIn as jest.Mock).mockReturnValue(true);
+		(useBackendGet as jest.Mock).mockReturnValue({
+			data: mockData,
+			error: null,
+			isLoading: false,
+		});
+	});
 
 	it("should render the dashboard title", () => {
 		// Does "Resume Analysis Dashboard" appear?
@@ -59,16 +82,18 @@ describe("Dashboard Component", () => {
 
 	it("should render the SkillsMatched component with all skills", () => {
 		// Does the skills appear correctly?
+		//useBackendGetMock.mockResolvedValueOnce({ mockData });
 		render(<Dashboard />);
-		mockData.matchedSkills.forEach((skill) => {
+		mockData.matchedSkills?.forEach((skill) => {
 			expect(screen.getByText(skill)).toBeInTheDocument();
 		});
 	});
 
 	it("should render the ImprovementSuggestions component with all suggestions", () => {
 		// Does the suggestions appear correctly?
+		//useBackendGetMock.mockResolvedValueOnce({ mockData });
 		render(<Dashboard />);
-		mockData.improvementSuggestions.forEach((suggestion) => {
+		mockData.improvementSuggestions?.forEach((suggestion) => {
 			expect(screen.getByText(suggestion)).toBeInTheDocument();
 		});
 	});
@@ -131,7 +156,7 @@ describe("Dashboard Component", () => {
 		});
 
 		// Check if old skills are not rendered
-		mockData.matchedSkills.forEach((skill) => {
+		mockData.matchedSkills?.forEach((skill) => {
 			expect(screen.queryByText(skill)).toBeNull();
 		});
 
@@ -141,8 +166,30 @@ describe("Dashboard Component", () => {
 		});
 
 		// Check if old suggestions are not rendered
-		mockData.improvementSuggestions.forEach((suggestion) => {
+		mockData.improvementSuggestions?.forEach((suggestion) => {
 			expect(screen.queryByText(suggestion)).toBeNull();
 		});
+	});
+	it("should display an error with the corrosponding message if the isError is true", () => {
+		(useBackendGet as jest.Mock).mockReturnValue({
+			data: mockError,
+			error: null,
+			isLoading: false,
+		});
+		render(<Dashboard />);
+		const errorElement = screen.getByText(/Error retrieving results/i);
+		expect(errorElement).toBeInTheDocument();
+		const messageElement = screen.getByText(RegExp(mockError.message));
+		expect(messageElement).toBeInTheDocument();
+	});
+	it("should display an error if the response is null", () => {
+		(useBackendGet as jest.Mock).mockReturnValue({
+			data: null,
+			error: null,
+			isLoading: false,
+		});
+		render(<Dashboard />);
+		const titleElement = screen.getByText(/Error retrieving results/i);
+		expect(titleElement).toBeInTheDocument();
 	});
 });
