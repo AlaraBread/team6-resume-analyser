@@ -15,11 +15,10 @@
 		"@emotion/react": "^11.13.3",
 		"@emotion/styled": "^11.13.0",
 		"@mui/material": "^6.1.7",
+		"ahooks": "^3.8.4",
 		"next": "latest",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"recoil": "^0.7.7",
-		"recoil-nexus": "^0.5.1",
 		"server-only": "^0.0.1",
 		"swr": "^2.2.5"
 	},

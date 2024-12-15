@@ -1,17 +1,16 @@
 "use client";
 
+import { useLocalStorageState } from "ahooks";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { atom, useRecoilState } from "recoil";
-import { getRecoil, setRecoil } from "recoil-nexus";
 import useSWR, { SWRResponse } from "swr";
 
 export const jsonFetcher: (
 	...args: Parameters<typeof fetch>
 ) => Promise<object> = (url) =>
-	fetch(url, { headers: { token: getRecoil(token) ?? "" } }).then((res) =>
-		res.json(),
-	);
+	fetch(url, {
+		headers: { token: getToken() },
+	}).then((res) => res.json());
 
 function getEndpointPath(endpoint: string) {
 	let server = process.env.NEXT_PUBLIC_BACKEND ?? "";
@@ -108,10 +107,6 @@ type jsonPostRequests = {
 		: K;
 }[keyof postRequests];
 
-export let token = atom({
-	key: "token",
-	default: globalThis.localStorage?.getItem("token"),
-});
 export async function backendPost<T extends jsonPostRequests>(
 	endpoint: T,
 	data: postRequests[T]["request"],
@@ -119,16 +114,14 @@ export async function backendPost<T extends jsonPostRequests>(
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		headers: {
-			token: getRecoil(token) ?? "",
+			token: getToken(),
 		},
 		body: JSON.stringify(data),
 	})
 		.then((response) => response.json())
 		.then((response) => {
 			if (endpoint == "api/login") {
-				if (response.token) {
-					setRecoil(token, response.token);
-				}
+				setToken(response.token);
 			}
 			return response;
 		}) as Promise<postRequests[T]["response"]>;
@@ -141,7 +134,7 @@ export async function backendFormPost<T extends formPostRequests>(
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		headers: {
-			token: getRecoil(token) ?? "",
+			token: getToken(),
 		},
 		body: data,
 	}).then((response) => response.json()) as Promise<
@@ -149,20 +142,21 @@ export async function backendFormPost<T extends formPostRequests>(
 	>;
 }
 
-export function Fetching() {
-	const [t] = useRecoilState(token);
-	useEffect(() => {
-		globalThis.localStorage?.setItem("token", t ?? "");
-	}, [t]);
-	return <></>;
+function getToken(): string {
+	return JSON.parse(localStorage?.getItem("token") ?? '""');
+}
+
+function setToken(token: string | undefined) {
+	localStorage?.setItem("token", JSON.stringify(token ?? '""'));
 }
 
 export function useProtectRoute() {
 	const router = useRouter();
-	const [tok] = useRecoilState(token);
+	const [token] = useLocalStorageState<string>("token");
+
 	useEffect(() => {
-		if (!tok) {
+		if (!token) {
 			router.push("/");
 		}
-	}, [tok]);
+	}, [token]);
 }
