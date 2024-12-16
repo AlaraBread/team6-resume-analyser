@@ -105,6 +105,40 @@ export type postRequests = {
 			token?: string;
 		};
 	};
+	"api/analyze": {
+		request: {};
+		response: {
+			isError: false;
+			message: "Analysis successful.";
+			data: {
+				resumeAnalysis: string[];
+				jobDescriptionAnalysis: {
+					mustHave: string[];
+					niceToHave: string[];
+				};
+				feedback: {
+					feedback: string;
+					category: string;
+				}[];
+			};
+		};
+	};
+	"api/fit-score": {
+		request: {
+			resumeKeywords: string[];
+			jobDescriptionKeywords: {
+				niceToHave: string[];
+				mustHave: string[];
+			};
+		};
+		response: {
+			isError: boolean;
+			message: string;
+			fitScore: number;
+			feedback: string[];
+			matchedSkills: string[];
+		};
+	};
 };
 
 type formPostRequests = {
