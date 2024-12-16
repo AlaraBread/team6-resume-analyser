@@ -6,7 +6,7 @@
 	"scripts": {
 		"dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
 		"dev:frontend": "cd frontend && npm run dev",
-		"dev:backend": "cd backend && deno run --allow-net --allow-env --watch main.ts",
+		"dev:backend": "cd backend && deno run --allow-net --allow-read --allow-env main.ts",
 		"format": "prettier -uw \"**/*\""
 	},
 	"author": "",
@@ -14,5 +14,6 @@
 	"devDependencies": {
 		"concurrently": "^9.1.0",
 		"prettier": "^3.3.3"
-	}
+	},
+	"dependencies": {}
 }

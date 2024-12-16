@@ -1,4 +1,4 @@
-interface SessionData {
+export interface SessionData {
 	resumeText: string;
 	jobDescription: string;
 }

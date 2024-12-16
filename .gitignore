@@ -6,3 +6,4 @@
 
 # Environment variables
 .env
+local.env

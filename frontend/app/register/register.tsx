@@ -73,6 +73,7 @@ export function Register() {
 				}
 			})
 			.catch((reason) => {
+				console.error(reason);
 				setPostData("Error: " + (reason?.message ?? reason));
 				setLoading(false);
 			});

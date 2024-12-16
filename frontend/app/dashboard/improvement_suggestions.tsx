@@ -13,12 +13,13 @@ import {
 } from "@mui/material";
 import styles from "./dashboard.module.css";
 interface ImprovementSuggestionsProps {
-	suggestions: { category: string; text: string }[];
+	suggestions: { category: string; feedback: string }[];
 }
 
 export default function ImprovementSuggestions({
-	suggestions,
+	suggestions = [],
 }: ImprovementSuggestionsProps) {
+	const isEmpty = suggestions.length == 0;
 	const allCategories = new Set(suggestions.map((s) => s.category));
 	const [selectedCategories, setSelectedCategories] =
 		useState<Set<string>>(allCategories);
@@ -51,6 +52,7 @@ export default function ImprovementSuggestions({
 					className: styles.cardHeaderTitleImprovement,
 				}}
 			/>
+			{isEmpty && <p>No suggestions available</p>}
 
 			<CardContent>
 				<Box sx={{ display: "flex", flexDirection: "column", ml: 3 }}>
@@ -97,11 +99,10 @@ export default function ImprovementSuggestions({
 						))}
 					</Box>
 				</Box>
-
 				<List className={styles.listContainerImprovement}>
 					{suggestionsFiltered.map((suggestion, index) => (
 						<ListItem key={index} className={styles.listItem}>
-							<ListItemText primary={suggestion.text} />
+							<ListItemText primary={suggestion.feedback} />
 						</ListItem>
 					))}
 				</List>

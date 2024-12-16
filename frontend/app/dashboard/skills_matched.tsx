@@ -11,7 +11,7 @@ interface SkillsMatchedProps {
 	skills: string[];
 }
 
-export default function SkillsMatched({ skills }: SkillsMatchedProps) {
+export default function SkillsMatched({ skills = [] }: SkillsMatchedProps) {
 	return (
 		<Card className={styles.cardContainerSkillsMatch}>
 			<CardHeader

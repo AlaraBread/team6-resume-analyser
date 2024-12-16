@@ -5,6 +5,11 @@ type FitScoreChartProps = {
 };
 
 export default function FitScoreChart({ score }: FitScoreChartProps) {
+	// handle null score
+	const noScore = score == null;
+	if (noScore) {
+		score = 0;
+	}
 	// Calculates to get star rating / 5 stars
 	const ratingVal = (score / 100) * 5;
 	// Rounds score to 2 decimal places
@@ -24,6 +29,7 @@ export default function FitScoreChart({ score }: FitScoreChartProps) {
 							precision={0.5}
 							size="large"
 						/>
+						{noScore && <p>No fit score available</p>}
 						<Typography variant="h6" className={styles.ratingScore}>
 							{roundedScore} / 5
 						</Typography>
