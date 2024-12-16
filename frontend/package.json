@@ -16,7 +16,6 @@
 		"@emotion/styled": "^11.13.0",
 		"@mui/material": "^6.1.7",
 		"ahooks": "^3.8.4",
-		"canvas": "^2.11.2",
 		"docx": "^9.1.0",
 		"file-saver": "^2.0.5",
 		"jspdf": "^2.5.2",
