@@ -4,7 +4,12 @@ import FitScoreChart from "./fit_score_chart";
 import SkillsMatched from "./skills_matched";
 import ImprovementSuggestions from "./improvement_suggestions";
 import styles from "./dashboard.module.css";
-import { getRequests, postRequests, backendPost } from "util/fetching";
+import {
+	getRequests,
+	postRequests,
+	backendPost,
+	getToken,
+} from "util/fetching";
 import { useState, useEffect } from "react";
 import React from "react";
 import Button from "@mui/material/Button";
@@ -14,9 +19,11 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { generatePDF, generateWord } from "./report_generator";
 import { useProtectRoute } from "util/fetching";
+import { useRouter } from "next/navigation";
 export type DashboardData = getRequests["api/fit-score"];
 
 export default function Dashboard() {
+	const router = useRouter();
 	useProtectRoute();
 
 	const [analyzeData, setAnalyzeData] = useState<
@@ -26,7 +33,7 @@ export default function Dashboard() {
 		postRequests["api/fit-score"]["response"] | null
 	>(null);
 	//const [error, setError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		backendPost("api/analyze", {})
@@ -45,11 +52,17 @@ export default function Dashboard() {
 					})
 					.catch(() => {
 						setFitData(null);
+						if (!getToken()) {
+							router.push("/");
+						}
 					});
 			})
 			.catch(() => {
 				setAnalyzeData(null);
 				setFitData(null);
+				if (!getToken()) {
+					router.push("/");
+				}
 			});
 	}, []);
 

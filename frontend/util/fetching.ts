@@ -145,8 +145,7 @@ export type postRequests = {
 };
 
 type formPostRequests = {
-	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData
-		? K
+	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData ? K
 		: never;
 }[keyof postRequests];
 
@@ -167,6 +166,13 @@ export async function backendPost<T extends jsonPostRequests>(
 		},
 		body: JSON.stringify(data),
 	})
+		.then((response) => {
+			if (response.status == 401) {
+				setToken(undefined);
+				return Promise.reject("not authenticated");
+			}
+			return response;
+		})
 		.then((response) => response.json())
 		.then((response) => {
 			if (endpoint == "api/login") {
@@ -191,7 +197,7 @@ export async function backendFormPost<T extends formPostRequests>(
 	>;
 }
 
-function getToken(): string {
+export function getToken(): string {
 	return JSON.parse(localStorage?.getItem("token") ?? '""');
 }
 
