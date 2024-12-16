@@ -79,7 +79,10 @@ export function getMatchedSkills(
 export function generateFeedback(
 	resumeKeywords: string[],
 	jobDescriptionKeywords: { niceToHave: string[]; mustHave: string[] },
-) {
+): {
+	feedback: string;
+	category: string;
+}[] {
 	const resume = new Set(resumeKeywords);
 	const mustHave = new Set(jobDescriptionKeywords.mustHave);
 	const niceToHave = new Set(jobDescriptionKeywords.niceToHave);
@@ -108,8 +111,8 @@ export function generateFeedback(
 			} else if (r < 0.75) {
 				return `Knowing ${keyword} would make you stand out`;
 			} else {
-				return `Include ${keyword} in your resume`;
+				return `Including ${keyword} in your resume would help you`;
 			}
 		}),
-	);
+	).map((feedback) => ({ feedback, category: "experience" }));
 }

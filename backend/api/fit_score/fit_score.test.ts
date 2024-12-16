@@ -18,44 +18,45 @@ Deno.test("/api/fit-score - with keywords", async () => {
 	const response = JSON.parse(ctx.response.body as string);
 	assertEquals(response.isError, false);
 	assertEquals(response.message, "success");
+	type FeedbackType = { feedback: string; category: string };
 	assert(
-		response.feedback.find((feedback: string) =>
-			feedback.includes("missing1")
+		response.feedback.find((feedback: FeedbackType) =>
+			feedback.feedback.includes("missing1")
 		) != undefined,
 	);
 	assert(
-		response.feedback.find((feedback: string) =>
-			feedback.includes("missing2")
+		response.feedback.find((feedback: FeedbackType) =>
+			feedback.feedback.includes("missing2")
 		) != undefined,
 	);
 	assert(
-		response.feedback.find((feedback: string) =>
-			feedback.includes("missing3")
+		response.feedback.find((feedback: FeedbackType) =>
+			feedback.feedback.includes("missing3")
 		) != undefined,
 	);
 	assert(
-		response.feedback.find((feedback: string) =>
-			feedback.includes("missing4")
+		response.feedback.find((feedback: FeedbackType) =>
+			feedback.feedback.includes("missing4")
 		) != undefined,
 	);
 	assert(
-		response.feedback.find((feedback: string) =>
-			feedback.includes("notmissing1")
+		response.feedback.find((feedback: FeedbackType) =>
+			feedback.feedback.includes("notmissing1")
 		) == undefined,
 	);
 	assert(
-		response.feedback.find((feedback: string) =>
-			feedback.includes("notmissing2")
+		response.feedback.find((feedback: FeedbackType) =>
+			feedback.feedback.includes("notmissing2")
 		) == undefined,
 	);
 	assert(
-		response.feedback.find((feedback: string) =>
-			feedback.includes("unused1")
+		response.feedback.find((feedback: FeedbackType) =>
+			feedback.feedback.includes("unused1")
 		) == undefined,
 	);
 	assert(
-		response.feedback.find((feedback: string) =>
-			feedback.includes("unused2")
+		response.feedback.find((feedback: FeedbackType) =>
+			feedback.feedback.includes("unused2")
 		) == undefined,
 	);
 	assertAlmostEquals(response.fitScore, 33.3333333);

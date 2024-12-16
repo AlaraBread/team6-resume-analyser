@@ -239,7 +239,16 @@ Must be logged in.
 	"message": "success",
 	"fitScore": 0.5,
 	"matchedSkills": ["skills", "that", "were", "found", "in", "resume and job description"],
-	"feedback": ["include experience with apple computer", "do a project with steve jobs"],
+	"feedback": [
+		{
+			feedback: "show experience with computer.",
+			category: "skills"
+		},
+		{
+			feedback: "demonstrate that you understand computer.",
+			category: "skills"
+		}
+	],
 }
 ```
 - **Error (`400 Bad Request`):**
