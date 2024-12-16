@@ -21,7 +21,12 @@ export async function analyzeHandler(
 	const sessionData = ctx.state.sessionData as SessionData | null;
 
 	// Validate session data
-	if (!sessionData || !sessionData.resumeText || !sessionData.jobDescription) {
+	if (
+		!sessionData ||
+		sessionData.resumeText == undefined ||
+		sessionData.jobDescription == undefined
+	) {
+		console.log(sessionData);
 		ctx.response.status = 400;
 		ctx.response.body = {
 			isError: true,

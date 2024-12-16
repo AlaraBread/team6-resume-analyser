@@ -67,15 +67,20 @@ export async function analyzeText<Type extends "resume" | "jobDescription">(
 	// Extract and return the assistant's message content
 	const messageContent = result.choices[0]?.message.content;
 	if (!messageContent) {
+		console.log(messageContent);
 		throw new Error(
 			"Unexpected API response format: missing message content.",
 		);
 	}
 
 	if (type == "jobDescription") {
-		const mustHaveStr = /Must-have: ?(?<csv>[^\n;]*)/gi.exec(messageContent)
-			?.groups?.csv;
+		const mustHaveStr =
+			/(?:\*\*)?Must[- ]have[^:]*(?:\*\*)?: ?(?<csv>[^\n;]*)/gi.exec(
+				messageContent,
+			)
+				?.groups?.csv;
 		if (mustHaveStr == undefined) {
+			console.log(messageContent);
 			throw new Error(
 				"Unexpected API response format: missing must-haves.",
 			);
@@ -85,10 +90,12 @@ export async function analyzeText<Type extends "resume" | "jobDescription">(
 			.map((keyword) => keyword.trim())
 			.filter((keyword) => keyword != "");
 
-		const niceToHaveStr = /Nice-to-have: ?(?<csv>[^\n;]*)/gi.exec(
-			messageContent,
-		)?.groups?.csv;
+		const niceToHaveStr =
+			/(?:\*\*)?Nice[- ]to[- ]have[^:]*(?:\*\*)?: ?(?<csv>[^\n;]*)/gi.exec(
+				messageContent,
+			)?.groups?.csv;
 		if (niceToHaveStr == undefined) {
+			console.log(messageContent);
 			throw new Error(
 				"Unexpected API response format: missing must-haves.",
 			);
@@ -152,7 +159,7 @@ ${jobDescription}`,
 			},
 		],
 		temperature: 0.7,
-		max_tokens: 300,
+		max_tokens: 2000,
 	};
 
 	const response = await fetch(OPENAI_API_URL, {
@@ -186,13 +193,15 @@ ${jobDescription}`,
 function parseFeedback(
 	response: OpenAIResponse,
 ): { feedback: string; category: string }[] {
-	const content = response.choices[0]?.message.content;
+	let content = response.choices[0]?.message.content;
 
 	if (!content) {
 		throw new Error(
 			"Unexpected API response format: missing feedback content.",
 		);
 	}
+
+	content = content.replaceAll("```json", "").replaceAll("```", "");
 
 	try {
 		const feedback = JSON.parse(content);
@@ -217,6 +226,7 @@ function parseFeedback(
 		});
 		return feedback;
 	} catch (error) {
+		console.log(content);
 		console.error("Error parsing OpenAI response:", error);
 		throw new Error("Failed to parse feedback from the response.");
 	}

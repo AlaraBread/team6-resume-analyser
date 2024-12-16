@@ -29,19 +29,28 @@ export default function Dashboard() {
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		backendPost("api/analyze", {}).then((analyzeResponse) => {
-			setAnalyzeData(analyzeResponse);
-			setLoading(true);
+		backendPost("api/analyze", {})
+			.then((analyzeResponse) => {
+				setAnalyzeData(analyzeResponse);
+				setLoading(true);
 
-			backendPost("api/fit-score", {
-				resumeKeywords: analyzeResponse?.data.resumeAnalysis,
-				jobDescriptionKeywords:
-					analyzeResponse?.data.jobDescriptionAnalysis,
-			}).then((fitResponse) => {
-				setFitData(fitResponse);
-				setLoading(false);
+				backendPost("api/fit-score", {
+					resumeKeywords: analyzeResponse?.data.resumeAnalysis,
+					jobDescriptionKeywords:
+						analyzeResponse?.data.jobDescriptionAnalysis,
+				})
+					.then((fitResponse) => {
+						setFitData(fitResponse);
+						setLoading(false);
+					})
+					.catch(() => {
+						setFitData(null);
+					});
+			})
+			.catch(() => {
+				setAnalyzeData(null);
+				setFitData(null);
 			});
-		});
 	}, []);
 
 	const [fileFormat, setFileFormat] = useState("PDF"); // Default format is PDF
@@ -76,19 +85,18 @@ export default function Dashboard() {
 				generatePDF(
 					fitData.fitScore,
 					fitData.matchedSkills,
-					fitData.feedback, //.concat(analyzeData.data.feedback),
+					analyzeData.data.feedback.concat(fitData.feedback),
 				);
 			} else if (fileFormat === "Word") {
 				generateWord(
 					fitData.fitScore,
 					fitData.matchedSkills,
-					fitData.feedback, //.concat(analyzeData.data.feedback),
+					analyzeData.data.feedback.concat(fitData.feedback),
 				);
 			}
 		};
 		return (
 			<>
-				const score =
 				<div className={styles.dashboardContainer}>
 					<h1 className={styles.dashboardTitle}>
 						Resume Analysis Dashboard
@@ -97,11 +105,9 @@ export default function Dashboard() {
 					<FitScoreChart score={fitData.fitScore} />
 					<SkillsMatched skills={fitData.matchedSkills} />
 					<ImprovementSuggestions
-						suggestions={
-							fitData.feedback /*.concat(
-							analyzeData.data.feedback,
-						)*/
-						}
+						suggestions={analyzeData.data.feedback.concat(
+							fitData.feedback,
+						)}
 					/>
 				</div>
 				{/* Button Container for Download Report */}
