@@ -19,6 +19,7 @@ interface ImprovementSuggestionsProps {
 export default function ImprovementSuggestions({
 	suggestions = [],
 }: ImprovementSuggestionsProps) {
+	const isEmpty = suggestions.length == 0;
 	const allCategories = new Set(suggestions.map((s) => s.category));
 	const [selectedCategories, setSelectedCategories] =
 		useState<Set<string>>(allCategories);
@@ -51,6 +52,7 @@ export default function ImprovementSuggestions({
 					className: styles.cardHeaderTitleImprovement,
 				}}
 			/>
+			{isEmpty && <p>No suggestions available</p>}
 
 			<CardContent>
 				<Box sx={{ display: "flex", flexDirection: "column", ml: 3 }}>
@@ -97,7 +99,6 @@ export default function ImprovementSuggestions({
 						))}
 					</Box>
 				</Box>
-				{suggestions.length == 0 && <p>No suggestions available</p>}
 				<List className={styles.listContainerImprovement}>
 					{suggestionsFiltered.map((suggestion, index) => (
 						<ListItem key={index} className={styles.listItem}>
