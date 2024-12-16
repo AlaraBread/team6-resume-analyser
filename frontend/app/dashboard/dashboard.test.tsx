@@ -1,12 +1,13 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import Dashboard from "./page";
 import FitScoreChart from "./fit_score_chart";
-import { useBackendGet } from "util/fetching";
+import { useBackendGet, backendPost, postRequests } from "util/fetching";
 
 jest.mock("../../util/fetching", () => ({
 	useBackendGet: jest.fn(),
 	isLoggedIn: jest.fn(),
 	useProtectRoute: jest.fn(),
+	backendPost: jest.fn(),
 }));
 
 const useRouterMock = jest.fn(() => {
@@ -24,53 +25,94 @@ jest.mock("next/navigation", () => {
 	};
 });
 
-describe("Dashboard Component", () => {
-	// Mock data for testing
-	const mockData = {
-		isError: false,
-		message: "get fit score successful",
-		fitScore: 85,
-		matchedSkills: [
-			"JavaScript",
-			"React",
-			"Node.js",
-			"Next.js",
-			"Team Collaboration",
-			"C",
-			"C#",
-		],
-		improvementSuggestions: [
-			{ category: "skills", text: "Add personal characteristics." },
+const mockFitData: postRequests["api/fit-score"]["response"] = {
+	isError: false,
+	message: "get fit score successful",
+	fitScore: 85,
+	matchedSkills: [
+		"JavaScript",
+		"React",
+		"Node.js",
+		"Next.js",
+		"Team Collaboration",
+		"C",
+		"C#",
+	],
+	feedback: [
+		{ category: "skills", feedback: "Add personal characteristics." },
+		{
+			category: "experience",
+			feedback: "Include measurable achievements.",
+		},
+		{ category: "skills", feedback: "Add personal project(s)." },
+	],
+};
+const mockAnalyzeData: postRequests["api/analyze"]["response"] = {
+	isError: false,
+	message: "Analysis successful.",
+	data: {
+		resumeAnalysis: ["a", "b", "c", "d"],
+		jobDescriptionAnalysis: {
+			mustHave: ["b"],
+			niceToHave: ["c"],
+		},
+		feedback: [
+			{
+				category: "skills",
+				feedback: "Add personal characteristics.",
+			},
 			{
 				category: "experience",
-				text: "Include measurable achievements.",
+				feedback: "Include measurable achievements.",
 			},
-			{ category: "skills", text: "Add personal project(s)." },
+			{ category: "skills", feedback: "Add personal project(s)." },
 		],
-	};
-	const mockError = {
-		isError: true,
-		message: "failed to get fit score",
-		//TODO: do we want to assign these garbage values, make them optional, or get rid of isError?
-		fitScore: 0,
-		matchedSkills: [],
-		improvementSuggestions: [],
-	};
+	},
+};
+const mockError = {
+	isError: true,
+	message: "failed to get fit score",
+	//TODO: do we want to assign these garbage values, make them optional, or get rid of isError?
+	fitScore: 0,
+	matchedSkills: [],
+	feedback: [],
+};
 
+describe("Dashboard Component", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: mockData,
+		/*
+		backendPostMock.mockImplementation((endpoint, payload) => {
+			if (endpoint === "api/fit-score") {
+				return Promise.resolve({ response: mockFitData });
+			} else if (endpoint === "api/analyze") {
+				return Promise.resolve({ response: mockAnalyzeData });
+			} else {
+				return Promise.reject({
+					error: "Invalid request",
+				});
+			}
+		});
+		*/
+		(backendPost as jest.Mock).mockResolvedValue({
+			data: mockFitData,
 			error: null,
 			isLoading: false,
-		});
+		}); /*
+		(backendPost as jest.Mock).mockResolvedValueOnce({
+			data: mockAnalyzeData,
+			error: null,
+			isLoading: false,
+		});*/
 	});
 
 	it("should render the dashboard title", () => {
 		// Does "Resume Analysis Dashboard" appear?
-		render(<Dashboard />);
+		await act(()=>{render(<Dashboard />);});
 		const titleElement = screen.getByText(/Resume Analysis Dashboard/i);
 		expect(titleElement).toBeInTheDocument();
+
+		});
 	});
 
 	it("should render the FitScoreChart with the correct score", () => {
@@ -89,17 +131,16 @@ describe("Dashboard Component", () => {
 		// Does the skills appear correctly?
 		//useBackendGetMock.mockResolvedValueOnce({ mockData });
 		render(<Dashboard />);
-		mockData.matchedSkills?.forEach((skill) => {
+		mockF.matchedSkills?.forEach((skill) => {
 			expect(screen.getByText(skill)).toBeInTheDocument();
 		});
 	});
 
-	it("should render the ImprovementSuggestions component with all suggestions", () => {
+	it("should render the feedback component with all suggestions", () => {
 		// Does the suggestions appear correctly?
-		//useBackendGetMock.mockResolvedValueOnce({ mockData });
 		render(<Dashboard />);
-		mockData.improvementSuggestions.forEach((suggestion) => {
-			expect(screen.getByText(suggestion.text)).toBeInTheDocument();
+		mockFitData.feedback.forEach((suggestion) => {
+			expect(screen.getByText(suggestion.feedback)).toBeInTheDocument();
 		});
 	});
 
@@ -164,7 +205,7 @@ describe("Dashboard Component", () => {
 		});
 
 		// Check if old skills are not rendered
-		mockData.matchedSkills?.forEach((skill) => {
+		mockFitData.matchedSkills?.forEach((skill) => {
 			expect(screen.queryByText(skill)).toBeNull();
 		});
 
@@ -174,8 +215,8 @@ describe("Dashboard Component", () => {
 		});
 
 		// Check if old suggestions are not rendered
-		mockData.improvementSuggestions.forEach((suggestion) => {
-			expect(screen.queryByText(suggestion.text)).toBeNull();
+		mockFitData.feedback.forEach((suggestion) => {
+			expect(screen.queryByText(suggestion.feedback)).toBeNull();
 		});
 	});
 
@@ -192,21 +233,21 @@ describe("Dashboard Component", () => {
 		fireEvent.click(experienceCheckbox);
 
 		// Checks if "skills" feedback are only displayed
-		const skillsFeedback = mockData.improvementSuggestions.filter(
+		const skillsFeedback = mockFitData.feedback.filter(
 			(suggestion) => suggestion.category === "skills",
 		);
 
 		skillsFeedback.forEach((suggestion) => {
-			expect(screen.getByText(suggestion.text)).toBeInTheDocument();
+			expect(screen.getByText(suggestion.feedback)).toBeInTheDocument();
 		});
 
 		// Checks if "experience" feedback are not displayed
-		const experienceFeedback = mockData.improvementSuggestions.filter(
+		const experienceFeedback = mockFitData.feedback.filter(
 			(suggestion) => suggestion.category === "experience",
 		);
 
 		experienceFeedback.forEach((suggestion) => {
-			expect(screen.queryByText(suggestion.text)).toBeNull();
+			expect(screen.queryByText(suggestion.feedback)).toBeNull();
 		});
 	});
 
@@ -222,21 +263,21 @@ describe("Dashboard Component", () => {
 		fireEvent.click(skillsCheckbox);
 
 		// Checks if "experience" feedback are only displayed
-		const experienceFeedback = mockData.improvementSuggestions.filter(
+		const experienceFeedback = mockFitData.feedback.filter(
 			(suggestion) => suggestion.category === "experience",
 		);
 
 		experienceFeedback.forEach((suggestion) => {
-			expect(screen.getByText(suggestion.text)).toBeInTheDocument();
+			expect(screen.getByText(suggestion.feedback)).toBeInTheDocument();
 		});
 
 		// Checks if "skills" feedback are not displayed
-		const skillsFeedback = mockData.improvementSuggestions.filter(
+		const skillsFeedback = mockFitData.feedback.filter(
 			(suggestion) => suggestion.category === "skills",
 		);
 
 		skillsFeedback.forEach((suggestion) => {
-			expect(screen.queryByText(suggestion.text)).toBeNull();
+			expect(screen.queryByText(suggestion.feedback)).toBeNull();
 		});
 	});
 	it("should display an error with the corrosponding message if the isError is true", () => {
@@ -270,7 +311,7 @@ describe("Dashboard Component", () => {
 				message: "get fit score successful",
 				fitScore: 0,
 				matchedSkills: [],
-				improvementSuggestions: [],
+				feedback: [],
 			},
 			error: null,
 			isLoading: false,
@@ -284,7 +325,7 @@ describe("Dashboard Component", () => {
 				message: "get fit score successful",
 				fitScore: 50,
 				matchedSkills: [],
-				improvementSuggestions: [],
+				feedback: [],
 			},
 			error: null,
 			isLoading: false,
@@ -298,7 +339,7 @@ describe("Dashboard Component", () => {
 				message: "get fit score successful",
 				fitScore: 100,
 				matchedSkills: [],
-				improvementSuggestions: [],
+				feedback: [],
 			},
 			error: null,
 			isLoading: false,
@@ -314,7 +355,7 @@ describe("Dashboard Component", () => {
 				message: "get fit score successful",
 				fitScore: 100,
 				matchedSkills: [],
-				improvementSuggestions: [],
+				feedback: [],
 			},
 			error: null,
 			isLoading: false,
@@ -332,7 +373,7 @@ describe("Dashboard Component", () => {
 				message: "get fit score successful",
 				fitScore: null,
 				matchedSkills: [],
-				improvementSuggestions: [],
+				feedback: [],
 			},
 			error: null,
 			isLoading: false,
