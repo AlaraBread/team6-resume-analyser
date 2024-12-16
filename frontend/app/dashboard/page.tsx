@@ -46,7 +46,6 @@ export default function Dashboard() {
 
 	const [fileFormat, setFileFormat] = useState("PDF"); // Default format is PDF
 
-	// if data is null then its loading
 	if (loading)
 		return (
 			<div className={styles.dashboardContainer}>
@@ -89,6 +88,7 @@ export default function Dashboard() {
 		};
 		return (
 			<>
+				const score =
 				<div className={styles.dashboardContainer}>
 					<h1 className={styles.dashboardTitle}>
 						Resume Analysis Dashboard
@@ -104,7 +104,6 @@ export default function Dashboard() {
 						}
 					/>
 				</div>
-
 				{/* Button Container for Download Report */}
 				<div className={styles.buttonContainer}>
 					{/* Select Button for File Format */}

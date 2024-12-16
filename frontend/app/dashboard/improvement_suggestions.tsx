@@ -17,7 +17,7 @@ interface ImprovementSuggestionsProps {
 }
 
 export default function ImprovementSuggestions({
-	suggestions,
+	suggestions = [],
 }: ImprovementSuggestionsProps) {
 	const allCategories = new Set(suggestions.map((s) => s.category));
 	const [selectedCategories, setSelectedCategories] =
