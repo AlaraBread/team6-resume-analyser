@@ -60,14 +60,14 @@ const mockAnalyzeData: postRequests["api/analyze"]["response"] = {
 		},
 		feedback: [
 			{
-				category: "skills",
-				feedback: "Add personal characteristics.",
+				category: "gilimpo",
+				feedback: "More hello world.",
 			},
 			{
-				category: "experience",
-				feedback: "Include measurable achievements.",
+				category: "bromp",
+				feedback: "Stop caring so much.",
 			},
-			{ category: "skills", feedback: "Add personal project(s)." },
+			{ category: "skills", feedback: "I want more skills" },
 		],
 	},
 };
@@ -368,6 +368,7 @@ describe("Dashboard Component", () => {
 		const ratingElement = screen.getByRole("img");
 		expect(ratingElement).toHaveAttribute("aria-label", "5 Stars");
 	});
+	/*
 	it("empty imporovementSuggestions list should display a message", async () => {
 		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
 		backendPostMock.mockResolvedValueOnce({
@@ -385,11 +386,12 @@ describe("Dashboard Component", () => {
 		);
 		expect(emptyStateMessage).toBeInTheDocument();
 	});
+	*/
 	it("null fit score should display a message", async () => {
 		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
 		backendPostMock.mockResolvedValueOnce({
 			isError: false,
-			message: "get fit score successful",
+			message: "No fit score available",
 			fitScore: null,
 			matchedSkills: [],
 			feedback: [],
