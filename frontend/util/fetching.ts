@@ -1,9 +1,16 @@
+"use client";
+
+import { useLocalStorageState } from "ahooks";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import useSWR, { SWRResponse } from "swr";
 
 export const jsonFetcher: (
 	...args: Parameters<typeof fetch>
 ) => Promise<object> = (url) =>
-	fetch(url, { headers: { token: token ?? "" } }).then((res) => res.json());
+	fetch(url, {
+		headers: { token: getToken() },
+	}).then((res) => res.json());
 
 function getEndpointPath(endpoint: string) {
 	let server = process.env.NEXT_PUBLIC_BACKEND ?? "";
@@ -100,7 +107,6 @@ type jsonPostRequests = {
 		: K;
 }[keyof postRequests];
 
-let token: string | null = globalThis?.localStorage?.getItem("token");
 export async function backendPost<T extends jsonPostRequests>(
 	endpoint: T,
 	data: postRequests[T]["request"],
@@ -108,17 +114,14 @@ export async function backendPost<T extends jsonPostRequests>(
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		headers: {
-			token: token ?? "",
+			token: getToken(),
 		},
 		body: JSON.stringify(data),
 	})
 		.then((response) => response.json())
 		.then((response) => {
-			if (endpoint == "api/login" && response.token) {
-				token = response.token;
-				if (token) {
-					globalThis?.localStorage?.setItem("token", token);
-				}
+			if (endpoint == "api/login") {
+				setToken(response.token);
 			}
 			return response;
 		}) as Promise<postRequests[T]["response"]>;
@@ -131,7 +134,7 @@ export async function backendFormPost<T extends formPostRequests>(
 	return fetch(getEndpointPath(endpoint), {
 		method: "POST",
 		headers: {
-			token: token ?? "",
+			token: getToken(),
 		},
 		body: data,
 	}).then((response) => response.json()) as Promise<
@@ -139,6 +142,21 @@ export async function backendFormPost<T extends formPostRequests>(
 	>;
 }
 
-export function isLoggedIn(): boolean {
-	return token != null;
+function getToken(): string {
+	return JSON.parse(localStorage?.getItem("token") ?? '""');
+}
+
+function setToken(token: string | undefined) {
+	localStorage?.setItem("token", JSON.stringify(token ?? '""'));
+}
+
+export function useProtectRoute() {
+	const router = useRouter();
+	const [token] = useLocalStorageState<string>("token");
+
+	useEffect(() => {
+		if (!token) {
+			router.push("/");
+		}
+	}, [token]);
 }

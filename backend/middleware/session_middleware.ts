@@ -6,9 +6,14 @@ export const sessionMiddleware: Middleware = async (ctx, next) => {
 	// Retrieve or generate a session ID
 	const token = ctx.request.headers.get("token");
 	if (!token) {
-		return Promise.reject("no token");
+		ctx.response.status = 401;
+		return;
 	}
-	const payload = await jwt.verifyJWT(token);
+	const payload = await jwt.verifyJWT(token).catch(() => undefined);
+	if (!payload) {
+		ctx.response.status = 401;
+		return;
+	}
 
 	// Attach session data to the context state
 	ctx.state.email = payload.email;

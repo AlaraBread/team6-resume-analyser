@@ -1,4 +1,4 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { assertEquals } from "@std/assert";
 import { assertSpyCalls, restore, spy, stub } from "@std/testing/mock";
 import { sessionMiddleware } from "../middleware/session_middleware.ts";
 import { inMemory } from "./deps.ts";
@@ -8,10 +8,13 @@ import { createMockContext } from "@oak/oak/testing";
 Deno.test("Session Middleware - Valid Token", async () => {
 	restore();
 	// Mock dependencies
-	const mockRetrieveData = spy(() => ({ resumeText: "", jobDescription: "" }));
+	const mockRetrieveData = spy(() => ({
+		resumeText: "",
+		jobDescription: "",
+	}));
 	const mockStoreData = spy(() => {});
-	const mockVerifyJWT = spy(
-		() => (Promise.resolve({ email: "test@example.com" })),
+	const mockVerifyJWT = spy(() =>
+		Promise.resolve({ email: "test@example.com" })
 	);
 
 	stub(inMemory, "retrieveData", mockRetrieveData);
@@ -48,11 +51,9 @@ Deno.test("Session Middleware - Missing Token", async () => {
 		state: {},
 	});
 
+	await sessionMiddleware(ctx, mockNext);
 	// Assertions
-	await assertRejects(
-		async () => await sessionMiddleware(ctx, mockNext),
-		"no token",
-	);
+	assertEquals(ctx.response.status, 401);
 
 	// Ensure `next` was not called
 	assertSpyCalls(mockNext, 0);
@@ -74,12 +75,10 @@ Deno.test("Session Middleware - Invalid Token", async () => {
 		headers: [["token", "invalid_token"]],
 		state: {},
 	});
+	await sessionMiddleware(ctx, mockNext);
 
 	// Run middleware and assert rejection
-	await assertRejects(
-		async () => await sessionMiddleware(ctx, mockNext),
-		"Invalid token",
-	);
+	assertEquals(ctx.response.status, 401);
 
 	// Assertions
 	assertSpyCalls(mockNext, 0); // Ensure next was not called
@@ -89,10 +88,13 @@ Deno.test("Session Middleware - Invalid Token", async () => {
 Deno.test("Session Middleware - Session Update", async () => {
 	restore();
 	// Mock dependencies
-	const mockRetrieveData = spy(() => ({ resumeText: "", jobDescription: "" }));
+	const mockRetrieveData = spy(() => ({
+		resumeText: "",
+		jobDescription: "",
+	}));
 	const mockStoreData = spy(() => {});
-	const mockVerifyJWT = spy(
-		() => (Promise.resolve({ email: "test@example.com" })),
+	const mockVerifyJWT = spy(() =>
+		Promise.resolve({ email: "test@example.com" })
 	);
 
 	stub(inMemory, "retrieveData", mockRetrieveData);
@@ -117,8 +119,9 @@ Deno.test("Session Middleware - Session Update", async () => {
 	assertEquals(ctx.state.sessionData.resumeText, "Updated Resume");
 	assertSpyCalls(mockStoreData, 1);
 	console.log(mockStoreData.calls[0].args);
-	assertEquals(
-		mockStoreData.calls[0].args,
-		["test@example.com", "Updated Resume", ""],
-	); // Ensure updated data is stored
+	assertEquals(mockStoreData.calls[0].args, [
+		"test@example.com",
+		"Updated Resume",
+		"",
+	]); // Ensure updated data is stored
 });
