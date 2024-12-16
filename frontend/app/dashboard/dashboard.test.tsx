@@ -1,17 +1,15 @@
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import Dashboard from "./page";
 import FitScoreChart from "./fit_score_chart";
-import { useBackendGet, backendPost, postRequests } from "util/fetching";
-import { responseCookiesToRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-
-const flushPromises = () => new Promise(setImmediate);
+import { backendPost, postRequests } from "util/fetching";
 
 const backendPostMock = jest.fn();
 jest.mock("../../util/fetching", () => ({
 	useBackendGet: jest.fn(),
 	isLoggedIn: jest.fn(),
 	useProtectRoute: jest.fn(),
-	backendPost: (...args: any[]) => backendPostMock(...args),
+	backendPost: (...args: Parameters<typeof backendPost>[]) =>
+		backendPostMock(...args),
 }));
 
 const useRouterMock = jest.fn(() => {
@@ -188,13 +186,13 @@ describe("Dashboard Component", () => {
 				<h1 className="dashboard-title">Resume Analysis Dashboard</h1>
 				<br></br>
 				<div>
-					{}//Render updated skills
+					{/*Render updated skills*/}
 					{updatedSkills.map((skill) => (
 						<p key={skill}>{skill}</p>
 					))}
 				</div>
 				<div>
-					{}//Render updated skills
+					{/*Render updated skills*/}
 					{updatedSuggestions.map((suggestion) => (
 						<p key={suggestion.text}>{suggestion.text}</p>
 					))}
@@ -335,7 +333,7 @@ describe("Dashboard Component", () => {
 		await act(async () => {
 			render(<Dashboard />);
 		});
-		let ratingElement = screen.getByRole("img");
+		const ratingElement = screen.getByRole("img");
 		expect(ratingElement).toHaveAttribute("aria-label", "0 Stars");
 	});
 	it("rating element should render with the correct fit score 2.5", async () => {
@@ -351,7 +349,7 @@ describe("Dashboard Component", () => {
 		await act(async () => {
 			render(<Dashboard />);
 		});
-		let ratingElement = screen.getByRole("img");
+		const ratingElement = screen.getByRole("img");
 		expect(ratingElement).toHaveAttribute("aria-label", "2.5 Stars");
 	});
 	it("rating element should render with the correct fit score 5", async () => {
@@ -367,7 +365,7 @@ describe("Dashboard Component", () => {
 		await act(async () => {
 			render(<Dashboard />);
 		});
-		let ratingElement = screen.getByRole("img");
+		const ratingElement = screen.getByRole("img");
 		expect(ratingElement).toHaveAttribute("aria-label", "5 Stars");
 	});
 	it("empty imporovementSuggestions list should display a message", async () => {
