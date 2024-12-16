@@ -84,6 +84,7 @@ const mockFitError: postRequests["api/fit-score"]["response"] = {
 describe("Dashboard Component", () => {
 	beforeEach(() => {
 		jest.restoreAllMocks();
+		backendPostMock.mockReset();
 	});
 
 	it("should render the dashboard title", async () => {
@@ -302,14 +303,18 @@ describe("Dashboard Component", () => {
 		const messageElement = screen.getByText(RegExp(mockFitError.message));
 		expect(messageElement).toBeInTheDocument();
 	});
-	it("should display an error if the response is null", async () => {
+	it("should display an error if the fit-score response is null", async () => {
 		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
 		backendPostMock.mockResolvedValueOnce(null);
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: null,
-			error: null,
-			isLoading: false,
+		await act(async () => {
+			render(<Dashboard />);
 		});
+		const titleElement = screen.getByText(/Error retrieving results/i);
+		expect(titleElement).toBeInTheDocument();
+	});
+	it("should display an error if the analyze response is null", async () => {
+		backendPostMock.mockResolvedValueOnce(null);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		await act(async () => {
 			render(<Dashboard />);
 		});
@@ -317,72 +322,62 @@ describe("Dashboard Component", () => {
 		expect(titleElement).toBeInTheDocument();
 	});
 
-	it("rating element should render with the correct fit score", async () => {
+	it("rating element should render with the correct fit score 0", async () => {
+		// 0 stars
 		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
-		backendPostMock.mockResolvedValueOnce(mockFitData);
-		const { rerender } = render(<Dashboard />);
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: {
-				isError: false,
-				message: "get fit score successful",
-				fitScore: 0,
-				matchedSkills: [],
-				feedback: [],
-			},
-			error: null,
-			isLoading: false,
+		backendPostMock.mockResolvedValueOnce({
+			isError: false,
+			message: "get fit score successful",
+			fitScore: 0,
+			matchedSkills: [],
+			feedback: [],
 		});
 		await act(async () => {
-			rerender(<Dashboard />);
+			render(<Dashboard />);
 		});
 		let ratingElement = screen.getByRole("img");
 		expect(ratingElement).toHaveAttribute("aria-label", "0 Stars");
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: {
-				isError: false,
-				message: "get fit score successful",
-				fitScore: 50,
-				matchedSkills: [],
-				feedback: [],
-			},
-			error: null,
-			isLoading: false,
+	});
+	it("rating element should render with the correct fit score 2.5", async () => {
+		// 0 stars
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce({
+			isError: false,
+			message: "get fit score successful",
+			fitScore: 50,
+			matchedSkills: [],
+			feedback: [],
 		});
 		await act(async () => {
-			rerender(<Dashboard />);
+			render(<Dashboard />);
 		});
-		ratingElement = screen.getByRole("img");
+		let ratingElement = screen.getByRole("img");
 		expect(ratingElement).toHaveAttribute("aria-label", "2.5 Stars");
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: {
-				isError: false,
-				message: "get fit score successful",
-				fitScore: 100,
-				matchedSkills: [],
-				feedback: [],
-			},
-			error: null,
-			isLoading: false,
+	});
+	it("rating element should render with the correct fit score 5", async () => {
+		// 0 stars
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce({
+			isError: false,
+			message: "get fit score successful",
+			fitScore: 100,
+			matchedSkills: [],
+			feedback: [],
 		});
 		await act(async () => {
-			rerender(<Dashboard />);
+			render(<Dashboard />);
 		});
-		ratingElement = screen.getByRole("img");
+		let ratingElement = screen.getByRole("img");
 		expect(ratingElement).toHaveAttribute("aria-label", "5 Stars");
 	});
 	it("empty imporovementSuggestions list should display a message", async () => {
 		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
-		backendPostMock.mockResolvedValueOnce(mockFitData);
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: {
-				isError: false,
-				message: "get fit score successful",
-				fitScore: 100,
-				matchedSkills: [],
-				feedback: [],
-			},
-			error: null,
-			isLoading: false,
+		backendPostMock.mockResolvedValueOnce({
+			isError: false,
+			message: "get fit score successful",
+			fitScore: 100,
+			matchedSkills: [],
+			feedback: [],
 		});
 		await act(async () => {
 			render(<Dashboard />);
@@ -393,16 +388,13 @@ describe("Dashboard Component", () => {
 		expect(emptyStateMessage).toBeInTheDocument();
 	});
 	it("null fit score should display a message", async () => {
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: {
-				isError: false,
-				message: "get fit score successful",
-				fitScore: null,
-				matchedSkills: [],
-				feedback: [],
-			},
-			error: null,
-			isLoading: false,
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce({
+			isError: false,
+			message: "get fit score successful",
+			fitScore: null,
+			matchedSkills: [],
+			feedback: [],
 		});
 		await act(async () => {
 			render(<Dashboard />);
