@@ -21,7 +21,6 @@ Deno.test.ignore(
 
 		// Call the actual function
 		const result = await analyzeText(jobDescription, "jobDescription");
-		console.log(result);
 
 		// Assertions: Validate the response contains expected formatting
 		assert(
