@@ -10,7 +10,7 @@ export default function (router: Router, sessionMiddleware: Middleware) {
 	);
 }
 
-const MAX_TEXT_LENGTH = 10000;
+export const MAX_TEXT_LENGTH = 10000;
 
 export async function analyzeHandler(
 	analyze: typeof analyzeText,

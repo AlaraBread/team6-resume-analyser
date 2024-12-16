@@ -1,4 +1,7 @@
 import { Context, Middleware, Router } from "@oak/oak";
+import { keywords } from "./keyword_extraction/keyword_extraction.ts";
+import { SessionData } from "../../in_memory/in_memory.ts";
+import { MAX_TEXT_LENGTH } from "../analyze/analyze.ts";
 
 export default function (router: Router, sessionMiddleware: Middleware) {
 	router.post("/api/fit-score", sessionMiddleware, fitScore);
@@ -23,6 +26,38 @@ export async function fitScore(ctx: Context) {
 		});
 		return;
 	}
+
+	const sessionData = ctx.state.sessionData as SessionData;
+	// Validate session data
+	if (
+		!sessionData ||
+		sessionData.resumeText == undefined ||
+		sessionData.jobDescription == undefined
+	) {
+		console.log(sessionData);
+		ctx.response.status = 400;
+		ctx.response.body = {
+			isError: true,
+			message: "You must upload a resume and job description.",
+		};
+		return;
+	}
+
+	if (
+		sessionData.resumeText.length > MAX_TEXT_LENGTH ||
+		sessionData.jobDescription.length > MAX_TEXT_LENGTH
+	) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			isError: true,
+			message: "Resume or Job description too long.",
+		};
+		return;
+	}
+
+	req.resumeKeywords = req.resumeKeywords.concat(
+		await keywords(sessionData.resumeText),
+	);
 	ctx.response.status = 200;
 	ctx.response.body = JSON.stringify({
 		isError: false,

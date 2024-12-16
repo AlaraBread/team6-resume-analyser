@@ -1,7 +1,7 @@
 import natural, { DataRecord } from "@natural";
 import { stopwords } from "./stopwords.ts";
 import { keepWords, specialPatterns } from "./specialwords.ts";
-import { dedup } from "../util/util.ts";
+import { dedup } from "../../../util/util.ts";
 
 const wordnet = new natural.WordNet();
 const tokenizer = new natural.WordTokenizer();
