@@ -4,16 +4,12 @@ import FitScoreChart from "./fit_score_chart";
 import { useBackendGet, backendPost, postRequests } from "util/fetching";
 import { responseCookiesToRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
-const backendPostMock =
-	jest.fn(/*(foo, foob) => {
-	console.log("backend posting");
-	return Promise.resolve(mockFitData);
-}*/);
+const backendPostMock = jest.fn();
 jest.mock("../../util/fetching", () => ({
 	useBackendGet: jest.fn(),
 	isLoggedIn: jest.fn(),
 	useProtectRoute: jest.fn(),
-	backendPost: backendPostMock,
+	backendPost: (...args: any[]) => backendPostMock(...args),
 }));
 
 /*
@@ -140,20 +136,13 @@ describe("Dashboard Component", () => {
 			error: null,
 			isLoading: false,
 		});*/
-
-		backendPostMock.mockResolvedValue({
-			response: mockFitData,
-		});
-		backendPostMock.mockResolvedValueOnce({
-			response: {
-				data: mockAnalyzeData,
-				error: null,
-				isLoading: false,
-			},
-		});
 	});
 
 	it("should render the dashboard title", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		await act(async () => {
 			// Does "Resume Analysis Dashboard" appear?
 			render(<Dashboard />);
