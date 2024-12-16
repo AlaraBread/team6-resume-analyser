@@ -82,12 +82,12 @@ Deno.test.ignore("generateResumeFeedback - Live API Call", async () => {
 
 	// Assertions: Validate the response contains feedback
 	assertEquals(
-		Array.isArray(result.feedback),
+		Array.isArray(result),
 		true,
 		"Feedback should be an array.",
 	);
 	assertEquals(
-		result.feedback.length > 0,
+		result.length > 0,
 		true,
 		"Feedback array should not be empty.",
 	);

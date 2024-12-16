@@ -67,35 +67,43 @@ export async function analyzeText<Type extends "resume" | "jobDescription">(
 	// Extract and return the assistant's message content
 	const messageContent = result.choices[0]?.message.content;
 	if (!messageContent) {
-		throw new Error("Unexpected API response format: missing message content.");
+		throw new Error(
+			"Unexpected API response format: missing message content.",
+		);
 	}
 
 	if (type == "jobDescription") {
 		const mustHaveStr = /Must-have: ?(?<csv>[^\n;]*)/gi.exec(messageContent)
-			?.groups
-			?.csv;
+			?.groups?.csv;
 		if (mustHaveStr == undefined) {
-			throw new Error("Unexpected API response format: missing must-haves.");
+			throw new Error(
+				"Unexpected API response format: missing must-haves.",
+			);
 		}
-		const mustHave = mustHaveStr.split(",").map((keyword) => keyword.trim())
+		const mustHave = mustHaveStr
+			.split(",")
+			.map((keyword) => keyword.trim())
 			.filter((keyword) => keyword != "");
 
 		const niceToHaveStr = /Nice-to-have: ?(?<csv>[^\n;]*)/gi.exec(
 			messageContent,
-		)
-			?.groups
-			?.csv;
+		)?.groups?.csv;
 		if (niceToHaveStr == undefined) {
-			throw new Error("Unexpected API response format: missing must-haves.");
+			throw new Error(
+				"Unexpected API response format: missing must-haves.",
+			);
 		}
-		const niceToHave = niceToHaveStr.split(",").map((keyword) => keyword.trim())
+		const niceToHave = niceToHaveStr
+			.split(",")
+			.map((keyword) => keyword.trim())
 			.filter((keyword) => keyword != "");
 
 		return { mustHave, niceToHave } as AnalyseResponse<Type>;
 	} else {
-		return messageContent.split(",").map((keyword) => keyword.trim()).filter((
-			keyword,
-		) => keyword != "") as AnalyseResponse<Type>;
+		return messageContent
+			.split(",")
+			.map((keyword) => keyword.trim())
+			.filter((keyword) => keyword != "") as AnalyseResponse<Type>;
 	}
 }
 
@@ -108,7 +116,7 @@ export async function analyzeText<Type extends "resume" | "jobDescription">(
 export async function generateResumeFeedback(
 	resumeText: string,
 	jobDescription: string,
-): Promise<{ feedback: string[] }> {
+): Promise<{ feedback: string; category: string }[]> {
 	const OPENAI_API_KEY = Deno.env.get("OPENAI_API_KEY");
 
 	if (!OPENAI_API_KEY) {
@@ -130,17 +138,17 @@ export async function generateResumeFeedback(
 			{
 				role: "system",
 				content:
-					"You are an expert career advisor who provides actionable feedback to improve resumes for specific job descriptions. Respond in a JSON array of feedback strings.",
+					"You are an expert career advisor who provides actionable feedback to improve resumes for specific job descriptions." +
+					' You also categorize each point of feedback into categories such as "experience" or "education".' +
+					' Respond in this json format: {"feedback": string, "category": string}[]',
 			},
 			{
 				role: "user",
-				content: `
-    Resume:
-    ${resumeText}
-    
-    Job Description:
-    ${jobDescription}
-                `,
+				content: `Resume:
+${resumeText}
+
+Job Description:
+${jobDescription}`,
 			},
 		],
 		temperature: 0.7,
@@ -167,7 +175,7 @@ export async function generateResumeFeedback(
 	// Extract and parse feedback from the response
 	const feedback = parseFeedback(result);
 
-	return { feedback };
+	return feedback;
 }
 
 /**
@@ -175,7 +183,9 @@ export async function generateResumeFeedback(
  * @param response The raw response from the OpenAI API.
  * @returns An array of feedback strings.
  */
-function parseFeedback(response: OpenAIResponse): string[] {
+function parseFeedback(
+	response: OpenAIResponse,
+): { feedback: string; category: string }[] {
 	const content = response.choices[0]?.message.content;
 
 	if (!content) {
@@ -186,11 +196,26 @@ function parseFeedback(response: OpenAIResponse): string[] {
 
 	try {
 		const feedback = JSON.parse(content);
-		if (Array.isArray(feedback)) {
-			return feedback;
-		} else {
-			throw new Error("Unexpected response format: Feedback is not an array.");
+		if (!Array.isArray(feedback)) {
+			throw new Error(
+				"Unexpected response format: Feedback is not an array.",
+			);
 		}
+		feedback.forEach((feedback) => {
+			if (!("category" in feedback)) {
+				throw new Error("no category in feedback response");
+			}
+			if (!("feedback" in feedback)) {
+				throw new Error("no feedback in feedback response");
+			}
+			if (typeof feedback.feedback !== "string") {
+				throw new Error("feedback not a string");
+			}
+			if (typeof feedback.category !== "string") {
+				throw new Error("category not a string");
+			}
+		});
+		return feedback;
 	} catch (error) {
 		console.error("Error parsing OpenAI response:", error);
 		throw new Error("Failed to parse feedback from the response.");

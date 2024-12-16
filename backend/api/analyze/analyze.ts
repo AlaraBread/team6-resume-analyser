@@ -1,9 +1,9 @@
-import { Context, Router } from "@oak/oak";
-import { analyzeText } from "../openai/openai.ts";
+import { Context, Middleware, Router } from "@oak/oak";
+import { analyzeText, generateResumeFeedback } from "../openai/openai.ts";
 import { SessionData } from "../../in_memory/in_memory.ts";
 
-export default function (router: Router) {
-	router.post("/api/analyze", analyzeHandler);
+export default function (router: Router, sessionMiddleware: Middleware) {
+	router.post("/api/analyze", sessionMiddleware, analyzeHandler);
 }
 
 export async function analyzeHandler(ctx: Context) {
@@ -30,10 +30,16 @@ export async function analyzeHandler(ctx: Context) {
 			"jobDescription",
 		);
 
+		const feedback = await generateResumeFeedback(
+			sessionData.resumeText,
+			sessionData.jobDescription,
+		);
+
 		// Combine results
 		const analysisResult = {
 			resumeAnalysis,
 			jobDescriptionAnalysis,
+			feedback,
 		};
 
 		// Return success response
