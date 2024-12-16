@@ -18,43 +18,6 @@ import JobDescriptionForm from "app/form/job_description_form";
 
 export type DashboardData = getRequests["api/fit-score"];
 
-// mock data for testing
-/*
-const mockData: MockData = {
-	isError: false,
-	message: "get fit score successful",
-	fitScore: 85,
-	matchedSkills: [
-		"JavaScript",
-		"React",
-		"Node.js",
-		"Next.js",
-		"Team Collaboration",
-		"C",
-		"C#",
-	],
-	improvementSuggestions: [
-		{ category: "skills", text: "Add personal characteristics." },
-		{ category: "experience", text: "Include measurable achievements." },
-		{ category: "skills", text: "Add personal project(s)." },
-	],
-};
-const mockError: MockData = {
-	isError: true,
-	message: "failed to get fit score",
-	fitScore: 85,
-	matchedSkills: [],
-	improvementSuggestions: [],
-};
-const mockEmpty: MockData = {
-	isError: false,
-	message: "get fit score successful",
-	fitScore: 0,
-	matchedSkills: [],
-	improvementSuggestions: [],
-};
-*/
-
 export default function Dashboard() {
 	useProtectRoute();
 
@@ -91,7 +54,7 @@ export default function Dashboard() {
 			</div>
 		);
 
-	if (analyzeData == null || fitData == null || error) {
+	if (/*analyzeData == null ||*/ fitData == null) {
 		// response is null, display error page
 		return (
 			<div className={styles.dashboardContainer}>
@@ -114,13 +77,13 @@ export default function Dashboard() {
 				generatePDF(
 					fitData.fitScore,
 					fitData.matchedSkills,
-					fitData.feedback.concat(analyzeData.data.feedback),
+					fitData.feedback, //.concat(analyzeData.data.feedback),
 				);
 			} else if (fileFormat === "Word") {
 				generateWord(
 					fitData.fitScore,
 					fitData.matchedSkills,
-					fitData.feedback.concat(analyzeData.data.feedback),
+					fitData.feedback, //.concat(analyzeData.data.feedback),
 				);
 			}
 		};
@@ -134,9 +97,11 @@ export default function Dashboard() {
 					<FitScoreChart score={fitData.fitScore} />
 					<SkillsMatched skills={fitData.matchedSkills} />
 					<ImprovementSuggestions
-						suggestions={fitData.feedback.concat(
+						suggestions={
+							fitData.feedback /*.concat(
 							analyzeData.data.feedback,
-						)}
+						)*/
+						}
 					/>
 				</div>
 
