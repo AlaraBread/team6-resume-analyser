@@ -4,8 +4,8 @@ import FitScoreChart from "./fit_score_chart";
 import SkillsMatched from "./skills_matched";
 import ImprovementSuggestions from "./improvement_suggestions";
 import styles from "./dashboard.module.css";
-import { getRequests, useBackendGet } from "util/fetching";
-import { useState } from "react";
+import { getRequests, postRequests, backendPost } from "util/fetching";
+import { useState, useEffect } from "react";
 import React from "react";
 import Button from "@mui/material/Button";
 import FormControl from "@mui/material/FormControl";
@@ -14,6 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { generatePDF, generateWord } from "./report_generator";
 import { useProtectRoute } from "util/fetching";
+import JobDescriptionForm from "app/form/job_description_form";
 
 export type DashboardData = getRequests["api/fit-score"];
 
@@ -56,19 +57,41 @@ const mockEmpty: MockData = {
 
 export default function Dashboard() {
 	useProtectRoute();
-	//if you wanna use the mock data just swap out useBackendGet().data for the mock data
-	const { data, isLoading, error } = useBackendGet("api/fit-score");
+
+	const [analyzeData, setAnalyzeData] = useState<
+		postRequests["api/analyze"]["response"] | null
+	>(null);
+	const [fitData, setFitData] = useState<
+		postRequests["api/fit-score"]["response"] | null
+	>(null);
+	const [error, setError] = useState<string | null>(null);
+	const [loading, setLoading] = useState(false);
+
+	useEffect(() => {
+		backendPost("api/analyze", {}).then((analyzeResponse) => {
+			setAnalyzeData(analyzeResponse);
+
+			backendPost("api/fit-score", {
+				resumeKeywords: analyzeResponse.data.resumeAnalysis,
+				jobDescriptionKeywords:
+					analyzeResponse.data.jobDescriptionAnalysis,
+			}).then((fitResponse) => {
+				setFitData(fitResponse);
+			});
+		});
+	});
 
 	const [fileFormat, setFileFormat] = useState("PDF"); // Default format is PDF
 
-	if (isLoading)
+	// if data is null then its loading
+	if (loading)
 		return (
 			<div className={styles.dashboardContainer}>
 				<h1>loading...</h1>
 			</div>
 		);
 
-	if (data == null || error) {
+	if (analyzeData == null || fitData == null || error) {
 		// response is null, display error page
 		return (
 			<div className={styles.dashboardContainer}>
@@ -76,12 +99,12 @@ export default function Dashboard() {
 				<p>null response</p>
 			</div>
 		);
-	} else if (data.isError) {
+	} else if (fitData.isError) {
 		// isError is true, display error page
 		return (
 			<div className={styles.dashboardContainer}>
 				<h1>Error retrieving results</h1>
-				<p>{data.message}</p>
+				<p>{fitData.message}</p>
 			</div>
 		);
 	} else {
@@ -89,15 +112,15 @@ export default function Dashboard() {
 		const handleDownload = () => {
 			if (fileFormat === "PDF") {
 				generatePDF(
-					data.fitScore,
-					data.matchedSkills,
-					data.improvementSuggestions,
+					fitData.fitScore,
+					fitData.matchedSkills,
+					analyzeData.data.feedback,
 				);
 			} else if (fileFormat === "Word") {
 				generateWord(
-					data.fitScore,
-					data.matchedSkills,
-					data.improvementSuggestions,
+					fitData.fitScore,
+					fitData.matchedSkills,
+					analyzeData.data.feedback,
 				);
 			}
 		};
@@ -108,10 +131,10 @@ export default function Dashboard() {
 						Resume Analysis Dashboard
 					</h1>
 					<br></br>
-					<FitScoreChart score={data.fitScore} />
-					<SkillsMatched skills={data.matchedSkills} />
+					<FitScoreChart score={fitData.fitScore} />
+					<SkillsMatched skills={fitData.matchedSkills} />
 					<ImprovementSuggestions
-						suggestions={data.improvementSuggestions}
+						suggestions={analyzeData.data.feedback}
 					/>
 				</div>
 
