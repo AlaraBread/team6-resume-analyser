@@ -106,280 +106,322 @@ describe("Dashboard Component", () => {
 		});*/
 	});
 
-	it("should render the dashboard title", () => {
-		// Does "Resume Analysis Dashboard" appear?
-		await act(()=>{render(<Dashboard />);});
-		const titleElement = screen.getByText(/Resume Analysis Dashboard/i);
-		expect(titleElement).toBeInTheDocument();
-
+	it("should render the dashboard title", async () => {
+		await act(async () => {
+			// Does "Resume Analysis Dashboard" appear?
+			render(<Dashboard />);
+			const titleElement = screen.getByText(/Resume Analysis Dashboard/i);
+			expect(titleElement).toBeInTheDocument();
 		});
 	});
 
-	it("should render the FitScoreChart with the correct score", () => {
-		// Does the fit score appear appopriately?
-		render(<Dashboard />);
+	it("should render the FitScoreChart with the correct score", async () => {
+		await act(async () => {
+			// Does the fit score appear appopriately?
+			render(<Dashboard />);
 
-		const scoreElement = screen.getByText(/Resume Fit Score/i);
-		expect(scoreElement).toBeInTheDocument();
+			const scoreElement = screen.getByText(/Resume Fit Score/i);
+			expect(scoreElement).toBeInTheDocument();
 
-		const roundedScoreText = "4.25 / 5";
-		const ratingElement = screen.getByText(roundedScoreText);
-		expect(ratingElement).toBeInTheDocument();
-	});
-
-	it("should render the SkillsMatched component with all skills", () => {
-		// Does the skills appear correctly?
-		//useBackendGetMock.mockResolvedValueOnce({ mockData });
-		render(<Dashboard />);
-		mockF.matchedSkills?.forEach((skill) => {
-			expect(screen.getByText(skill)).toBeInTheDocument();
+			const roundedScoreText = "4.25 / 5";
+			const ratingElement = screen.getByText(roundedScoreText);
+			expect(ratingElement).toBeInTheDocument();
 		});
 	});
 
-	it("should render the feedback component with all suggestions", () => {
-		// Does the suggestions appear correctly?
-		render(<Dashboard />);
-		mockFitData.feedback.forEach((suggestion) => {
-			expect(screen.getByText(suggestion.feedback)).toBeInTheDocument();
+	it("should render the SkillsMatched component with all skills", async () => {
+		await act(async () => {
+			// Does the skills appear correctly?
+			//useBackendGetMock.mockResolvedValueOnce({ mockData });
+			render(<Dashboard />);
+			mockF.matchedSkills?.forEach((skill) => {
+				expect(screen.getByText(skill)).toBeInTheDocument();
+			});
 		});
 	});
 
-	it("should adapt correctly to changes in fit score", () => {
-		// Render a new dashboard (with a different fit score)
-		const newScore = 50;
-		const NewDashboard = () => (
-			<div className="dashboard-container">
-				<h1 className="dashboard-title">Resume Analysis Dashboard</h1>
-				<FitScoreChart score={newScore} />
-			</div>
-		);
-		render(<NewDashboard />);
-		const roundedScoreText = "2.50 / 5";
-		const newRatingElement = screen.getByText(roundedScoreText);
-		expect(newRatingElement).toBeInTheDocument();
+	it("should render the feedback component with all suggestions", async () => {
+		await act(async () => {
+			// Does the suggestions appear correctly?
+			render(<Dashboard />);
+			mockFitData.feedback.forEach((suggestion) => {
+				expect(
+					screen.getByText(suggestion.feedback),
+				).toBeInTheDocument();
+			});
+		});
 	});
 
-	it("should update and render new skills and suggestions (remove old)", () => {
-		// Updated data: skills and sugggestions
-		const updatedSkills = [
-			"Python",
-			"Machine Learning",
-			"Data Science",
-			"PL/SQL",
-		];
-		const updatedSuggestions = [
-			{ category: "experience", text: "Learn deep learning techniques." },
-			{ category: "skills", text: "Contribute to open-source projects." },
-			{
-				category: "experience",
-				text: "Improve algorithm design skills.",
-			},
-		];
-
-		// New mock Dashboard component for testing
-		const NewDashboard = () => (
-			<div className="dashboard-container">
-				<h1 className="dashboard-title">Resume Analysis Dashboard</h1>
-				<br></br>
-				<div>
-					{/* Render updated skills */}
-					{updatedSkills.map((skill) => (
-						<p key={skill}>{skill}</p>
-					))}
+	it("should adapt correctly to changes in fit score", async () => {
+		await act(async () => {
+			// Render a new dashboard (with a different fit score)
+			const newScore = 50;
+			const NewDashboard = () => (
+				<div className="dashboard-container">
+					<h1 className="dashboard-title">
+						Resume Analysis Dashboard
+					</h1>
+					<FitScoreChart score={newScore} />
 				</div>
-				<div>
-					{/* Render updated suggestions */}
-					{updatedSuggestions.map((suggestion) => (
-						<p key={suggestion.text}>{suggestion.text}</p>
-					))}
+			);
+			render(<NewDashboard />);
+			const roundedScoreText = "2.50 / 5";
+			const newRatingElement = screen.getByText(roundedScoreText);
+			expect(newRatingElement).toBeInTheDocument();
+		});
+	});
+
+	it("should update and render new skills and suggestions (remove old)", async () => {
+		await act(async () => {
+			// Updated data: skills and sugggestions
+			const updatedSkills = [
+				"Python",
+				"Machine Learning",
+				"Data Science",
+				"PL/SQL",
+			];
+			const updatedSuggestions = [
+				{
+					category: "experience",
+					text: "Learn deep learning techniques.",
+				},
+				{
+					category: "skills",
+					text: "Contribute to open-source projects.",
+				},
+				{
+					category: "experience",
+					text: "Improve algorithm design skills.",
+				},
+			];
+
+			// New mock Dashboard component for testing
+			const NewDashboard = () => (
+				<div className="dashboard-container">
+					<h1 className="dashboard-title">
+						Resume Analysis Dashboard
+					</h1>
+					<br></br>
+					<div>
+						{/* Render updated skills */}
+						{updatedSkills.map((skill) => (
+							<p key={skill}>{skill}</p>
+						))}
+					</div>
+					<div>
+						{/* Render updated suggestions */}
+						{updatedSuggestions.map((suggestion) => (
+							<p key={suggestion.text}>{suggestion.text}</p>
+						))}
+					</div>
 				</div>
-			</div>
-		);
+			);
 
-		// Render with updated data
-		render(<NewDashboard />);
+			// Render with updated data
+			render(<NewDashboard />);
 
-		// Check if updated skills are rendered
-		updatedSkills.forEach((skill) => {
-			expect(screen.getByText(skill)).toBeInTheDocument();
-		});
+			// Check if updated skills are rendered
+			updatedSkills.forEach((skill) => {
+				expect(screen.getByText(skill)).toBeInTheDocument();
+			});
 
-		// Check if old skills are not rendered
-		mockFitData.matchedSkills?.forEach((skill) => {
-			expect(screen.queryByText(skill)).toBeNull();
-		});
+			// Check if old skills are not rendered
+			mockFitData.matchedSkills?.forEach((skill) => {
+				expect(screen.queryByText(skill)).toBeNull();
+			});
 
-		// Check if updated suggestions are rendered
-		updatedSuggestions.forEach((suggestion) => {
-			expect(screen.getByText(suggestion.text)).toBeInTheDocument();
-		});
+			// Check if updated suggestions are rendered
+			updatedSuggestions.forEach((suggestion) => {
+				expect(screen.getByText(suggestion.text)).toBeInTheDocument();
+			});
 
-		// Check if old suggestions are not rendered
-		mockFitData.feedback.forEach((suggestion) => {
-			expect(screen.queryByText(suggestion.feedback)).toBeNull();
-		});
-	});
-
-	it("should only display 'skills' feedback when checkbox is selected", () => {
-		render(<Dashboard />);
-
-		const skillsCheckbox = screen.getByLabelText(/skills/i);
-		const experienceCheckbox = screen.getByLabelText(/experience/i);
-
-		expect(skillsCheckbox).toBeInTheDocument();
-		expect(experienceCheckbox).toBeInTheDocument();
-
-		// Uncheck "experience" checkbox
-		fireEvent.click(experienceCheckbox);
-
-		// Checks if "skills" feedback are only displayed
-		const skillsFeedback = mockFitData.feedback.filter(
-			(suggestion) => suggestion.category === "skills",
-		);
-
-		skillsFeedback.forEach((suggestion) => {
-			expect(screen.getByText(suggestion.feedback)).toBeInTheDocument();
-		});
-
-		// Checks if "experience" feedback are not displayed
-		const experienceFeedback = mockFitData.feedback.filter(
-			(suggestion) => suggestion.category === "experience",
-		);
-
-		experienceFeedback.forEach((suggestion) => {
-			expect(screen.queryByText(suggestion.feedback)).toBeNull();
+			// Check if old suggestions are not rendered
+			mockFitData.feedback.forEach((suggestion) => {
+				expect(screen.queryByText(suggestion.feedback)).toBeNull();
+			});
 		});
 	});
 
-	it("should only display 'experience' feedback when checkbox is selected", () => {
-		render(<Dashboard />);
+	it("should only display 'skills' feedback when checkbox is selected", async () => {
+		await act(async () => {
+			render(<Dashboard />);
 
-		const skillsCheckbox = screen.getByLabelText(/skills/i);
-		const experienceCheckbox = screen.getByLabelText(/experience/i);
-		expect(skillsCheckbox).toBeInTheDocument();
-		expect(experienceCheckbox).toBeInTheDocument();
+			const skillsCheckbox = screen.getByLabelText(/skills/i);
+			const experienceCheckbox = screen.getByLabelText(/experience/i);
 
-		// Uncheck "skills" checkbox
-		fireEvent.click(skillsCheckbox);
+			expect(skillsCheckbox).toBeInTheDocument();
+			expect(experienceCheckbox).toBeInTheDocument();
 
-		// Checks if "experience" feedback are only displayed
-		const experienceFeedback = mockFitData.feedback.filter(
-			(suggestion) => suggestion.category === "experience",
-		);
+			// Uncheck "experience" checkbox
+			fireEvent.click(experienceCheckbox);
 
-		experienceFeedback.forEach((suggestion) => {
-			expect(screen.getByText(suggestion.feedback)).toBeInTheDocument();
-		});
+			// Checks if "skills" feedback are only displayed
+			const skillsFeedback = mockFitData.feedback.filter(
+				(suggestion) => suggestion.category === "skills",
+			);
 
-		// Checks if "skills" feedback are not displayed
-		const skillsFeedback = mockFitData.feedback.filter(
-			(suggestion) => suggestion.category === "skills",
-		);
+			skillsFeedback.forEach((suggestion) => {
+				expect(
+					screen.getByText(suggestion.feedback),
+				).toBeInTheDocument();
+			});
 
-		skillsFeedback.forEach((suggestion) => {
-			expect(screen.queryByText(suggestion.feedback)).toBeNull();
+			// Checks if "experience" feedback are not displayed
+			const experienceFeedback = mockFitData.feedback.filter(
+				(suggestion) => suggestion.category === "experience",
+			);
+
+			experienceFeedback.forEach((suggestion) => {
+				expect(screen.queryByText(suggestion.feedback)).toBeNull();
+			});
 		});
 	});
-	it("should display an error with the corrosponding message if the isError is true", () => {
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: mockError,
-			error: null,
-			isLoading: false,
+
+	it("should only display 'experience' feedback when checkbox is selected", async () => {
+		await act(async () => {
+			render(<Dashboard />);
+
+			const skillsCheckbox = screen.getByLabelText(/skills/i);
+			const experienceCheckbox = screen.getByLabelText(/experience/i);
+			expect(skillsCheckbox).toBeInTheDocument();
+			expect(experienceCheckbox).toBeInTheDocument();
+
+			// Uncheck "skills" checkbox
+			fireEvent.click(skillsCheckbox);
+
+			// Checks if "experience" feedback are only displayed
+			const experienceFeedback = mockFitData.feedback.filter(
+				(suggestion) => suggestion.category === "experience",
+			);
+
+			experienceFeedback.forEach((suggestion) => {
+				expect(
+					screen.getByText(suggestion.feedback),
+				).toBeInTheDocument();
+			});
+
+			// Checks if "skills" feedback are not displayed
+			const skillsFeedback = mockFitData.feedback.filter(
+				(suggestion) => suggestion.category === "skills",
+			);
+
+			skillsFeedback.forEach((suggestion) => {
+				expect(screen.queryByText(suggestion.feedback)).toBeNull();
+			});
 		});
-		render(<Dashboard />);
-		const errorElement = screen.getByText(/Error retrieving results/i);
-		expect(errorElement).toBeInTheDocument();
-		const messageElement = screen.getByText(RegExp(mockError.message));
-		expect(messageElement).toBeInTheDocument();
 	});
-	it("should display an error if the response is null", () => {
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: null,
-			error: null,
-			isLoading: false,
+	it("should display an error with the corrosponding message if the isError is true", async () => {
+		await act(async () => {
+			(useBackendGet as jest.Mock).mockReturnValue({
+				data: mockError,
+				error: null,
+				isLoading: false,
+			});
+			render(<Dashboard />);
+			const errorElement = screen.getByText(/Error retrieving results/i);
+			expect(errorElement).toBeInTheDocument();
+			const messageElement = screen.getByText(RegExp(mockError.message));
+			expect(messageElement).toBeInTheDocument();
 		});
-		render(<Dashboard />);
-		const titleElement = screen.getByText(/Error retrieving results/i);
-		expect(titleElement).toBeInTheDocument();
+	});
+	it("should display an error if the response is null", async () => {
+		await act(async () => {
+			(useBackendGet as jest.Mock).mockReturnValue({
+				data: null,
+				error: null,
+				isLoading: false,
+			});
+			render(<Dashboard />);
+			const titleElement = screen.getByText(/Error retrieving results/i);
+			expect(titleElement).toBeInTheDocument();
+		});
 	});
 
-	it("rating element should render with the correct fit score", () => {
-		const { rerender } = render(<Dashboard />);
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: {
-				isError: false,
-				message: "get fit score successful",
-				fitScore: 0,
-				matchedSkills: [],
-				feedback: [],
-			},
-			error: null,
-			isLoading: false,
+	it("rating element should render with the correct fit score", async () => {
+		await act(async () => {
+			const { rerender } = render(<Dashboard />);
+			(useBackendGet as jest.Mock).mockReturnValue({
+				data: {
+					isError: false,
+					message: "get fit score successful",
+					fitScore: 0,
+					matchedSkills: [],
+					feedback: [],
+				},
+				error: null,
+				isLoading: false,
+			});
+			rerender(<Dashboard />);
+			let ratingElement = screen.getByRole("img");
+			expect(ratingElement).toHaveAttribute("aria-label", "0 Stars");
+			(useBackendGet as jest.Mock).mockReturnValue({
+				data: {
+					isError: false,
+					message: "get fit score successful",
+					fitScore: 50,
+					matchedSkills: [],
+					feedback: [],
+				},
+				error: null,
+				isLoading: false,
+			});
+			rerender(<Dashboard />);
+			ratingElement = screen.getByRole("img");
+			expect(ratingElement).toHaveAttribute("aria-label", "2.5 Stars");
+			(useBackendGet as jest.Mock).mockReturnValue({
+				data: {
+					isError: false,
+					message: "get fit score successful",
+					fitScore: 100,
+					matchedSkills: [],
+					feedback: [],
+				},
+				error: null,
+				isLoading: false,
+			});
+			rerender(<Dashboard />);
+			ratingElement = screen.getByRole("img");
+			expect(ratingElement).toHaveAttribute("aria-label", "5 Stars");
 		});
-		rerender(<Dashboard />);
-		let ratingElement = screen.getByRole("img");
-		expect(ratingElement).toHaveAttribute("aria-label", "0 Stars");
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: {
-				isError: false,
-				message: "get fit score successful",
-				fitScore: 50,
-				matchedSkills: [],
-				feedback: [],
-			},
-			error: null,
-			isLoading: false,
-		});
-		rerender(<Dashboard />);
-		ratingElement = screen.getByRole("img");
-		expect(ratingElement).toHaveAttribute("aria-label", "2.5 Stars");
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: {
-				isError: false,
-				message: "get fit score successful",
-				fitScore: 100,
-				matchedSkills: [],
-				feedback: [],
-			},
-			error: null,
-			isLoading: false,
-		});
-		rerender(<Dashboard />);
-		ratingElement = screen.getByRole("img");
-		expect(ratingElement).toHaveAttribute("aria-label", "5 Stars");
 	});
-	it("empty imporovementSuggestions list should display a message", () => {
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: {
-				isError: false,
-				message: "get fit score successful",
-				fitScore: 100,
-				matchedSkills: [],
-				feedback: [],
-			},
-			error: null,
-			isLoading: false,
+	it("empty imporovementSuggestions list should display a message", async () => {
+		await act(async () => {
+			(useBackendGet as jest.Mock).mockReturnValue({
+				data: {
+					isError: false,
+					message: "get fit score successful",
+					fitScore: 100,
+					matchedSkills: [],
+					feedback: [],
+				},
+				error: null,
+				isLoading: false,
+			});
+			render(<Dashboard />);
+			const emptyStateMessage = screen.queryByText(
+				/No suggestions available/i,
+			);
+			expect(emptyStateMessage).toBeInTheDocument();
 		});
-		render(<Dashboard />);
-		const emptyStateMessage = screen.queryByText(
-			/No suggestions available/i,
-		);
-		expect(emptyStateMessage).toBeInTheDocument();
 	});
-	it("null fit score should display a message", () => {
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: {
-				isError: false,
-				message: "get fit score successful",
-				fitScore: null,
-				matchedSkills: [],
-				feedback: [],
-			},
-			error: null,
-			isLoading: false,
+	it("null fit score should display a message", async () => {
+		await act(async () => {
+			(useBackendGet as jest.Mock).mockReturnValue({
+				data: {
+					isError: false,
+					message: "get fit score successful",
+					fitScore: null,
+					matchedSkills: [],
+					feedback: [],
+				},
+				error: null,
+				isLoading: false,
+			});
+			render(<Dashboard />);
+			const nullStateMessage = screen.queryByText(
+				/No fit score available/i,
+			);
+			expect(nullStateMessage).toBeInTheDocument();
 		});
-		render(<Dashboard />);
-		const nullStateMessage = screen.queryByText(/No fit score available/i);
-		expect(nullStateMessage).toBeInTheDocument();
 	});
 });
