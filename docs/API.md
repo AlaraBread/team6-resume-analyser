@@ -241,12 +241,12 @@ Must be logged in.
 	"matchedSkills": ["skills", "that", "were", "found", "in", "resume and job description"],
 	"feedback": [
 		{
-			feedback: "show experience with computer.",
-			category: "skills"
+			"feedback": "show experience with computer.",
+			"category": "skills"
 		},
 		{
-			feedback: "demonstrate that you understand computer.",
-			category: "skills"
+			"feedback": "demonstrate that you understand computer.",
+			"category": "skills"
 		}
 	],
 }
