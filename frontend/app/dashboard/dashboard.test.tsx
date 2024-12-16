@@ -4,6 +4,8 @@ import FitScoreChart from "./fit_score_chart";
 import { useBackendGet, backendPost, postRequests } from "util/fetching";
 import { responseCookiesToRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
 
+const flushPromises = () => new Promise(setImmediate);
+
 const backendPostMock = jest.fn();
 jest.mock("../../util/fetching", () => ({
 	useBackendGet: jest.fn(),
@@ -146,7 +148,6 @@ describe("Dashboard Component", () => {
 		await act(async () => {
 			// Does "Resume Analysis Dashboard" appear?
 			render(<Dashboard />);
-			await new Promise((resolve, _reject) => setTimeout(resolve, 400));
 		});
 
 		const titleElement = screen.getByText(/Resume Analysis Dashboard/i);

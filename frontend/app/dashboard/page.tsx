@@ -33,7 +33,6 @@ export default function Dashboard() {
 	useEffect(() => {
 		backendPost("api/analyze", {}).then((analyzeResponse) => {
 			setAnalyzeData(analyzeResponse);
-			console.log(analyzeResponse);
 
 			backendPost("api/fit-score", {
 				resumeKeywords: analyzeResponse.data.resumeAnalysis,
