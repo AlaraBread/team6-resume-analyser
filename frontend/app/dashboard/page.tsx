@@ -42,7 +42,7 @@ export default function Dashboard() {
 				setFitData(fitResponse);
 			});
 		});
-	});
+	}, []);
 
 	const [fileFormat, setFileFormat] = useState("PDF"); // Default format is PDF
 
@@ -53,7 +53,7 @@ export default function Dashboard() {
 			</div>
 		);
 
-	if (/*analyzeData == null ||*/ fitData == null) {
+	if (analyzeData == null || fitData == null) {
 		// response is null, display error page
 		return (
 			<div className={styles.dashboardContainer}>

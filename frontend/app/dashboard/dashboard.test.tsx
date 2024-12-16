@@ -14,17 +14,6 @@ jest.mock("../../util/fetching", () => ({
 	backendPost: (...args: any[]) => backendPostMock(...args),
 }));
 
-/*
-jest.mock("../../util/fetching", () => {
-	const originalModule: object = jest.requireActual("../../util/fetching");
-	return {
-		__esModule: true,
-		...originalModule,
-		backendPost: ((...args) =>
-			backendPostMock(...args)) as typeof backendPost,
-	};
-});*/
-
 const useRouterMock = jest.fn(() => {
 	return {
 		push: (_route: string) => {},
@@ -40,7 +29,7 @@ jest.mock("next/navigation", () => {
 	};
 });
 
-const mockFitData /*: postRequests["api/fit-score"]["response"]*/ = {
+const mockFitData: postRequests["api/fit-score"]["response"] = {
 	isError: false,
 	message: "get fit score successful",
 	fitScore: 85,
@@ -61,24 +50,6 @@ const mockFitData /*: postRequests["api/fit-score"]["response"]*/ = {
 		},
 		{ category: "skills", feedback: "Add personal project(s)." },
 	],
-	data: {
-		resumeAnalysis: ["a", "b", "c", "d"],
-		jobDescriptionAnalysis: {
-			mustHave: ["b"],
-			niceToHave: ["c"],
-		},
-		feedback: [
-			{
-				category: "skills",
-				feedback: "Add personal characteristics.",
-			},
-			{
-				category: "experience",
-				feedback: "Include measurable achievements.",
-			},
-			{ category: "skills", feedback: "Add personal project(s)." },
-		],
-	},
 };
 const mockAnalyzeData: postRequests["api/analyze"]["response"] = {
 	isError: false,
@@ -102,10 +73,9 @@ const mockAnalyzeData: postRequests["api/analyze"]["response"] = {
 		],
 	},
 };
-const mockError = {
+const mockFitError: postRequests["api/fit-score"]["response"] = {
 	isError: true,
 	message: "failed to get fit score",
-	//TODO: do we want to assign these garbage values, make them optional, or get rid of isError?
 	fitScore: 0,
 	matchedSkills: [],
 	feedback: [],
@@ -113,36 +83,10 @@ const mockError = {
 
 describe("Dashboard Component", () => {
 	beforeEach(() => {
-		jest.clearAllMocks();
-		/*
-		backendPostMock.mockImplementation((endpoint, payload) => {
-			if (endpoint === "api/fit-score") {
-				return Promise.resolve({ response: mockFitData });
-			} else if (endpoint === "api/analyze") {
-				return Promise.resolve({ response: mockAnalyzeData });
-			} else {
-				return Promise.reject({
-					error: "Invalid request",
-				});
-			}
-		});
-		*/
-		/*
-		(backendPost as jest.Mock).mockResolvedValue({
-			data: mockFitData,
-			error: null,
-			isLoading: false,
-		}); 
-		(backendPost as jest.Mock).mockResolvedValueOnce({
-			data: mockAnalyzeData,
-			error: null,
-			isLoading: false,
-		});*/
+		jest.restoreAllMocks();
 	});
 
 	it("should render the dashboard title", async () => {
-		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
-		backendPostMock.mockResolvedValueOnce(mockFitData);
 		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
 		backendPostMock.mockResolvedValueOnce(mockFitData);
 		await act(async () => {
@@ -153,8 +97,10 @@ describe("Dashboard Component", () => {
 		const titleElement = screen.getByText(/Resume Analysis Dashboard/i);
 		expect(titleElement).toBeInTheDocument();
 	});
-	/*
+
 	it("should render the FitScoreChart with the correct score", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		await act(async () => {
 			// Does the fit score appear appopriately?
 			render(<Dashboard />);
@@ -168,6 +114,8 @@ describe("Dashboard Component", () => {
 	});
 
 	it("should render the SkillsMatched component with all skills", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		await act(async () => {
 			// Does the skills appear correctly?
 			render(<Dashboard />);
@@ -178,6 +126,8 @@ describe("Dashboard Component", () => {
 	});
 
 	it("should render the feedback component with all suggestions", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		await act(async () => {
 			// Does the suggestions appear correctly?
 			render(<Dashboard />);
@@ -188,6 +138,8 @@ describe("Dashboard Component", () => {
 	});
 
 	it("should adapt correctly to changes in fit score", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		// Render a new dashboard (with a different fit score)
 		const newScore = 50;
 		const NewDashboard = () => (
@@ -205,6 +157,8 @@ describe("Dashboard Component", () => {
 	});
 
 	it("should update and render new skills and suggestions (remove old)", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		// Updated data: skills and sugggestions
 		const updatedSkills = [
 			"Python",
@@ -272,6 +226,8 @@ describe("Dashboard Component", () => {
 	});
 
 	it("should only display 'skills' feedback when checkbox is selected", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		await act(async () => {
 			render(<Dashboard />);
 		});
@@ -304,6 +260,8 @@ describe("Dashboard Component", () => {
 	});
 
 	it("should only display 'experience' feedback when checkbox is selected", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		await act(async () => {
 			render(<Dashboard />);
 		});
@@ -334,20 +292,19 @@ describe("Dashboard Component", () => {
 		});
 	});
 	it("should display an error with the corrosponding message if the isError is true", async () => {
-		(useBackendGet as jest.Mock).mockReturnValue({
-			data: mockError,
-			error: null,
-			isLoading: false,
-		});
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitError);
 		await act(async () => {
 			render(<Dashboard />);
 		});
 		const errorElement = screen.getByText(/Error retrieving results/i);
 		expect(errorElement).toBeInTheDocument();
-		const messageElement = screen.getByText(RegExp(mockError.message));
+		const messageElement = screen.getByText(RegExp(mockFitError.message));
 		expect(messageElement).toBeInTheDocument();
 	});
 	it("should display an error if the response is null", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(null);
 		(useBackendGet as jest.Mock).mockReturnValue({
 			data: null,
 			error: null,
@@ -361,6 +318,8 @@ describe("Dashboard Component", () => {
 	});
 
 	it("rating element should render with the correct fit score", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		const { rerender } = render(<Dashboard />);
 		(useBackendGet as jest.Mock).mockReturnValue({
 			data: {
@@ -412,6 +371,8 @@ describe("Dashboard Component", () => {
 		expect(ratingElement).toHaveAttribute("aria-label", "5 Stars");
 	});
 	it("empty imporovementSuggestions list should display a message", async () => {
+		backendPostMock.mockResolvedValueOnce(mockAnalyzeData);
+		backendPostMock.mockResolvedValueOnce(mockFitData);
 		(useBackendGet as jest.Mock).mockReturnValue({
 			data: {
 				isError: false,
@@ -449,5 +410,4 @@ describe("Dashboard Component", () => {
 		const nullStateMessage = screen.queryByText(/No fit score available/i);
 		expect(nullStateMessage).toBeInTheDocument();
 	});
-	*/
 });
