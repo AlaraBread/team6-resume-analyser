@@ -14,8 +14,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { generatePDF, generateWord } from "./report_generator";
 import { useProtectRoute } from "util/fetching";
-import JobDescriptionForm from "app/form/job_description_form";
-
 export type DashboardData = getRequests["api/fit-score"];
 
 export default function Dashboard() {
@@ -27,12 +25,13 @@ export default function Dashboard() {
 	const [fitData, setFitData] = useState<
 		postRequests["api/fit-score"]["response"] | null
 	>(null);
-	const [error, setError] = useState<string | null>(null);
+	//const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		backendPost("api/analyze", {}).then((analyzeResponse) => {
 			setAnalyzeData(analyzeResponse);
+			setLoading(true);
 
 			backendPost("api/fit-score", {
 				resumeKeywords: analyzeResponse?.data.resumeAnalysis,
@@ -40,6 +39,7 @@ export default function Dashboard() {
 					analyzeResponse?.data.jobDescriptionAnalysis,
 			}).then((fitResponse) => {
 				setFitData(fitResponse);
+				setLoading(false);
 			});
 		});
 	}, []);
