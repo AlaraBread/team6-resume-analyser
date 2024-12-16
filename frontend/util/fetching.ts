@@ -199,10 +199,12 @@ export async function backendFormPost<T extends formPostRequests>(
 }
 
 export function getToken(): string {
+	if (!Object.hasOwn(globalThis, "localStorage")) return "";
 	return JSON.parse(localStorage?.getItem("token") ?? '""');
 }
 
 function setToken(token: string | undefined) {
+	if (!Object.hasOwn(globalThis, "localStorage")) return;
 	localStorage?.setItem("token", JSON.stringify(token ?? ""));
 }
 
