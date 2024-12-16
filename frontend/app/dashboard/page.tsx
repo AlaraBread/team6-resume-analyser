@@ -57,11 +57,18 @@ const mockEmpty: MockData = {
 export default function Dashboard() {
 	useProtectRoute();
 	//if you wanna use the mock data just swap out useBackendGet().data for the mock data
-	const response = useBackendGet("api/fit-score").data;
+	const { data, isLoading, error } = useBackendGet("api/fit-score");
 
 	const [fileFormat, setFileFormat] = useState("PDF"); // Default format is PDF
 
-	if (response == null) {
+	if (isLoading)
+		return (
+			<div className={styles.dashboardContainer}>
+				<h1>loading...</h1>
+			</div>
+		);
+
+	if (data == null || error) {
 		// response is null, display error page
 		return (
 			<div className={styles.dashboardContainer}>
@@ -69,12 +76,12 @@ export default function Dashboard() {
 				<p>null response</p>
 			</div>
 		);
-	} else if (response.isError) {
+	} else if (data.isError) {
 		// isError is true, display error page
 		return (
 			<div className={styles.dashboardContainer}>
 				<h1>Error retrieving results</h1>
-				<p>{response.message}</p>
+				<p>{data.message}</p>
 			</div>
 		);
 	} else {
@@ -82,15 +89,15 @@ export default function Dashboard() {
 		const handleDownload = () => {
 			if (fileFormat === "PDF") {
 				generatePDF(
-					response.fitScore,
-					response.matchedSkills,
-					response.improvementSuggestions,
+					data.fitScore,
+					data.matchedSkills,
+					data.improvementSuggestions,
 				);
 			} else if (fileFormat === "Word") {
 				generateWord(
-					response.fitScore,
-					response.matchedSkills,
-					response.improvementSuggestions,
+					data.fitScore,
+					data.matchedSkills,
+					data.improvementSuggestions,
 				);
 			}
 		};
@@ -101,10 +108,10 @@ export default function Dashboard() {
 						Resume Analysis Dashboard
 					</h1>
 					<br></br>
-					<FitScoreChart score={response.fitScore} />
-					<SkillsMatched skills={response.matchedSkills} />
+					<FitScoreChart score={data.fitScore} />
+					<SkillsMatched skills={data.matchedSkills} />
 					<ImprovementSuggestions
-						suggestions={response.improvementSuggestions}
+						suggestions={data.improvementSuggestions}
 					/>
 				</div>
 

@@ -108,8 +108,7 @@ export type postRequests = {
 };
 
 type formPostRequests = {
-	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData
-		? K
+	[K in keyof postRequests]-?: postRequests[K]["request"] extends FormData ? K
 		: never;
 }[keyof postRequests];
 
@@ -165,7 +164,7 @@ function setToken(token: string | undefined) {
 
 export function useProtectRoute() {
 	const router = useRouter();
-	const [token] = useLocalStorageState<string>("token");
+	const [token] = useLocalStorageState<string>('"token"');
 
 	useEffect(() => {
 		if (!token) {
