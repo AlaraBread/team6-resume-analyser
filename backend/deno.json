@@ -13,8 +13,7 @@
 		"@std/assert": "jsr:@std/assert@1",
 		"@officeparser": "npm:officeparser",
 		"@djwt": "https://deno.land/x/djwt@v3.0.2/mod.ts",
-		"@dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts",
-		"@natural": "npm:natural"
+		"@dotenv": "https://deno.land/x/dotenv@v3.2.2/mod.ts"
 	},
 	"fmt": {
 		"useTabs": true
