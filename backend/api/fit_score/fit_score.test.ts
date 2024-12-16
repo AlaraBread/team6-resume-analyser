@@ -12,6 +12,13 @@ Deno.test("/api/fit-score - with keywords", async () => {
 				mustHave: ["missing3", "missing4", "notmissing2"],
 			},
 		})),
+		state: {
+			sessionData: {
+				resumeText: "i have experience with java, sql, and git",
+				jobDescription:
+					"we need someone with java, sql, git, and python experience.",
+			},
+		},
 	});
 	await fitScore(ctx);
 	assertEquals(ctx.response.status, 200);
@@ -73,6 +80,12 @@ Deno.test("/api/fit-score - with empty arrays", async () => {
 				mustHave: [],
 			},
 		})),
+		state: {
+			sessionData: {
+				resumeText: "",
+				jobDescription: "",
+			},
+		},
 	});
 	await fitScore(ctx);
 	assertEquals(ctx.response.status, 200);
@@ -90,6 +103,12 @@ Deno.test("/api/fit-score - malformed request", async () => {
 				mustHave: [],
 			},
 		})),
+		state: {
+			sessionData: {
+				resumeText: "",
+				jobDescription: "",
+			},
+		},
 	});
 	await fitScore(ctx);
 	assertEquals(ctx.response.status, 400);
