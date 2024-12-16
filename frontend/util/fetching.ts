@@ -135,7 +135,10 @@ export type postRequests = {
 			isError: boolean;
 			message: string;
 			fitScore: number;
-			feedback: string[];
+			feedback: {
+				feedback: string;
+				category: string;
+			}[];
 			matchedSkills: string[];
 		};
 	};
