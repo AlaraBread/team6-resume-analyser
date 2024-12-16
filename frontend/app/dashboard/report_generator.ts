@@ -7,7 +7,7 @@ export function generatePDF(
 	matchedKeywords: string[],
 	feedback: {
 		category: string;
-		text: string;
+		feedback: string;
 	}[],
 ) {
 	const doc = new jsPDF();
@@ -50,7 +50,7 @@ export function generatePDF(
 	doc.setFont("helvetica", "normal");
 	feedback.forEach((item, index) => {
 		doc.text(
-			`- ${item.category} - ${item.text}`,
+			`- ${item.category} - ${item.feedback}`,
 			10,
 			currentY + index * 10,
 		);
@@ -64,7 +64,7 @@ export function generateWord(
 	matchedKeywords: string[],
 	feedback: {
 		category: string;
-		text: string;
+		feedback: string;
 	}[],
 ) {
 	const doc = new Document({
@@ -130,7 +130,7 @@ export function generateWord(
 							new Paragraph({
 								children: [
 									new TextRun({
-										text: `- ${item.category} - ${item.text}`,
+										text: `- ${item.category} - ${item.feedback}`,
 										size: 24,
 									}),
 								],

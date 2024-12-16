@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import styles from "./dashboard.module.css";
 interface ImprovementSuggestionsProps {
-	suggestions: { category: string; text: string }[];
+	suggestions: { category: string; feedback: string }[];
 }
 
 export default function ImprovementSuggestions({
@@ -101,7 +101,7 @@ export default function ImprovementSuggestions({
 				<List className={styles.listContainerImprovement}>
 					{suggestionsFiltered.map((suggestion, index) => (
 						<ListItem key={index} className={styles.listItem}>
-							<ListItemText primary={suggestion.text} />
+							<ListItemText primary={suggestion.feedback} />
 						</ListItem>
 					))}
 				</List>
