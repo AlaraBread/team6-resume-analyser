@@ -56,6 +56,7 @@ export function Register() {
 				router.push("/login");
 			})
 			.catch((reason) => {
+				console.error(reason);
 				setPostData("Error: " + (reason?.message ?? reason));
 				setLoading(false);
 			});

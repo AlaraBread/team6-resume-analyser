@@ -156,7 +156,6 @@ type jsonPostRequests = {
 		: K;
 }[keyof postRequests];
 
-let token: string | null = globalThis?.localStorage?.getItem("token");
 export async function backendPost<T extends jsonPostRequests>(
 	endpoint: T,
 	data: postRequests[T]["request"],
@@ -197,12 +196,13 @@ function getToken(): string {
 }
 
 function setToken(token: string | undefined) {
-	localStorage?.setItem("token", JSON.stringify(token ?? '""'));
+	localStorage?.setItem("token", JSON.stringify(token ?? ""));
 }
 
 export function useProtectRoute() {
 	const router = useRouter();
-	const [token] = useLocalStorageState<string>('"token"');
+	const [t] = useLocalStorageState<string>('"token"');
+	const token = t ?? getToken();
 
 	useEffect(() => {
 		if (!token) {
