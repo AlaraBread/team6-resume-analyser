@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import Dashboard from "./page";
-import { MockData } from "./page";
 import FitScoreChart from "./fit_score_chart";
 import { useBackendGet } from "util/fetching";
 
@@ -27,7 +26,7 @@ jest.mock("next/navigation", () => {
 
 describe("Dashboard Component", () => {
 	// Mock data for testing
-	const mockData: MockData = {
+	const mockData = {
 		isError: false,
 		message: "get fit score successful",
 		fitScore: 85,
@@ -49,7 +48,7 @@ describe("Dashboard Component", () => {
 			{ category: "skills", text: "Add personal project(s)." },
 		],
 	};
-	const mockError: MockData = {
+	const mockError = {
 		isError: true,
 		message: "failed to get fit score",
 		//TODO: do we want to assign these garbage values, make them optional, or get rid of isError?

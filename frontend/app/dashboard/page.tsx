@@ -4,7 +4,7 @@ import FitScoreChart from "./fit_score_chart";
 import SkillsMatched from "./skills_matched";
 import ImprovementSuggestions from "./improvement_suggestions";
 import styles from "./dashboard.module.css";
-import { useBackendGet } from "util/fetching";
+import { getRequests, useBackendGet } from "util/fetching";
 import { useState } from "react";
 import React from "react";
 import Button from "@mui/material/Button";
@@ -14,16 +14,9 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { generatePDF, generateWord } from "./report_generator";
 import { useProtectRoute } from "util/fetching";
-export interface MockData {
-	isError: boolean;
-	message: string;
-	fitScore: number;
-	matchedSkills: string[];
-	improvementSuggestions: {
-		category: string;
-		text: string;
-	}[];
-}
+
+export type DashboardData = getRequests["api/fit-score"];
+
 // mock data for testing
 /*
 const mockData: MockData = {
@@ -60,6 +53,7 @@ const mockEmpty: MockData = {
 	improvementSuggestions: [],
 };
 */
+
 export default function Dashboard() {
 	useProtectRoute();
 	//if you wanna use the mock data just swap out useBackendGet().data for the mock data
