@@ -114,13 +114,13 @@ export default function Dashboard() {
 				generatePDF(
 					fitData.fitScore,
 					fitData.matchedSkills,
-					analyzeData.data.feedback,
+					fitData.feedback.concat(analyzeData.data.feedback),
 				);
 			} else if (fileFormat === "Word") {
 				generateWord(
 					fitData.fitScore,
 					fitData.matchedSkills,
-					analyzeData.data.feedback,
+					fitData.feedback.concat(analyzeData.data.feedback),
 				);
 			}
 		};
@@ -134,7 +134,9 @@ export default function Dashboard() {
 					<FitScoreChart score={fitData.fitScore} />
 					<SkillsMatched skills={fitData.matchedSkills} />
 					<ImprovementSuggestions
-						suggestions={analyzeData.data.feedback}
+						suggestions={fitData.feedback.concat(
+							analyzeData.data.feedback,
+						)}
 					/>
 				</div>
 
