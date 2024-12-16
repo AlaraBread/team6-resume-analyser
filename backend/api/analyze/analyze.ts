@@ -3,10 +3,20 @@ import { analyzeText, generateResumeFeedback } from "../openai/openai.ts";
 import { SessionData } from "../../in_memory/in_memory.ts";
 
 export default function (router: Router, sessionMiddleware: Middleware) {
-	router.post("/api/analyze", sessionMiddleware, analyzeHandler);
+	router.post(
+		"/api/analyze",
+		sessionMiddleware,
+		analyzeHandler.bind(undefined, analyzeText, generateResumeFeedback),
+	);
 }
 
-export async function analyzeHandler(ctx: Context) {
+const MAX_TEXT_LENGTH = 10000;
+
+export async function analyzeHandler(
+	analyze: typeof analyzeText,
+	getFeedback: typeof generateResumeFeedback,
+	ctx: Context,
+) {
 	// Retrieve session data
 	const sessionData = ctx.state.sessionData as SessionData | null;
 
@@ -20,17 +30,29 @@ export async function analyzeHandler(ctx: Context) {
 		return;
 	}
 
+	if (
+		sessionData.resumeText.length > MAX_TEXT_LENGTH ||
+		sessionData.jobDescription.length > MAX_TEXT_LENGTH
+	) {
+		ctx.response.status = 400;
+		ctx.response.body = {
+			isError: true,
+			message: "Resume or Job description too long.",
+		};
+		return;
+	}
+
 	try {
 		// Analyze the resume
-		const resumeAnalysis = await analyzeText(sessionData.resumeText, "resume");
+		const resumeAnalysis = await analyze(sessionData.resumeText, "resume");
 
 		// Analyze the job description
-		const jobDescriptionAnalysis = await analyzeText(
+		const jobDescriptionAnalysis = await analyze(
 			sessionData.jobDescription,
 			"jobDescription",
 		);
 
-		const feedback = await generateResumeFeedback(
+		const feedback = await getFeedback(
 			sessionData.resumeText,
 			sessionData.jobDescription,
 		);

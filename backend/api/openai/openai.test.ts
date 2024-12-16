@@ -97,6 +97,7 @@ Deno.test.ignore("generateResumeFeedback - Live API Call", async () => {
 // Mocked tests to verify function logic without live API
 Deno.test("analyzeText - Valid Input for Job Description (Mocked)", async () => {
 	restore();
+	stub(Deno.env, "get", () => "api-key");
 
 	// Mock the fetch API for a successful response
 	const mockFetch = stub(globalThis, "fetch", () =>
@@ -129,6 +130,7 @@ Deno.test("analyzeText - Valid Input for Job Description (Mocked)", async () => 
 
 Deno.test("analyzeText - Valid Input for Job Description (Mocked)", async () => {
 	restore();
+	stub(Deno.env, "get", () => "api-key");
 
 	// Mock the fetch API for a successful response
 	const mockFetch = stub(globalThis, "fetch", () =>
@@ -180,6 +182,8 @@ Deno.test("analyzeText - API Key Missing (Mocked)", async () => {
 });
 
 Deno.test("analyzeText - Invalid Input (Mocked)", async () => {
+	restore();
+	stub(Deno.env, "get", () => "api-key");
 	const longInput = "a".repeat(10001); // Exceeds the character limit
 
 	await assertRejects(
@@ -191,6 +195,7 @@ Deno.test("analyzeText - Invalid Input (Mocked)", async () => {
 
 Deno.test("analyzeText - API Error Response (Mocked)", async () => {
 	restore();
+	stub(Deno.env, "get", () => "api-key");
 
 	// Mock the fetch API for an API error response
 	const mockFetch = stub(globalThis, "fetch", () =>

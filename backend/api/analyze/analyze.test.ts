@@ -4,30 +4,44 @@ import { Router } from "@oak/oak";
 import analyze, { analyzeHandler } from "./analyze.ts";
 import { createBody } from "../../util/util.test.ts";
 import { restore } from "@std/testing/mock";
-import {
-	AnalyzeResponse,
-	ErrorResponse,
-} from "../../interfaces/openai_interface.ts";
 import { SessionData } from "../../in_memory/in_memory.ts";
+import {
+	AnalyseResponse,
+	analyzeText,
+	generateResumeFeedback,
+} from "../openai/openai.ts";
+import { sessionMiddleware } from "../../middleware/session_middleware.ts";
+
+const mockAnalyzeText: typeof analyzeText = <T>(
+	_inputText: string,
+	type: T,
+) => {
+	if (type == "resume") {
+		return Promise.resolve(["1", "2"] as AnalyseResponse<
+			T
+		>);
+	} else {
+		return Promise.resolve({
+			mustHave: ["a", "b", "c"],
+			niceToHave: ["x", "y"],
+		} as AnalyseResponse<
+			T
+		>);
+	}
+};
+
+const mockGenerateFeedback: typeof generateResumeFeedback = (
+	_resumeText: string,
+	_jobDescription: string,
+) => Promise.resolve([{ feedback: "a", category: "b" }]);
 
 Deno.test("POST /api/analyze - Valid Input", async () => {
 	restore();
-	const mockAnalyzeTextHelper = () =>
-		Promise.resolve({
-			fitScore: 85,
-			feedback: ["Great alignment with job reqierments."],
-		});
 
 	const ctx = createMockContext({
 		method: "POST",
 		path: "/api/analyze",
 		headers: [["Content-Type", "application/json"]],
-		body: createBody(
-			JSON.stringify({
-				resumeText: "Resume content",
-				jobDescription: "Job content",
-			}),
-		),
 		state: {
 			sessionData: {
 				resumeText: "my resume",
@@ -39,7 +53,7 @@ Deno.test("POST /api/analyze - Valid Input", async () => {
 	const router = new Router();
 	router.post(
 		"/api/analyze",
-		analyzeHandler.bind(undefined, mockAnalyzeTextHelper),
+		analyzeHandler.bind(undefined, mockAnalyzeText, mockGenerateFeedback),
 	);
 
 	const next = async () => {};
@@ -47,11 +61,30 @@ Deno.test("POST /api/analyze - Valid Input", async () => {
 	await router.routes()(ctx, next);
 
 	// Assertions
-	const responseBody = ctx.response.body as AnalyzeResponse;
+	const responseBody = ctx.response.body as {
+		isError: boolean;
+		message: string;
+		data: {
+			resumeAnalysis: string[];
+			jobDescriptionAnalysis: {
+				mustHave: string[];
+				niceToHave: string[];
+			};
+			feedback: {
+				feedback: string;
+				category: string;
+			}[];
+		};
+	};
 	assertEquals(ctx.response.status, 200);
 	assertEquals(responseBody.isError, false);
 	assertEquals(responseBody.message, "Analysis successful.");
-	assertEquals(responseBody.data?.fitScore, 85);
+	assertEquals(responseBody.data.resumeAnalysis, ["1", "2"]);
+	assertEquals(responseBody.data.jobDescriptionAnalysis, {
+		mustHave: ["a", "b", "c"],
+		niceToHave: ["x", "y"],
+	});
+	assertEquals(responseBody.data.feedback, [{ feedback: "a", category: "b" }]);
 });
 
 Deno.test("POST /api/analyze - Missing Input", async () => {
@@ -61,22 +94,28 @@ Deno.test("POST /api/analyze - Missing Input", async () => {
 		method: "POST",
 		path: "/api/analyze",
 		headers: [["Content-Type", "application/json"]],
-		body: createBody(
-			JSON.stringify({
+		state: {
+			sessionData: {
 				jobDescription: "Job content", // Missing resumeText
-			}),
-		),
+			} as SessionData,
+		},
 	});
 
 	const router = new Router();
-	analyze(router);
+	router.post(
+		"/api/analyze",
+		analyzeHandler.bind(undefined, mockAnalyzeText, mockGenerateFeedback),
+	);
 
 	const next = async () => {};
 
 	await router.routes()(ctx, next);
 
 	// Assertions
-	const responseBody = ctx.response.body as ErrorResponse;
+	const responseBody = ctx.response.body as {
+		isError: boolean;
+		message: string;
+	};
 	assertEquals(ctx.response.status, 400);
 	assertEquals(responseBody.isError, true);
 	assertEquals(
@@ -94,27 +133,33 @@ Deno.test("POST /api/analyze - Input Too Long", async () => {
 		method: "POST",
 		path: "/api/analyze",
 		headers: [["Content-Type", "application/json"]],
-		body: createBody(
-			JSON.stringify({
-				resumeText: longText,
+		state: {
+			sessionData: {
 				jobDescription: "Job content",
-			}),
-		),
+				resumeText: longText,
+			} as SessionData,
+		},
 	});
 
 	const router = new Router();
-	analyze(router);
+	router.post(
+		"/api/analyze",
+		analyzeHandler.bind(undefined, mockAnalyzeText, mockGenerateFeedback),
+	);
 
 	const next = async () => {};
 
 	await router.routes()(ctx, next);
 
 	// Assertions
-	const responseBody = ctx.response.body as ErrorResponse;
+	const responseBody = ctx.response.body as {
+		isError: boolean;
+		message: string;
+	};
 	assertEquals(ctx.response.status, 400);
 	assertEquals(responseBody.isError, true);
 	assertEquals(
 		responseBody.message,
-		"You must upload a resume and job description.",
+		"Resume or Job description too long.",
 	);
 });

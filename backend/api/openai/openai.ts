@@ -12,7 +12,7 @@ const CONTENT_TEMPLATES: Record<string, string> = {
 		"You are an assistant that extracts keywords from resumes. Provide only the keywords, separated by commas.",
 };
 
-type AnalyseResponse<Type> = Type extends "resume" ? string[]
+export type AnalyseResponse<Type> = Type extends "resume" ? string[]
 	: Type extends "jobDescription" ? { mustHave: string[]; niceToHave: string[] }
 	: never;
 
