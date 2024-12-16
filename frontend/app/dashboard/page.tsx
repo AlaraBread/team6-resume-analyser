@@ -35,9 +35,9 @@ export default function Dashboard() {
 			setAnalyzeData(analyzeResponse);
 
 			backendPost("api/fit-score", {
-				resumeKeywords: analyzeResponse.data.resumeAnalysis,
+				resumeKeywords: analyzeResponse?.data.resumeAnalysis,
 				jobDescriptionKeywords:
-					analyzeResponse.data.jobDescriptionAnalysis,
+					analyzeResponse?.data.jobDescriptionAnalysis,
 			}).then((fitResponse) => {
 				setFitData(fitResponse);
 			});
