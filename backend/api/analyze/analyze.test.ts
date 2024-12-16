@@ -1,8 +1,7 @@
 import { assertEquals } from "@std/assert";
 import { createMockContext } from "@oak/oak/testing";
 import { Router } from "@oak/oak";
-import analyze, { analyzeHandler } from "./analyze.ts";
-import { createBody } from "../../util/util.test.ts";
+import { analyzeHandler } from "./analyze.ts";
 import { restore } from "@std/testing/mock";
 import { SessionData } from "../../in_memory/in_memory.ts";
 import {
@@ -10,7 +9,6 @@ import {
 	analyzeText,
 	generateResumeFeedback,
 } from "../openai/openai.ts";
-import { sessionMiddleware } from "../../middleware/session_middleware.ts";
 
 const mockAnalyzeText: typeof analyzeText = <T>(
 	_inputText: string,
