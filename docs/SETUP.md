@@ -59,6 +59,13 @@ To run the same checks that run in ci on your local, you can run
 npm run check
 ```
 
+### Run end to end tests
+
+(in `frontend`)
+```sh
+npm run test:e2e
+```
+
 ## Backend
 
 The backend is in `/backend`. It is an [oak server](https://oakserver.org/) that uses [deno](https://deno.com/).
@@ -100,7 +107,7 @@ The backend is in `/backend`. It is an [oak server](https://oakserver.org/) that
 
    **Step 4.4:** Copy the generated secret key.
 
-   **Step 4.5:** Add the secret key to your `local.env` file as an environment variable. Use the following format:
+   **Step 4.5:** Add the secret key to your `backend/local.env` file as an environment variable. Use the following format:
    ```env
    OPENAI_API_KEY=your-token-key
    ```

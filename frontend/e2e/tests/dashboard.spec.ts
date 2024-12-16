@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("Dashboard Page Tests", () => {
 	test.beforeEach(async ({ page }) => {
@@ -22,7 +22,49 @@ test.describe("Dashboard Page Tests", () => {
 		await page.click('button[type="submit"]');
 
 		await page.waitForURL("**/form");
-		await page.goto("http://localhost:3000/dashboard");
+		// Mock backend API call for successful analyze
+		await page.route("**/api/analyze", (route) => {
+			route.fulfill({
+				status: 200,
+				body: JSON.stringify({
+					isError: false,
+					message: "Analysis successful.",
+					data: {
+						resumeAnalysis: ["hello", "world"],
+						jobDescriptionAnalysis: {
+							mustHave: ["useless"],
+							niceToHave: ["hi", "hello"],
+						},
+						feedback: [
+							{
+								feedback: "do some stuff to it",
+								category: "useless",
+							},
+						],
+					},
+				}),
+			});
+		});
+		await page.route("**/api/fit-score", (route) => {
+			route.fulfill({
+				status: 200,
+				body: JSON.stringify({
+					isError: false,
+					message: "success",
+					fitScore: 50,
+					matchedSkills: ["hello", "i matched skills"],
+					feedback: [
+						{
+							category: "bad advice",
+							feedback: "lie on your resume",
+						},
+					],
+				}),
+			});
+		});
+		await page.goto("http://localhost:3000/dashboard", {
+			waitUntil: "networkidle",
+		});
 	});
 
 	test("All dashboard components are displayed", async ({ page }) => {
@@ -41,9 +83,15 @@ test.describe("Dashboard Page Tests", () => {
 
 		// Checkboxes
 		await expect(page.locator('label:has-text("All")')).toBeVisible();
-		await expect(page.locator('label:has-text("skills")')).toBeVisible();
+		await expect(page.locator('label:has-text("useless")')).toBeVisible();
 		await expect(
-			page.locator('label:has-text("experience")'),
+			page.locator('span:has-text("lie on your resume")'),
+		).toBeVisible();
+		await expect(
+			page.locator('span:has-text("do some stuff to it")'),
+		).toBeVisible();
+		await expect(
+			page.locator('h2:has-text("Skills and Keywords Matched")'),
 		).toBeVisible();
 	});
 });

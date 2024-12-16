@@ -105,7 +105,7 @@ test.describe("Login Page Tests", () => {
 		await page.route("**/api/login", (route) => {
 			route.fulfill({
 				status: 401,
-				body: JSON.stringify({ message: "Invalid email or password" }),
+				body: JSON.stringify({ message: "not authenticated" }),
 			});
 		});
 
@@ -120,6 +120,6 @@ test.describe("Login Page Tests", () => {
 		const backendMessage = await page.locator(
 			'[data-testid="backend-login-post"]',
 		);
-		await expect(backendMessage).toHaveText("Invalid email or password");
+		await expect(backendMessage).toHaveText("not authenticated");
 	});
 });
